@@ -34,9 +34,9 @@ window['_state'] = state
 var SMessages = proto.lookup('esterpad.SMessages')
 var CMessages = proto.lookup('esterpad.CMessages')
 
-var wsUrl = 'ws://' + window.location.host + '/ws'
+var wsUrl = 'ws://' + window.location.host + '/.ws'
 if (window.location.hostname === 'localhost') {
-  wsUrl = 'ws://localhost:9000/ws'
+  wsUrl = 'ws://localhost:9000/.ws'
 }
 var conn = new WebSocket(wsUrl)
 conn.binaryType = 'arraybuffer'
