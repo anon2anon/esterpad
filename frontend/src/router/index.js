@@ -5,7 +5,7 @@ import Login from '@/components/Login'
 import Register from '@/components/Register'
 import PadList from '@/components/PadList'
 
-import state from '@/state'
+import { state, bus } from '@/globs'
 
 Vue.use(Router)
 
@@ -43,6 +43,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
         if (!state.isLoggedIn) next('/.login?go=' + to.path)
         state.padId = to.params.padId
+        bus.$emit('pad-id-changed', to.params.padId)
         next()
       }
     }

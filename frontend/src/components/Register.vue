@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import state from '@/state'
+import { bus } from '@/globs'
 
 export default {
   name: 'esterpad-login',
@@ -42,7 +42,7 @@ export default {
   methods: {
     register () {
       // validate passwds or smth
-      state.sendMessage('Register', {
+      bus.$emit('send', 'Register', {
         email: this.email,
         nickname: this.nickname,
         password: this.pass

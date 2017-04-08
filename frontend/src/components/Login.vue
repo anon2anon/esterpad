@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import state from '@/state'
+import { state, bus } from '@/globs'
 
 export default {
   name: 'esterpad-login',
@@ -36,14 +36,14 @@ export default {
   },
   methods: {
     sendLogin () {
-      state.sendMessage('Login', {
+      bus.$emit('send', 'Login', {
         email: this.email,
         password: this.pass
       })
     },
     guestLogin () {
       // TODO: read sessId
-      state.sendMessage('Session', {sessId: ''})
+      bus.$emit('send', 'Session', {sessId: ''})
     }
   }
 }

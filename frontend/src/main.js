@@ -10,9 +10,11 @@ Vue.use(VueMaterial)
 
 import MyUser from '@/components/MyUser'
 import Editor from '@/components/Editor'
+import UserList from '@/components/UserList'
 
 Vue.component('esterpad-myuser', MyUser)
 Vue.component('esterpad-editor', Editor)
+Vue.component('esterpad-userlist', UserList)
 
 Vue.config.productionTip = false
 
@@ -28,8 +30,9 @@ import * as protobuf from 'protobufjs'
 import * as jsonDescr from './assets/proto.json'
 var proto = protobuf.Root.fromJSON(jsonDescr)
 
-import state from './state'
+import { state, bus } from './globs'
 window['_state'] = state
+window['_bus'] = bus
 
 var SMessages = proto.lookup('esterpad.SMessages')
 var CMessages = proto.lookup('esterpad.CMessages')
@@ -41,25 +44,25 @@ if (window.location.hostname === 'localhost') {
 var conn = new WebSocket(wsUrl)
 conn.binaryType = 'arraybuffer'
 
-state.sendMessage = function () {
+bus.$on('send', function () {
   var args = [] // accepts any number of messages
   for (var i = 0; 2 * i < arguments.length; i++) {
     var tmp = {}
     tmp[arguments[i]] = arguments[i + 1]
     tmp['CMessages'] = arguments[i]
-    console.log('sendMessage', arguments[i], arguments[i + 1])
+    console.log('send', arguments[i], arguments[i + 1])
     args.push(tmp)
   }
   var buffer = CMessages.encode({
     cm: args
   }).finish()
   conn.send(buffer)
-}
+})
 
 conn.onopen = function (evt) {
   console.log('WS connected')
   if (state.sessId) {
-    state.sendMessage('Session', {sessId: state.sessId})
+    bus.$emit('send', 'Session', {sessId: state.sessId})
   }
 }
 
@@ -71,7 +74,7 @@ conn.onclose = function (evt) {
 conn.onmessage = function (evt) {
   var messages = SMessages.decode(new Uint8Array(evt.data)).sm
   if (!messages) return // ping
-  console.log(messages)
+  console.log('messages', messages)
   messages.forEach(function (message) {
     console.log(message)
     if (message.Auth !== null) { // Our info
@@ -95,18 +98,19 @@ conn.onmessage = function (evt) {
         router.push('/.padlist')
       }
     } else if (message.UserInfo !== null) { // User connected/updated
+      bus.$emit('user-info', message.UserInfo)
     } else if (message.UserLeave !== null) {
+      bus.$emit('user-leave', message.UserLeave)
     } else if (message.Chat !== null) { // Chat message
+      bus.$emit('new-chat-msg', message.Chat)
     } else if (message.Delta !== null) { // New delta
+      bus.$emit('new-delta', message.Delta)
     } else if (message.AuthError) {
-      state.snackbarMsg = ''
-      setTimeout(function () {
-        state.snackbarMsg = 'Login error #' + message.AuthError.error
-      }, 100) // TODO: create message queue
+      bus.$emit('auth-error', 'Login error #' + message.AuthError.error)
     } else if (message.PadList !== null) {
       state.padList = message.PadList.pads
     } else {
-      console.error('Unknown message type', message)
+      console.error('Unknown message type')
     }
   })
 }

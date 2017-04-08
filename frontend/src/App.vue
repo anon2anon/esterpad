@@ -40,22 +40,26 @@
     <router-view></router-view>
 
     <md-snackbar md-position="bottom right" ref="snackbar" :md-duration="2000">
-      <span>{{ state.snackbarMsg }}</span>
+      <span>{{ snckMsg }}</span>
       <md-button class="md-accent" md-theme="light-blue" @click.native="$refs.snackbar.close()">OK</md-button>
     </md-snackbar>
   </div>
 </template>
 
 <script>
-import state from '@/state'
+import { state, bus } from '@/globs'
 
 export default {
   name: 'app',
   data () {
     return {
       state: state,
-      title: ''
+      title: '',
+      snckMsg: ''
     }
+  },
+  mounted () {
+    bus.$on('auth-error', this.snackbarMsg)
   },
   methods: {
     toggleSidenav () {
@@ -65,11 +69,15 @@ export default {
       this.$refs.sidenav.close()
     },
     signout () {
-      state.sendMessage('Logout', {})
+      bus.$emit('send', 'Logout', {})
       state.isLoggedIn = false
       if (['/.login', '/.register'].indexOf(this.$route.path) < 0) {
         this.$router.push('/.login')
       }
+    },
+    snackbarMsg (msg) {
+      this.snckMsg = msg
+      this.$refs.snackbar.open()
     }
   },
   watch: {
@@ -78,11 +86,6 @@ export default {
         this.title = to.name
       } else {
         this.title = state.padId
-      }
-    },
-    'state.snackbarMsg' (to, from) {
-      if (to !== '') {
-        this.$refs.snackbar.open()
       }
     }
   }

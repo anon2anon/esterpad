@@ -5,7 +5,7 @@
     </md-layout>
     <md-layout md-column :md-gutter="8">
       <md-layout md-flex="40">
-        User list
+        <esterpad-userlist></esterpad-userlist>
       </md-layout>
       <md-layout>
         Chat

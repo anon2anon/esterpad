@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import state from '@/state'
+import { state } from '@/globs'
 
 export default {
   name: 'esterpad-padlist',
