@@ -65,10 +65,7 @@ export default {
       this.$refs.sidenav.close()
     },
     signout () {
-      state.sendMessage({
-        Logout: {},
-        CMessage: 'Logout'
-      })
+      state.sendMessage('Logout', {})
       state.isLoggedIn = false
       if (['/.login', '/.register'].indexOf(this.$route.path) < 0) {
         this.$router.push('/.login')

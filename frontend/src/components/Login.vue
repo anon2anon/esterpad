@@ -36,21 +36,14 @@ export default {
   },
   methods: {
     sendLogin () {
-      state.sendMessage({
-        Login: {
-          email: this.email,
-          password: this.pass
-        },
-        CMessage: 'Login'
+      state.sendMessage('Login', {
+        email: this.email,
+        password: this.pass
       })
     },
     guestLogin () {
-      state.sendMessage({
-        Session: {
-          sessId: '' // TODO: read sessId
-        },
-        CMessage: 'Session'
-      })
+      // TODO: read sessId
+      state.sendMessage('Session', {sessId: ''})
     }
   }
 }

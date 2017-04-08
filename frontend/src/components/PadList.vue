@@ -42,11 +42,6 @@ export default {
       if (this.newPadName) {
         state.padList.push(this.newPadName)
         this.$router.push('/' + this.newPadName)
-        // move to pad
-        state.sendMessage({
-          EnterPad: {name: this.newPadName},
-          CMessage: 'EnterPad'
-        })
       }
     }
   }

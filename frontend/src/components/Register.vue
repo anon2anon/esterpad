@@ -42,13 +42,10 @@ export default {
   methods: {
     register () {
       // validate passwds or smth
-      state.sendMessage({
-        Register: {
-          email: this.email,
-          nickname: this.nickname,
-          password: this.pass
-        },
-        CMessage: 'Register'
+      state.sendMessage('Register', {
+        email: this.email,
+        nickname: this.nickname,
+        password: this.pass
       })
     }
   }

@@ -42,8 +42,16 @@ var conn = new WebSocket(wsUrl)
 conn.binaryType = 'arraybuffer'
 
 state.sendMessage = function () {
+  var args = [] // accepts any number of messages
+  for (var i = 0; 2 * i < arguments.length; i++) {
+    var tmp = {}
+    tmp[arguments[i]] = arguments[i + 1]
+    tmp['CMessages'] = arguments[i]
+    console.log('sendMessage', arguments[i], arguments[i + 1])
+    args.push(tmp)
+  }
   var buffer = CMessages.encode({
-    cm: [...arguments] // accepts any number of messages
+    cm: args
   }).finish()
   conn.send(buffer)
 }
@@ -51,12 +59,7 @@ state.sendMessage = function () {
 conn.onopen = function (evt) {
   console.log('WS connected')
   if (state.sessId) {
-    state.sendMessage({
-      Session: {
-        sessId: state.sessId
-      },
-      CMessage: 'Session'
-    })
+    state.sendMessage('Session', {sessId: state.sessId})
   }
 }
 
