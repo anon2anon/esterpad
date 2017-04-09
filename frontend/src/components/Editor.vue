@@ -87,7 +87,7 @@ export default {
       this.revision = delta.id
 
       var to = new TextOperation()
-      for (var i in delta.ops) {
+      for (var i = 0; i < delta.ops.length; ++i) {
         var op = delta.ops[i]
         if (op.insert !== null) {
           to = to.insert(op.insert.text)
