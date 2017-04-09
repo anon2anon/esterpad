@@ -77,7 +77,8 @@ export default {
         value: '', // (TODO: make cool spinner here)
         tabSize: 4,
         mode: 'text/plain',
-        lineNumbers: true
+        lineNumbers: true,
+        lineWrapping: true
       })
 
       this.cma = new CodemirrorAdapter(cm)
@@ -107,22 +108,21 @@ export default {
           this.sendTextOperation(this.buffer)
           this.buffer = null
         }
-        return
-      }
-
-      if (this.synchronized) {
-        this.cma.applyOperation(to)
       } else {
-        if (this.buffer !== null) {
-          var pair1 = TextOperation.transform(this.outgoing, to)
-          var pair2 = TextOperation.transform(this.buffer, pair1[1])
-          this.outgoing = pair1[0]
-          this.buffer = pair2[0]
-          this.cma.applyOperation(pair2[1])
+        if (this.synchronized) {
+          this.cma.applyOperation(to)
         } else {
-          var pair = TextOperation.transform(this.outgoing, to)
-          this.outgoing = pair[0]
-          this.cma.applyOperation(pair[1])
+          if (this.buffer !== null) {
+            var pair1 = TextOperation.transform(this.outgoing, to)
+            var pair2 = TextOperation.transform(this.buffer, pair1[1])
+            this.outgoing = pair1[0]
+            this.buffer = pair2[0]
+            this.cma.applyOperation(pair2[1])
+          } else {
+            var pair = TextOperation.transform(this.outgoing, to)
+            this.outgoing = pair[0]
+            this.cma.applyOperation(pair[1])
+          }
         }
       }
     }

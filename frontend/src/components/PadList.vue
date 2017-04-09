@@ -40,7 +40,6 @@ export default {
     },
     onClose () {
       if (this.newPadName) {
-        state.padList.push(this.newPadName)
         this.$router.push('/' + this.newPadName)
       }
     }

@@ -109,7 +109,7 @@ conn.onmessage = function (evt) {
     } else if (message.AuthError) {
       bus.$emit('auth-error', 'Login error #' + message.AuthError.error)
     } else if (message.PadList !== null) {
-      state.padList = message.PadList.pads
+      state.padList = state.padList.concat(message.PadList.pads)
     } else {
       console.error('Unknown message type')
     }

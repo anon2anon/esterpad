@@ -71,6 +71,7 @@ export default {
     signout () {
       bus.$emit('send', 'Logout', {})
       state.isLoggedIn = false
+      state.sessId = ''
       if (['/.login', '/.register'].indexOf(this.$route.path) < 0) {
         this.$router.push('/.login')
       }
