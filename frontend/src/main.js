@@ -11,10 +11,12 @@ Vue.use(VueMaterial)
 import MyUser from '@/components/MyUser'
 import Editor from '@/components/Editor'
 import UserList from '@/components/UserList'
+import Chat from '@/components/Chat'
 
 Vue.component('esterpad-myuser', MyUser)
 Vue.component('esterpad-editor', Editor)
 Vue.component('esterpad-userlist', UserList)
+Vue.component('esterpad-chat', Chat)
 
 Vue.config.productionTip = false
 

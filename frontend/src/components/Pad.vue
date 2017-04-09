@@ -1,14 +1,14 @@
 <template>
-  <md-layout :md-gutter="8">
+  <md-layout md-row>
     <md-layout md-flex="75" class="bordered-right">
       <esterpad-editor></esterpad-editor>
     </md-layout>
-    <md-layout md-column :md-gutter="8">
+    <md-layout md-column>
       <md-layout md-flex="40" class="bordered-bottom">
         <esterpad-userlist></esterpad-userlist>
       </md-layout>
       <md-layout>
-        Chat
+        <esterpad-chat></esterpad-chat>
       </md-layout>
     </md-layout>
   </md-layout>
