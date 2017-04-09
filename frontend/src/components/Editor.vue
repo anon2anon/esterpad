@@ -13,16 +13,50 @@ export default {
   name: 'esterpad-editor',
   data () {
     return {
-      cma: null
+      cma: null,
+      synchronized: true,
+      outgoing: null,
+      buffer: null,
+      revision: 0
     }
   },
   mounted () {
-    this.reinitCM(state.padId)
     // isn't it a RC?
+    this.reinitCM(state.padId)
     bus.$on('pad-id-changed', this.reinitCM)
+
     bus.$on('new-delta', this.newDelta)
   },
   methods: {
+    sendTextOperation (textOp, inverse) {
+      console.log('change', textOp, inverse)
+      var ops = []
+      for (var i in textOp.ops) {
+        var op = textOp.ops[i]
+        if (TextOperation.isInsert(op)) {
+          ops.push({
+            insert: {text: op},
+            op: 'insert'
+          })
+        }
+        if (TextOperation.isRetain(op)) {
+          ops.push({
+            retain: {len: op},
+            op: 'retain'
+          })
+        }
+        if (TextOperation.isDelete(op)) {
+          ops.push({
+            delete: {len: -op},
+            op: 'delete'
+          })
+        }
+      }
+      bus.$emit('send', 'Delta', {
+        revision: this.revision,
+        ops: ops
+      })
+    },
     reinitCM (padId) {
       console.log('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
@@ -35,37 +69,11 @@ export default {
       })
 
       this.cma = new CodemirrorAdapter(cm)
-      this.cma.registerCallbacks({'change': function (textOp, inverse) {
-        console.log('change', textOp, inverse)
-        var ops = []
-        for (var i in textOp.ops) {
-          var op = textOp.ops[i]
-          if (TextOperation.isInsert(op)) {
-            ops.push({
-              insert: {text: op},
-              op: 'insert'
-            })
-          }
-          if (TextOperation.isRetain(op)) {
-            ops.push({
-              retain: {len: op},
-              op: 'retain'
-            })
-          }
-          if (TextOperation.isDelete(op)) {
-            ops.push({
-              delete: {len: -op},
-              op: 'delete'
-            })
-          }
-        }
-        bus.$emit('send', 'Delta', {
-          revision: 0,
-          ops: ops
-        })
-      }})
+      this.cma.registerCallbacks({'change': this.sendTextOperation})
     },
     newDelta (delta) {
+      this.revision = delta.id
+
       var to = new TextOperation()
       for (var i in delta.ops) {
         var op = delta.ops[i]
@@ -79,8 +87,31 @@ export default {
           to = to.delete(op.delete.len)
         }
       }
-      console.log(to)
-      this.cma.applyOperation(to)
+      console.log('Converted delta', to)
+
+      if (state.userId === delta.userId) {
+        this.synchronized = true
+        if (this.buffer !== null) {
+          this.sendTextOperation(this.buffer)
+          this.synchronized = false
+          this.buffer = null
+        }
+        return
+      }
+
+      if (this.synchronized) {
+        this.cma.applyOperation(to)
+      } else {
+        if (this.buffer !== null) {
+          var pair1 = TextOperation.transform(this.buffer, to)
+          var pair2 = TextOperation.transform(this.outgoing, pair1[1])
+          this.buffer = pair1[0]
+          this.cma.applyOperation(pair2[1])
+        } else {
+          var pair = TextOperation.transform(this.outgoing, to)
+          this.cma.applyOperation(pair[1])
+        }
+      }
     }
   }
 }

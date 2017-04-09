@@ -80,6 +80,7 @@ conn.onmessage = function (evt) {
     if (message.Auth !== null) { // Our info
       state.isLoggedIn = true
       state.userName = message.Auth.nickname
+      state.userId = message.Auth.userId
       state.userColorNum = message.Auth.color
       if (message.Auth.sessId) {
         state.sessId = message.Auth.sessId

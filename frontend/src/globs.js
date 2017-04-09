@@ -3,6 +3,7 @@ var state = {
   padList: [],
 
   userName: 'Guest',
+  userId: 0,
   get userColor () {
     return '#' + ('000000' + this.userColorNum.toString(16)).slice(-6)
   },
