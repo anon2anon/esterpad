@@ -30,6 +30,8 @@ export default {
   methods: {
     sendTextOperation (textOp) {
       console.log('sending textOp', textOp)
+      this.synchronized = false
+      this.outgoing = textOp
       var ops = []
       for (var i in textOp.ops) {
         var op = textOp.ops[i]
@@ -60,7 +62,6 @@ export default {
     cmChangeCallback (textOp, inverse) {
       console.log('cmChangeCallback', textOp, inverse)
       if (this.synchronized) {
-        this.synchronized = false
         this.sendTextOperation(textOp)
       } else if (this.buffer === null) {
         this.buffer = textOp
@@ -103,7 +104,6 @@ export default {
       if (state.userId === delta.userId) {
         this.synchronized = true
         if (this.buffer !== null) {
-          this.synchronized = false
           this.sendTextOperation(this.buffer)
           this.buffer = null
         }
