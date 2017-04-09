@@ -1,7 +1,10 @@
 <template>
   <div>
     <div v-for="user in userList" key="user">
-      {{ user.nickname }} {{ user.color }}
+      <md-layout class="user-item">
+        <div class="avatar" :style="{ background: num2color(user.color) }"></div>
+        <div>{{ user.nickname }}</div>
+      </md-layout>
     </div>
   </div>
 </template>
@@ -23,14 +26,44 @@ export default {
   },
   methods: {
     userInfo (info) {
-      console.log(info)
+      console.log('user connected', info)
       if (info.online) {
         this.userList.push(info)
       }
     },
     userLeave (info) {
-      console.log(info)
+      console.log('user left', info)
+      this.userList.splice(this.userList.findIndex(
+        i => i.userId === info.userId
+      ), 1)
+    },
+    num2color (num) {
+      return '#' + ('000000' + num.toString(16)).slice(-6)
     }
   }
 }
 </script>
+
+<style scoped>
+ .container {
+   display: block;
+   height: 100%;
+ }
+ .avatar {
+   display: inline-block;
+   box-sizing: border-box;
+   width: 20px;
+   height: 20px;
+   border-radius: 50%;
+   border: 1px solid #000;
+   box-shadow: 0 0 1px 0px white inset, 0 0 1px 0px white;
+   -moz-border-radius: 50%;
+   -webkit-border-radius: 50%;
+   margin-right: 4px;
+ }
+ .user-item {
+   padding: 3px;
+   display: flex;
+   align-items: center;
+ }
+</style>
