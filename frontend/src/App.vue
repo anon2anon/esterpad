@@ -132,7 +132,7 @@ export default {
  }
 
  .md-list {
-   flex: 1 1 auto;
+   flex: 1 1 0;
  }
 
  @media (min-width: 1281px) {
