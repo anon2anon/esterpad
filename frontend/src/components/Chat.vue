@@ -2,9 +2,8 @@
   <div class="chat-container">
     <div class="messages" ref="messages">
       <div v-for="message in messageList" key="message"
-           :style="{ background: state.colorMap[message.userId] }">
-        {{ message.text }}
-      </div>
+           :style="{ background: state.colorMap[message.userId] }"
+           style="white-space: pre">{{ message.text }}</div>
     </div>
     <div @keydown.prevent.enter="enterPressed">
       <md-input-container>
@@ -75,6 +74,7 @@ export default {
  .messages {
    flex: 1 1 0;
    overflow-y: scroll;
+   word-break: break-all;
  }
 
  .md-input-container.md-input-placeholder {

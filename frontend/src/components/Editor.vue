@@ -86,7 +86,7 @@ export default {
       this.cma.registerCallbacks({'change': this.cmChangeCallback})
     },
     newDelta (delta) {
-      if (delta.id !== this.revision + 1) {
+      if (delta.id !== this.revision + 1 && this.revision !== 0) {
         console.log('too new delta', delta.id, 'saving to queue')
         this.incomingQueue[delta.id] = delta
         while ((this.revision + 1) in this.incomingQueue) {
@@ -94,6 +94,7 @@ export default {
           this.newDelta(this.incomingQueue[this.revision + 1])
           delete this.incomingQueue[this.revision + 1]
         }
+        return
       }
       this.revision = delta.id
 
