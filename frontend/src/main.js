@@ -84,6 +84,7 @@ conn.onmessage = function (evt) {
       state.userName = message.Auth.nickname
       state.userId = message.Auth.userId
       state.userColorNum = message.Auth.color
+      state.colorMap[message.Auth.userId] = state.userColor
       if (message.Auth.sessId) {
         state.sessId = message.Auth.sessId
       }
@@ -101,6 +102,8 @@ conn.onmessage = function (evt) {
         router.push('/.padlist')
       }
     } else if (message.UserInfo !== null) { // User connected/updated
+      state.colorMap[message.UserInfo.userId] =
+        '#' + ('000000' + message.UserInfo.color.toString(16)).slice(-6)
       bus.$emit('user-info', message.UserInfo)
     } else if (message.UserLeave !== null) {
       bus.$emit('user-leave', message.UserLeave)

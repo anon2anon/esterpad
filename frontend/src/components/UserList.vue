@@ -28,7 +28,14 @@ export default {
     userInfo (info) {
       console.log('user connected', info)
       if (info.online) {
-        this.userList.push(info)
+        var tmp = this.userList.findIndex(
+          i => i.userId === info.userId
+        )
+        if (tmp === -1) { // create new user
+          this.userList.push(info)
+        } else { // update existing
+          this.userList.splice(tmp, 1, info)
+        }
       }
     },
     userLeave (info) {

@@ -15,6 +15,8 @@ var state = {
     localStorage.setItem('sessId', val)
   },
 
+  colorMap: {},
+
   isLoggedIn: false,
   perms: {
     view: true,

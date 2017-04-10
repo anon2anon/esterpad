@@ -17,7 +17,8 @@ export default {
       synchronized: true,
       outgoing: null,
       buffer: null,
-      revision: 0
+      revision: 0,
+      incomingQueue: {}
     }
   },
   mounted () {
@@ -85,6 +86,15 @@ export default {
       this.cma.registerCallbacks({'change': this.cmChangeCallback})
     },
     newDelta (delta) {
+      if (delta.id !== this.revision + 1) {
+        console.log('too new delta', delta.id, 'saving to queue')
+        this.incomingQueue[delta.id] = delta
+        while ((this.revision + 1) in this.incomingQueue) {
+          console.log('applying delta from queue', this.revision + 1)
+          this.newDelta(this.incomingQueue[this.revision + 1])
+          delete this.incomingQueue[this.revision + 1]
+        }
+      }
       this.revision = delta.id
 
       var to = new TextOperation()

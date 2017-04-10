@@ -1,16 +1,36 @@
 <template>
   <div>
-    {{ userName }}
+    <span contenteditable @keydown.prevent.enter="nameChanged" ref="userName">
+      {{ userName }}
+    </span>
     <div class="avatar" :style="{ background: userColor }"></div>
   </div>
 </template>
 
 <script>
+import { state, bus } from '@/globs'
+
 export default {
   name: 'esterpad-myuser',
   props: {
     userName: String,
     userColor: String
+  },
+  methods: {
+    nameChanged () {
+      this.$refs.userName.blur()
+      state.userName = this.$refs.userName.textContent.trim()
+      bus.$emit('send', 'UserInfo', {
+        changemask: 1,
+        nickname: state.userName
+      })
+    },
+    colorChanger () {
+      bus.$emit('send', 'UserInfo', {
+        changemask: 2,
+        color: parseInt(this.userColor.substr(1), 16)
+      })
+    }
   }
 }
 </script>

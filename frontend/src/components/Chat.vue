@@ -1,8 +1,9 @@
 <template>
   <div class="chat-container">
     <div class="messages" ref="messages">
-      <div v-for="message in messageList" key="message">
-        {{ message }}
+      <div v-for="message in messageList" key="message"
+           :style="{ background: state.colorMap[message.userId] }">
+        {{ message.text }}
       </div>
     </div>
     <div @keydown.prevent.enter="enterPressed">
@@ -21,6 +22,7 @@ export default {
   name: 'esterpad-chat',
   data () {
     return {
+      state: state,
       revision: 0,
       messageList: [],
       msg: ''
@@ -31,7 +33,10 @@ export default {
     bus.$on('new-chat-msg', function (msg) {
       console.log('chat message', msg)
       that.revision = msg.id
-      that.messageList.push(msg.text)
+      that.messageList.push(msg) // maybe recreate object without id
+      setTimeout(function () {
+        that.$refs.messages.scrollTop = that.$refs.messages.scrollHeight
+      }, 100) // TODO: fix me please
     })
     setTimeout(function () {
       that.$refs.messages.scrollTop = that.$refs.messages.scrollHeight
@@ -43,10 +48,14 @@ export default {
         this.msg += '\n'
         return
       }
+      if (this.msg.trim() === '') return
       bus.$emit('send', 'Chat', {
         text: this.msg
       })
-      this.messageList.push(state.userName + ': ' + this.msg)
+      this.messageList.push({
+        userId: state.userId,
+        text: state.userName + ': ' + this.msg
+      })
       var that = this
       setTimeout(function () {
         that.$refs.messages.scrollTop = that.$refs.messages.scrollHeight
