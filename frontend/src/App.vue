@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="container">
-    <md-sidenav class="md-left md-fixed" ref="sidenav">
+    <md-sidenav class="md-left" ref="sidenav">
       <md-toolbar>
         <div class="md-toolbar-container">
           <p class="md-title">Esterpad</p>
@@ -121,44 +121,14 @@ export default {
    display: flex;
    flex-flow: column nowrap;
    flex: 1;
-   transition: all .4s !default cubic-bezier(.25, .8, .25, 1) !default !default;
  }
 
  .md-sidenav .md-sidenav-content {
-   width: 280px !important;
    display: flex;
    flex-flow: column;
-   overflow: hidden !important;
  }
 
  .md-list {
    flex: 1 1 0;
- }
-
- @media (min-width: 1281px) {
-   .md-title-left {
-     margin-left: 8px !important;
-   }
-
-   .nav-trigger {
-     display: none !important;
-   }
-
-   .container {
-     padding-left: 280px;
-   }
-
-   .md-backdrop {
-     opacity: 0;
-     pointer-events: none;
-   }
-
-   .md-sidenav .md-sidenav-content {
-     top: 0 !important;
-     pointer-events: auto !important;
-     transform: translate3d(0, 0, 0);
-     box-shadow: 0 1px 5px rgba(0,0,0,.2), 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12);
-     left: 280px !important;
-   }
  }
 </style>

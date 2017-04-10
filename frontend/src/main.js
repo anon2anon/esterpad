@@ -89,12 +89,12 @@ conn.onmessage = function (evt) {
         state.sessId = message.Auth.sessId
       }
       state.perms = {
-        view: Boolean(message.Auth.perms && 1),
-        chat: Boolean(message.Auth.perms && (1 << 1)),
-        edit: Boolean(message.Auth.perms && (1 << 2)),
-        whitewash: Boolean(message.Auth.perms && (1 << 3)),
-        notGuest: Boolean(message.Auth.perms && (1 << 4)),
-        admin: Boolean(message.Auth.perms && (1 << 5))
+        view: Boolean(message.Auth.perms & 1),
+        chat: Boolean(message.Auth.perms & (1 << 1)),
+        edit: Boolean(message.Auth.perms & (1 << 2)),
+        whitewash: Boolean(message.Auth.perms & (1 << 3)),
+        notGuest: Boolean(message.Auth.perms & (1 << 4)),
+        admin: Boolean(message.Auth.perms & (1 << 5))
       }
       if ('go' in router.currentRoute.query) {
         router.push(router.currentRoute.query['go'])
