@@ -44,7 +44,6 @@ export default {
         return
       }
       bus.$emit('send', 'Chat', {
-        revision: this.revision,
         text: this.msg
       })
       this.messageList.push(state.userName + ': ' + this.msg)
