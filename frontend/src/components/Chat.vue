@@ -23,7 +23,6 @@ export default {
   data () {
     return {
       state: state,
-      revision: 0,
       messageList: [],
       msg: ''
     }
@@ -32,7 +31,6 @@ export default {
     var that = this
     bus.$on('new-chat-msg', function (msg) {
       console.log('chat message', msg)
-      that.revision = msg.id
       that.messageList.push(msg) // maybe recreate object without id
       setTimeout(function () {
         that.$refs.messages.scrollTop = that.$refs.messages.scrollHeight
