@@ -52,7 +52,7 @@ export default {
       var msgdiv = document.createElement('div')
       var msgtext = document.createTextNode(msg.text)
       msgdiv.appendChild(msgtext)
-      msgdiv.className = 'chat-message chat-author-' + msg.userId
+      msgdiv.className = 'chat-author-' + msg.userId
       msgdiv.style = 'background: ' + state.colorMap[msg.userId]
       this.$refs.messages.appendChild(msgdiv)
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight

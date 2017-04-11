@@ -6,7 +6,7 @@
           <p class="md-title">Esterpad</p>
         </div>
       </md-toolbar>
-      <md-list>
+      <md-list @click.native="closeSidenav">
         <md-list-item v-if="!state.isLoggedIn || !state.perms.notGuest">
           <router-link exact to="/.login">Login</router-link>
         </md-list-item>

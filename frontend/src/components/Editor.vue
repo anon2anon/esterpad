@@ -34,8 +34,7 @@ export default {
       this.synchronized = false
       this.outgoing = textOp
       var ops = []
-      for (var i in textOp.ops) {
-        var op = textOp.ops[i]
+      for (let op of textOp.ops) {
         if (TextOperation.isInsert(op)) {
           ops.push({
             insert: {text: op},
@@ -99,8 +98,7 @@ export default {
       this.revision = delta.id
 
       var to = new TextOperation()
-      for (var i = 0; i < delta.ops.length; ++i) {
-        var op = delta.ops[i]
+      for (let op of delta.ops) {
         if (op.insert !== null) {
           to = to.insert(op.insert.text)
         }
