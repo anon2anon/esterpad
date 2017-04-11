@@ -1,15 +1,12 @@
 <template>
   <div class="chat-container">
     <div class="messages" ref="messages">
-      <div v-for="message in messageList" key="message"
-           :style="{ background: state.colorMap[message.userId] }"
-           style="white-space: pre">{{ message.text }}</div>
     </div>
     <div @keydown.prevent.enter="enterPressed">
-      <md-input-container>
-        <md-textarea v-model="msg" placeholder="Write a message...">
-        </md-textarea>
-      </md-input-container>
+      <textarea v-model="msg" id="chat-input" ref="msgbox"
+                placeholder="Write a message..."
+                @keyup="autoGrow(this)">
+      </textarea>
     </div>
   </div>
 </template>
@@ -30,14 +27,9 @@ export default {
     var that = this
     bus.$on('new-chat-msg', function (msg) {
       console.log('chat message', msg)
-      that.messageList.push(msg) // maybe recreate object without id
-      setTimeout(function () {
-        that.$refs.messages.scrollTop = that.$refs.messages.scrollHeight
-      }, 100) // TODO: fix me please
+      that.appendMsg(msg)
     })
-    setTimeout(function () {
-      that.$refs.messages.scrollTop = that.$refs.messages.scrollHeight
-    }, 100) // TODO: fix me please
+    bus.$on('color-update', this.updateColor)
   },
   methods: {
     enterPressed (e) {
@@ -49,15 +41,35 @@ export default {
       bus.$emit('send', 'Chat', {
         text: this.msg
       })
-      this.messageList.push({
-        userId: state.userId,
-        text: state.userName + ': ' + this.msg
+
+      this.appendMsg({
+        text: state.userName + ': ' + this.msg,
+        userId: state.userId
       })
-      var that = this
-      setTimeout(function () {
-        that.$refs.messages.scrollTop = that.$refs.messages.scrollHeight
-      }, 100)
       this.msg = ''
+    },
+    appendMsg (msg) {
+      var msgdiv = document.createElement('div')
+      var msgtext = document.createTextNode(msg.text)
+      msgdiv.appendChild(msgtext)
+      msgdiv.className = 'chat-message chat-author-' + msg.userId
+      msgdiv.style = 'background: ' + state.colorMap[msg.userId]
+      this.$refs.messages.appendChild(msgdiv)
+      this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+    },
+    updateColor (userId, newColor) {
+      var tmp = this.$refs.messages.getElementsByClassName('chat-author-' + userId)
+      for (let div of tmp) {
+        div.style = 'background: ' + newColor
+        console.log(div)
+      }
+    },
+    autoGrow () {
+      this.$refs.msgbox.style.height = '5px'
+      this.$refs.msgbox.style.height = this.$refs.msgbox.scrollHeight + 'px'
+      if (this.$refs.msgbox.scrollHeight >= 100) {
+        this.$refs.msgbox.scrollTop = this.$refs.msgbox.scrollHeight
+      }
     }
   }
 }
@@ -69,6 +81,7 @@ export default {
    display: flex;
    flex-flow: column nowrap;
    flex: 1;
+   white-space: pre;
  }
 
  .messages {
@@ -77,8 +90,19 @@ export default {
    word-break: break-all;
  }
 
- .md-input-container.md-input-placeholder {
-   margin-bottom: 2px;
-   margin-top: -12px;
+ #chat-input {
+   width: 100%;
+   resize: none;
+   background-color: transparent;
+   border-style: solid;
+   border-width: 0px 0px 1px 0px;
+   border-color: darkred;
+   outline: 0;
+   overflow: hidden;
+
+   height: 25px;
+   min-height: 25px;
+   max-height: 100px;
+   margin-bottom: -6px;
  }
 </style>

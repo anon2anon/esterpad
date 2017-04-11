@@ -102,8 +102,9 @@ conn.onmessage = function (evt) {
         router.push('/.padlist')
       }
     } else if (message.UserInfo !== null) { // User connected/updated
-      state.colorMap[message.UserInfo.userId] =
-        '#' + ('000000' + message.UserInfo.color.toString(16)).slice(-6)
+      let color = '#' + ('000000' + message.UserInfo.color.toString(16)).slice(-6)
+      state.colorMap[message.UserInfo.userId] = color
+      bus.$emit('color-update', message.UserInfo.userId, color)
       bus.$emit('user-info', message.UserInfo)
     } else if (message.UserLeave !== null) {
       bus.$emit('user-leave', message.UserLeave)
