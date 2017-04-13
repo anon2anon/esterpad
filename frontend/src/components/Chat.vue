@@ -69,8 +69,12 @@ export default {
       msgdiv.appendChild(msgtext)
       msgdiv.className = 'chat-author-' + msg.userId
       msgdiv.style = 'background: ' + state.colorMap[msg.userId]
+      let needScroll = this.$refs.messages.scrollTop + this.$refs.messages.offsetHeight >=
+        this.$refs.messages.scrollHeight - 1
       this.$refs.messages.appendChild(msgdiv)
-      this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+      if (needScroll) {
+        this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+      }
     },
     updateColor (userId, newColor) {
       if (!this.$refs.messages) return
