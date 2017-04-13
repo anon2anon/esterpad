@@ -18,7 +18,9 @@ export default {
       outgoing: null,
       buffer: null,
       revision: 0,
-      incomingQueue: {}
+      incomingQueue: {},
+      debounceBuffer: null,
+      debounceTimer: null
     }
   },
   mounted () {
@@ -33,27 +35,7 @@ export default {
       console.log('sending textOp', textOp)
       this.synchronized = false
       this.outgoing = textOp
-      var ops = []
-      for (let op of textOp.ops) {
-        if (TextOperation.isInsert(op)) {
-          ops.push({
-            insert: {text: op},
-            op: 'insert'
-          })
-        }
-        if (TextOperation.isRetain(op)) {
-          ops.push({
-            retain: {len: op},
-            op: 'retain'
-          })
-        }
-        if (TextOperation.isDelete(op)) {
-          ops.push({
-            delete: {len: -op},
-            op: 'delete'
-          })
-        }
-      }
+      var ops = textOp.ops.map(i => i.getProtobufData())
       bus.$emit('send', 'Delta', {
         revision: this.revision,
         ops: ops
@@ -61,6 +43,22 @@ export default {
     },
     cmChangeCallback (textOp, inverse) {
       console.log('cmChangeCallback', textOp, inverse)
+      if (this.debounceBuffer !== null) {
+        this.debounceBuffer = this.debounceBuffer.compose(textOp)
+      } else {
+        this.debounceBuffer = textOp
+      }
+
+      var that = this
+      clearTimeout(this.debounceTimer)
+      this.debounceTimer = setTimeout(function () {
+        that.processDebounceBuffer(textOp)
+      }, 300) // maybe we should tune this
+      // maybe send after each whitespace or something
+    },
+    processDebounceBuffer () {
+      var textOp = this.debounceBuffer
+      console.log('processDelta', textOp)
       if (this.synchronized) {
         this.sendTextOperation(textOp)
       } else if (this.buffer === null) {
@@ -68,6 +66,7 @@ export default {
       } else {
         this.buffer = this.buffer.compose(textOp)
       }
+      this.debounceBuffer = null
     },
     reinitCM (padId) {
       console.log('reinitCM', padId)
@@ -98,6 +97,7 @@ export default {
       this.revision = delta.id
 
       var to = new TextOperation()
+      // maybe move to Op.js or TextOperation.js
       for (let op of delta.ops) {
         if (op.insert !== null) {
           to = to.insert(op.insert.text)

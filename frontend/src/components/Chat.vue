@@ -38,6 +38,21 @@ export default {
         return
       }
       if (this.msg.trim() === '') return
+
+      // todo: move to MyUser
+      if (this.msg.startsWith('/color')) {
+        var colorName = this.msg.substr(6).trim()
+        // parse CSS colors
+        state.userColorNum = parseInt(colorName, 16)
+        state.colorMap[state.userId] = state.userColor
+        bus.$emit('send', 'UserInfo', {
+          changemask: 2,
+          color: state.userColorNum
+        })
+        this.msg = ''
+        return
+      }
+
       bus.$emit('send', 'Chat', {
         text: this.msg
       })
@@ -58,6 +73,7 @@ export default {
       this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
     },
     updateColor (userId, newColor) {
+      if (!this.$refs.messages) return
       var tmp = this.$refs.messages.getElementsByClassName('chat-author-' + userId)
       for (let div of tmp) {
         div.style = 'background: ' + newColor

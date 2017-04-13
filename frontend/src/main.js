@@ -8,6 +8,9 @@ import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.css'
 Vue.use(VueMaterial)
 
+import Compact from 'vue-color'
+Vue.component('compact-picker', Compact)
+
 import MyUser from '@/components/MyUser'
 import Editor from '@/components/Editor'
 import UserList from '@/components/UserList'
@@ -35,6 +38,10 @@ var proto = protobuf.Root.fromJSON(jsonDescr)
 import { state, bus } from './globs'
 window['_state'] = state
 window['_bus'] = bus
+
+import Op from '@/ot/Op'
+let op = new Op(1)
+console.log(op instanceof Op)
 
 var SMessages = proto.lookup('esterpad.SMessages')
 var CMessages = proto.lookup('esterpad.CMessages')

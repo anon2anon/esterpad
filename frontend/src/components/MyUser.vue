@@ -25,7 +25,7 @@ export default {
         nickname: state.userName
       })
     },
-    colorChanger () {
+    colorChanged () {
       bus.$emit('send', 'UserInfo', {
         changemask: 2,
         color: parseInt(this.userColor.substr(1), 16)

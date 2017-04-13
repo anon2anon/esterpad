@@ -136,18 +136,16 @@ CodeMirrorAdapter.operationFromCodeMirrorChange =
 // Apply an operation to a CodeMirror instance.
 CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
   cm.operation(function () {
-    var ops = operation.ops;
     var index = 0; // holds the current index into CodeMirror's content
-    for (var i = 0, l = ops.length; i < l; i++) {
-      var op = ops[i];
-      if (TextOperation.isRetain(op)) {
-        index += op;
-      } else if (TextOperation.isInsert(op)) {
-        cm.replaceRange(op, cm.posFromIndex(index));
-        index += op.length;
-      } else if (TextOperation.isDelete(op)) {
+    for (let op of operation.ops) {
+      if (op.isRetain()) {
+        index += op.len;
+      } else if (op.isInsert()) {
+        cm.replaceRange(op.data, cm.posFromIndex(index));
+        index += op.len;
+      } else if (op.isDelete()) {
         var from = cm.posFromIndex(index);
-        var to   = cm.posFromIndex(index - op);
+        var to   = cm.posFromIndex(index + op.len);
         cm.replaceRange('', from, to);
       }
     }
