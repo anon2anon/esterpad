@@ -64,6 +64,9 @@ export default {
       this.msg = ''
     },
     appendMsg (msg) {
+      if (document.hidden) { // msg.needPush &&
+        bus.$emit('push', state.padId, msg.text)
+      }
       var msgdiv = document.createElement('div')
       var msgtext = document.createTextNode(msg.text)
       msgdiv.appendChild(msgtext)

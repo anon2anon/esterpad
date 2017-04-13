@@ -36,6 +36,23 @@ import { state, bus } from './globs'
 window['_state'] = state
 window['_bus'] = bus
 
+import Push from 'push.js'
+
+if (!Push.Permission.has()) {
+  Push.Permission.request()
+}
+
+bus.$on('push', function (header, body) {
+  Push.create(header, {
+    body: body,
+    onClick: function () {
+      window.focus()
+      this.close()
+      Push.clear()
+    }
+  })
+})
+
 var SMessages = proto.lookup('esterpad.SMessages')
 var CMessages = proto.lookup('esterpad.CMessages')
 
