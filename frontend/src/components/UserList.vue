@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="width: 100%">
     <div v-for="user in userList" key="user">
-      <md-layout class="user-item">
+      <md-layout class="user-item" :title="user.ip ? user.ip + '\n' + user.userAgent : ''">
         <div class="avatar" :style="{ background: num2color(user.color) }"></div>
         <div>{{ user.nickname }}</div>
       </md-layout>
