@@ -27,7 +27,7 @@ export default class {
     if (this.op !== 'insert') {
       this.data = newLen
     } else {
-      throw new Error('Trying to set string len');
+      throw new Error('Trying to set string len')
     }
   }
 

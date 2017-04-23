@@ -8,6 +8,7 @@ import CodeMirror from 'codemirror'
 import 'codemirror/lib/codemirror.css'
 import CodemirrorAdapter from '@/ot/CodemirrorAdapter.js'
 import TextOperation from '@/ot/TextOperation.js'
+import CSSManager from '@/lib/cssmanager.js'
 
 export default {
   name: 'esterpad-editor',
@@ -20,7 +21,8 @@ export default {
       revision: 0,
       incomingQueue: {},
       debounceBuffer: null,
-      debounceTimer: null
+      debounceTimer: null,
+      cssManager: null
     }
   },
   mounted () {
@@ -29,6 +31,11 @@ export default {
     bus.$on('pad-id-changed', this.reinitCM)
 
     bus.$on('new-delta', this.newDelta)
+
+    this.cssManager = new CSSManager('dynamicCSS')
+    bus.$on('user-info', this.userInfo)
+    bus.$on('user-leave', this.userLeave)
+    this.userInfo({userId: state.userId, color: state.userColorNum})
   },
   methods: {
     sendTextOperation (textOp) {
@@ -43,6 +50,21 @@ export default {
     },
     cmChangeCallback (textOp, inverse) {
       console.log('cmChangeCallback', textOp, inverse)
+
+      let ourMeta = new TextOperation()
+      let needUpdate = false
+      for (let op of textOp.ops) {
+        if (op.isRetain()) ourMeta = ourMeta.retain(op)
+        if (op.isDelete()) ourMeta = ourMeta.delete(op)
+        if (op.isInsert()) {
+          ourMeta = ourMeta.retain(op.len, {userId: state.userId})
+          needUpdate = true
+        }
+      }
+      if (needUpdate) {
+        this.cma.applyOperation(ourMeta)
+      }
+
       if (this.debounceBuffer !== null) {
         this.debounceBuffer = this.debounceBuffer.compose(textOp)
       } else {
@@ -140,6 +162,13 @@ export default {
           }
         }
       }
+    },
+    userInfo (info) {
+      this.cssManager.selectorStyle('.author-' + info.userId).background =
+        '#' + ('000000' + info.color.toString(16)).slice(-6)
+    },
+    userLeave (info) {
+      console.warn('TODO: handle user leave in editor')
     }
   }
 }
@@ -149,5 +178,8 @@ export default {
  .CodeMirror, .flex {
    min-width: 100%;
    min-height: 100%;
+ }
+ .CodeMirror {
+   font-family: Arial, sans-serif !important;
  }
 </style>
