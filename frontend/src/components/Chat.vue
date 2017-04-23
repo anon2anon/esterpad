@@ -20,7 +20,8 @@ export default {
     return {
       state: state,
       messageList: [],
-      msg: ''
+      msg: '',
+      lastId: -1
     }
   },
   mounted () {
@@ -66,6 +67,10 @@ export default {
     appendMsg (msg) {
       if (document.hidden) { // msg.needPush &&
         bus.$emit('push', state.padId, msg.text)
+      }
+      if ('id' in msg) {
+        if (this.lastId === -1) this.lastId = msg.id
+        else this.lastId = Math.min(this.lastId, msg.id)
       }
       var msgdiv = document.createElement('div')
       var msgtext = document.createTextNode(msg.text)

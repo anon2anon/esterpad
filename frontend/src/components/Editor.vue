@@ -96,14 +96,20 @@ export default {
       }
       this.revision = delta.id
 
+      let convertMeta = function (meta) {
+        let res = {}
+        if (meta.changemask & (1 << 5)) res.userId = meta.userId
+        return res
+      }
+
       var to = new TextOperation()
       // maybe move to Op.js or TextOperation.js
       for (let op of delta.ops) {
         if (op.insert !== null) {
-          to = to.insert(op.insert.text)
+          to = to.insert(op.insert.text, convertMeta(op.insert.meta))
         }
         if (op.retain !== null) {
-          to = to.retain(op.retain.len)
+          to = to.retain(op.retain.len, convertMeta(op.retain.meta))
         }
         if (op.delete !== null) {
           to = to.delete(op.delete.len)

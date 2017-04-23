@@ -36,6 +36,7 @@ export default class {
     tmp.op = this.op
     tmp[this.op] = {}
     if (this.meta) {
+      // convert meta to PB format
       tmp[this.op].meta = this.meta
     }
     if (this.op === 'insert') {

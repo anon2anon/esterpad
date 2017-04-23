@@ -138,14 +138,19 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
   cm.operation(function () {
     var index = 0; // holds the current index into CodeMirror's content
     for (let op of operation.ops) {
+      let from = cm.posFromIndex(index);
       if (op.isRetain()) {
         index += op.len;
       } else if (op.isInsert()) {
-        cm.replaceRange(op.data, cm.posFromIndex(index));
+        cm.replaceRange(op.data, from);
+        let to = cm.posFromIndex(index + op.len);
+        let classes = ''
+        if (op.meta.hasOwnProperty('userId')) classes += 'author-' + op.meta.userId
+        if (classes !== '') cm.markText(from, to, {className: classes})
+        console.log(op.meta)
         index += op.len;
       } else if (op.isDelete()) {
-        var from = cm.posFromIndex(index);
-        var to   = cm.posFromIndex(index + op.len);
+        let to   = cm.posFromIndex(index + op.len);
         cm.replaceRange('', from, to);
       }
     }
