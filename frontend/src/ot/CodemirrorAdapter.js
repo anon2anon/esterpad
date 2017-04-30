@@ -1,3 +1,5 @@
+/* eslint no-unexpected-multiline: 0 */
+
 import TextOperation from './TextOperation.js'
 import Selection from './Selection.js'
 
@@ -30,17 +32,18 @@ CodeMirrorAdapter.prototype.detach = function () {
 }
 
 function cmpPos (a, b) {
-  if (a.line < b.line) { return -1; }
-  if (a.line > b.line) { return 1; }
-  if (a.ch < b.ch)     { return -1; }
-  if (a.ch > b.ch)     { return 1; }
+  if (a.line < b.line) return -1
+  if (a.line > b.line) return 1
+  if (a.ch < b.ch) return -1
+  if (a.ch > b.ch) return 1
   return 0
 }
-function posEq (a, b) { return cmpPos(a, b) === 0; }
-function posLe (a, b) { return cmpPos(a, b) <= 0; }
 
-function minPos (a, b) { return posLe(a, b) ? a : b; }
-function maxPos (a, b) { return posLe(a, b) ? b : a; }
+// var posEq = (a, b) => cmpPos(a, b) === 0
+var posLe = (a, b) => cmpPos(a, b) <= 0
+
+var minPos = (a, b) => posLe(a, b) ? a : b
+var maxPos = (a, b) => posLe(a, b) ? b : a
 
 function codemirrorDocLength (doc) {
   return doc.indexFromPos({ line: doc.lastLine(), ch: 0 }) +
@@ -64,33 +67,33 @@ CodeMirrorAdapter.operationFromCodeMirrorChanges = function (changes, doc) {
   // of the linked list of changes.
 
   var docEndLength = codemirrorDocLength(doc)
-  var operation    = new TextOperation().retain(docEndLength)
-  var inverse      = new TextOperation().retain(docEndLength)
+  var operation = new TextOperation().retain(docEndLength)
+  var inverse = new TextOperation().retain(docEndLength)
 
   var indexFromPos = function (pos) {
     return doc.indexFromPos(pos)
   }
 
-  function last (arr) { return arr[arr.length - 1]; }
+  var last = arr => arr[arr.length - 1]
 
   function sumLengths (strArr) {
-    if (strArr.length === 0) { return 0; }
+    if (strArr.length === 0) return 0
     var sum = 0
-    for (var i = 0; i < strArr.length; i++) { sum += strArr[i].length; }
+    for (var i = 0; i < strArr.length; i++) sum += strArr[i].length
     return sum + strArr.length - 1
   }
 
   function updateIndexFromPos (indexFromPos, change) {
     return function (pos) {
-      if (posLe(pos, change.from)) { return indexFromPos(pos); }
+      if (posLe(pos, change.from)) return indexFromPos(pos)
       if (posLe(change.to, pos)) {
         return indexFromPos({
           line: pos.line + change.text.length - 1 - (change.to.line - change.from.line),
-          ch: (change.to.line < pos.line) ?
-            pos.ch :
-            (change.text.length <= 1) ?
-            pos.ch - (change.to.ch - change.from.ch) + sumLengths(change.text) :
-            pos.ch - change.to.ch + last(change.text).length
+          ch: (change.to.line < pos.line)
+            ? pos.ch
+            : (change.text.length <= 1)
+              ? pos.ch - (change.to.ch - change.from.ch) + sumLengths(change.text)
+              : pos.ch - change.to.ch + last(change.text).length
         }) + sumLengths(change.removed) - sumLengths(change.text)
       }
       if (change.from.line === pos.line) {
@@ -111,14 +114,14 @@ CodeMirrorAdapter.operationFromCodeMirrorChanges = function (changes, doc) {
 
     operation = new TextOperation()
       .retain(fromIndex)
-    ['delete'](sumLengths(change.removed))
+     ['delete'](sumLengths(change.removed))
       .insert(change.text.join('\n'))
       .retain(restLength)
       .compose(operation)
 
     inverse = inverse.compose(new TextOperation()
                               .retain(fromIndex)
-                              ['delete'](sumLengths(change.text))
+                             ['delete'](sumLengths(change.text))
                               .insert(change.removed.join('\n'))
                               .retain(restLength)
                              )
@@ -136,7 +139,7 @@ CodeMirrorAdapter.operationFromCodeMirrorChange =
 // Apply an operation to a CodeMirror instance.
 CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
   cm.operation(function () {
-    var index = 0; // holds the current index into CodeMirror's content
+    var index = 0 // holds the current index into CodeMirror's content
     for (let op of operation.ops) {
       let from = cm.posFromIndex(index)
 
@@ -145,6 +148,7 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
 
         if (Object.keys(op.meta).length > 0) { // have meta, create mark
           let classes = '' // converting meta to classes
+          // TODO: process all meta
           if (op.meta.hasOwnProperty('userId')) classes += 'author-' + op.meta.userId
 
           if (classes !== '') {
@@ -178,7 +182,7 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
 
         index += op.len
       } else if (op.isDelete()) {
-        let to   = cm.posFromIndex(index + op.len)
+        let to = cm.posFromIndex(index + op.len)
         cm.replaceRange('', from, to)
       }
     }
@@ -204,7 +208,7 @@ CodeMirrorAdapter.prototype.onChanges = function (_, changes) {
     var pair = CodeMirrorAdapter.operationFromCodeMirrorChanges(changes, this.cm)
     this.trigger('change', pair[0], pair[1])
   }
-  if (this.selectionChanged) { this.trigger('selectionChange'); }
+  if (this.selectionChanged) this.trigger('selectionChange')
   this.changeInProgress = false
   this.ignoreNextChange = false
 }
@@ -219,7 +223,7 @@ CodeMirrorAdapter.prototype.onCursorActivity =
   }
 
 CodeMirrorAdapter.prototype.onBlur = function () {
-  if (!this.cm.somethingSelected()) { this.trigger('blur'); }
+  if (!this.cm.somethingSelected()) this.trigger('blur')
 }
 
 CodeMirrorAdapter.prototype.getValue = function () {
@@ -247,7 +251,7 @@ CodeMirrorAdapter.prototype.setSelection = function (selection) {
     var range = selection.ranges[i]
     ranges[i] = {
       anchor: this.cm.posFromIndex(range.anchor),
-      head:   this.cm.posFromIndex(range.head)
+      head: this.cm.posFromIndex(range.head)
     }
   }
   this.cm.setSelections(ranges)
@@ -260,7 +264,7 @@ var addStyleRule = (function () {
   var styleSheet = styleElement.sheet
 
   return function (css) {
-    if (added[css]) { return; }
+    if (added[css]) return
     added[css] = true
     styleSheet.insertRule(css, (styleSheet.cssRules || styleSheet.rules).length)
   }
@@ -285,13 +289,13 @@ CodeMirrorAdapter.prototype.setOtherCursor = function (position, color, clientId
 
 CodeMirrorAdapter.prototype.setOtherSelectionRange = function (range, color, clientId) {
   var match = /^#([0-9a-fA-F]{6})$/.exec(color)
-  if (!match) { throw new Error("only six-digit hex colors are allowed."); }
+  if (!match) { throw new Error('only six-digit hex colors are allowed.') }
   var selectionClassName = 'selection-' + match[1]
-  var rule = '.' + selectionClassName + ' { background: ' + color + '; }'
+  var rule = '.' + selectionClassName + ' { background: ' + color + ' }'
   addStyleRule(rule)
 
   var anchorPos = this.cm.posFromIndex(range.anchor)
-  var headPos   = this.cm.posFromIndex(range.head)
+  var headPos = this.cm.posFromIndex(range.head)
 
   return this.cm.markText(
     minPos(anchorPos, headPos),
@@ -322,7 +326,7 @@ CodeMirrorAdapter.prototype.setOtherSelection = function (selection, color, clie
 CodeMirrorAdapter.prototype.trigger = function (event) {
   var args = Array.prototype.slice.call(arguments, 1)
   var action = this.callbacks && this.callbacks[event]
-  if (action) { action.apply(this, args); }
+  if (action) { action.apply(this, args) }
 }
 
 CodeMirrorAdapter.prototype.applyOperation = function (operation) {
@@ -339,11 +343,11 @@ CodeMirrorAdapter.prototype.registerRedo = function (redoFn) {
 }
 
 // Throws an error if the first argument is falsy. Useful for debugging.
-function assert (b, msg) {
-  if (!b) {
-    throw new Error(msg || "assertion error")
-  }
-}
+// function assert (b, msg) {
+//   if (!b) {
+//     throw new Error(msg || 'assertion error')
+//   }
+// }
 
 // Bind a method to an object, so it doesn't matter whether you call
 // object.method() directly or pass object.method as a reference to another

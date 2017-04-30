@@ -36,15 +36,34 @@ export default class {
     tmp.op = this.op
     tmp[this.op] = {}
     if (this.meta) {
-      // convert meta to PB format
-      tmp[this.op].meta = this.meta
+      // TODO: grab this from proto
+      let attrs = ['bold', 'italic', 'underline', 'strike', 'fontSize', 'userId']
+      let tmpMeta = {
+        changemask: 0
+      }
+      for (let i = 0; i < attrs.length; ++i) {
+        if (this.meta.hasOwnProperty(attrs[i])) {
+          tmpMeta.changemask |= (1 << i)
+          tmpMeta[attrs[i]] = this.meta[attrs[i]]
+        }
+      }
+      tmp[this.op].meta = tmpMeta
     }
-    if (this.op === 'insert') {
+    if (this.isInsert()) {
       tmp[this.op].text = this.data
     } else {
       tmp[this.op].len = this.data
     }
     return tmp
+  }
+
+  metaEquals (other) {
+    other = other || {}
+    if (other.meta) other = other.meta
+
+    // TODO: write code
+
+    return false
   }
 
   isInsert () {

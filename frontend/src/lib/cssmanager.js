@@ -1,15 +1,8 @@
 export default class {
-  getSheetByTitle (title) {
-    for (let s of document.styleSheets) {
-      if (s.title === title) {
-        return s
-      }
-    }
-    return null
-  }
-
   constructor (styleTitle) {
-    this.sheet = this.getSheetByTitle(styleTitle)
+    let styleElement = document.createElement('style')
+    document.documentElement.getElementsByTagName('head')[0].appendChild(styleElement)
+    this.sheet = styleElement.sheet
     this.selectorList = []
   }
 

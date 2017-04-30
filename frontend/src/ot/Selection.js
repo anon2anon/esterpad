@@ -34,7 +34,7 @@ Range.prototype.transform = function (other) {
         newIndex -= Math.min(index, -ops[i])
         index += ops[i]
       }
-      if (index < 0) { break; }
+      if (index < 0) { break }
     }
     return newIndex
   }
@@ -70,18 +70,18 @@ Selection.fromJSON = function (obj) {
 }
 
 Selection.prototype.equals = function (other) {
-  if (this.position !== other.position) { return false; }
-  if (this.ranges.length !== other.ranges.length) { return false; }
+  if (this.position !== other.position) { return false }
+  if (this.ranges.length !== other.ranges.length) { return false }
   // FIXME: Sort ranges before comparing them?
   for (var i = 0; i < this.ranges.length; i++) {
-    if (!this.ranges[i].equals(other.ranges[i])) { return false; }
+    if (!this.ranges[i].equals(other.ranges[i])) { return false }
   }
   return true
 }
 
 Selection.prototype.somethingSelected = function () {
   for (var i = 0; i < this.ranges.length; i++) {
-    if (!this.ranges[i].isEmpty()) { return true; }
+    if (!this.ranges[i].isEmpty()) { return true }
   }
   return false
 }

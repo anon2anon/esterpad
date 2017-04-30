@@ -10,7 +10,7 @@ function TextOperation () {
   // When an operation is applied to an input string, you can think of this as
   // if an imaginary cursor runs over the entire string and skips over some
   // parts, deletes some parts and inserts characters at some positions. These
-  // actions (skip/delete/insert) are stored as an array in the "ops" property.
+  // actions (skip/delete/insert) are stored as an array in the 'ops' property.
   this.ops = []
   // An operation's baseLength is the length of every string the operation
   // can be applied to.
@@ -21,13 +21,13 @@ function TextOperation () {
 }
 
 TextOperation.prototype.equals = function (other) {
-  if (this.baseLength !== other.baseLength) { return false; }
-  if (this.targetLength !== other.targetLength) { return false; }
-  if (this.ops.length !== other.ops.length) { return false; }
+  if (this.baseLength !== other.baseLength) return false
+  if (this.targetLength !== other.targetLength) return false
+  if (this.ops.length !== other.ops.length) return false
   for (var i = 0; i < this.ops.length; i++) {
-    if (this.ops[i].op !== other.ops[i].op) { return false; }
-    if (this.ops[i].data !== other.ops[i].data) { return false; }
-    // TODO: compare meta
+    if (this.ops[i].op !== other.ops[i].op) return false
+    if (this.ops[i].data !== other.ops[i].data) return false
+    if (this.ops[i].metaEquals(other.ops[i])) return false
   }
   return true
 }
@@ -47,10 +47,14 @@ TextOperation.prototype.equals = function (other) {
 // Skip over a given number of characters.
 TextOperation.prototype.retain = function (n, meta) {
   if (n instanceof Op) {
-    // TODO: check for isRetain and merge ops
     this.baseLength += n.len
     this.targetLength += n.len
-    this.ops.push(n)
+    if (this.ops.length > 0 && this.ops[this.ops.length - 1].isRetain() &&
+        this.ops[this.ops.length - 1].metaEquals(n)) {
+      this.ops[this.ops.length - 1].len += n
+    } else {
+      this.ops.push(n)
+    }
     return this
   }
   if (typeof n !== 'number') {
@@ -59,9 +63,10 @@ TextOperation.prototype.retain = function (n, meta) {
   if (n === 0) return this
   this.baseLength += n
   this.targetLength += n
-  if (this.ops.length > 0 && this.ops[this.ops.length-1].isRetain() && false) { // TODO: compare metas
-    // The last op is a retain op => we can merge them into one op.
-    this.ops[this.ops.length-1].len += n
+  if (this.ops.length > 0 && this.ops[this.ops.length - 1].isRetain() &&
+      this.ops[this.ops.length - 1].metaEquals(meta)) {
+    // The last op is a retain op with same meta => we can merge them into one op.
+    this.ops[this.ops.length - 1].len += n
   } else {
     // Create a new op.
     this.ops.push(new Op(n, meta))
@@ -72,31 +77,36 @@ TextOperation.prototype.retain = function (n, meta) {
 // Insert a string at the current position.
 TextOperation.prototype.insert = function (str, meta) {
   if (str instanceof Op) {
-    // TODO: check for isInsert and merge ops
     this.targetLength += str.len
-    this.ops.push(str)
+    if (this.ops.length > 0 && this.ops[this.ops.length - 1].isInsert() &&
+        this.ops[this.ops.length - 1].metaEquals(str)) {
+      this.ops[this.ops.length - 1].data += str
+    } else {
+      this.ops.push(str)
+    }
     return this
   }
   if (typeof str !== 'string') {
-    throw new Error("insert expects a string")
+    throw new Error('insert expects a string')
   }
-  if (str === '') { return this; }
+  if (str === '') { return this }
   this.targetLength += str.length
-  var ops = this.ops
-  if (ops.length > 0 && ops[ops.length-1].isInsert() && false) { // TODO: compare metas
+  let ops = this.ops
+  if (ops.length > 0 && ops[ops.length - 1].isInsert() &&
+      ops[ops.length - 1].metaEquals(meta)) {
     // Merge insert op.
-    ops[ops.length-1].data += str
-  } else if (ops.length >= 2 && ops[ops.length-1].isDelete() && false) { // TODO: compare metas
+    ops[ops.length - 1].data += str
+  } else if (ops.length >= 2 && ops[ops.length - 1].isDelete()) {
     // It doesn't matter when an operation is applied whether the operation
-    // is delete(3), insert("something") or insert("something"), delete(3).
+    // is delete(3), insert('something') or insert('something'), delete(3).
     // Here we enforce that in this case, the insert op always comes first.
     // This makes all operations that have the same effect when applied to
     // a document of the right length equal in respect to the `equals` method.
-    if (ops[ops.length-2].isInsert()) {
-      ops[ops.length-2].data += str
-    } else { // TODO: more shit with metas
-      ops[ops.length] = ops[ops.length-1]
-      ops[ops.length-2].data = str
+    if (ops[ops.length - 2].isInsert() && ops[ops.length - 2].metaEquals(meta)) {
+      ops[ops.length - 2].data += str
+    } else {
+      ops.push(ops[ops.length - 1])
+      ops[ops.length - 2] = new Op(str, meta) // -2 is basically original delete
     }
   } else {
     ops.push(new Op(str, meta))
@@ -107,19 +117,22 @@ TextOperation.prototype.insert = function (str, meta) {
 // Delete a string at the current position.
 TextOperation.prototype['delete'] = function (n) {
   if (n instanceof Op) {
-    // TODO: check for isDelete and merge ops
     this.baseLength += n.len
-    this.ops.push(n)
+    if (this.ops.length > 0 && this.ops[this.ops.length - 1].isDelete()) {
+      this.ops[this.ops.length - 1].len += n.len
+    } else {
+      this.ops.push(n)
+    }
     return this
   }
   if (typeof n !== 'number') {
-    throw new Error("delete expects an integer or a string")
+    throw new Error('delete expects an integer or a string')
   }
   if (n === 0) return this
   if (n < 0) n = -n
   this.baseLength += n
-  if (this.ops.length > 0 && this.ops[this.ops.length-1].isDelete()) {
-    this.ops[this.ops.length-1].len += n
+  if (this.ops.length > 0 && this.ops[this.ops.length - 1].isDelete()) {
+    this.ops[this.ops.length - 1].len += n
   } else {
     this.ops.push(new Op(-n))
   }
@@ -136,7 +149,7 @@ TextOperation.prototype.isNoop = function () {
 /* TextOperation.prototype.apply = function (str) {
   var operation = this
   if (str.length !== operation.baseLength) {
-    throw new Error("The operation's base length must be equal to the string's length.")
+    throw new Error('The operation's base length must be equal to the string's length.')
   }
   var newStr = [], j = 0
   var strIndex = 0
@@ -145,7 +158,7 @@ TextOperation.prototype.isNoop = function () {
     var op = ops[i]
     if (op.isRetain()) {
       if (strIndex + op > str.length) {
-        throw new Error("Operation can't retain more characters than are left in the string.")
+        throw new Error('Operation can't retain more characters than are left in the string.')
       }
       // Copy skipped part of the old string.
       newStr[j++] = str.slice(strIndex, strIndex + op)
@@ -158,14 +171,14 @@ TextOperation.prototype.isNoop = function () {
     }
   }
   if (strIndex !== str.length) {
-    throw new Error("The operation didn't operate on the whole string.")
+    throw new Error('The operation didn't operate on the whole string.')
   }
   return newStr.join('')
 } */
 
 // Computes the inverse of an operation. The inverse of an operation is the
 // operation that reverts the effects of the operation, e.g. when you have an
-// operation 'insert("hello "); skip(6);' then the inverse is 'delete("hello ")
+// operation 'insert('hello '); skip(6);' then the inverse is 'delete('hello ')
 // skip(6);'. The inverse should be used for implementing undo.
 TextOperation.prototype.invert = function (str) {
   var strIndex = 0
@@ -193,13 +206,16 @@ TextOperation.prototype.invert = function (str) {
 TextOperation.prototype.compose = function (operation2) {
   var operation1 = this
   if (operation1.targetLength !== operation2.baseLength) {
-    throw new Error("The base length of the second operation has to be the target length of the first operation")
+    throw new Error('The base length of the second operation has to be the target length of the first operation')
   }
 
-  var operation = new TextOperation(); // the combined operation
-  var ops1 = operation1.ops, ops2 = operation2.ops; // for fast access
-  var i1 = 0, i2 = 0; // current index into ops1 respectively ops2
-  var op1 = ops1[i1++], op2 = ops2[i2++]; // current ops
+  let operation = new TextOperation() // the combined operation
+  let ops1 = operation1.ops
+  let ops2 = operation2.ops // for fast access
+  let i1 = 0
+  let i2 = 0 // current index into ops1 respectively ops2
+  let op1 = ops1[i1++]
+  let op2 = ops2[i2++] // current ops
   while (true) {
     // Dispatch on the type of op1 and op2
     if (typeof op1 === 'undefined' && typeof op2 === 'undefined') {
@@ -219,10 +235,10 @@ TextOperation.prototype.compose = function (operation2) {
     }
 
     if (typeof op1 === 'undefined') {
-      throw new Error("Cannot compose operations: first operation is too short.")
+      throw new Error('Cannot compose operations: first operation is too short.')
     }
     if (typeof op2 === 'undefined') {
-      throw new Error("Cannot compose operations: first operation is too long.")
+      throw new Error('Cannot compose operations: first operation is too long.')
     }
 
     if (op1.isRetain() && op2.isRetain()) {
@@ -287,8 +303,8 @@ TextOperation.prototype.compose = function (operation2) {
       }
     } else {
       throw new Error(
-        "This shouldn't happen: op1: " +
-          JSON.stringify(op1) + ", op2: " +
+        'This shouldn\'t happen: op1: ' +
+          JSON.stringify(op1) + ', op2: ' +
           JSON.stringify(op2)
       )
     }
@@ -297,15 +313,14 @@ TextOperation.prototype.compose = function (operation2) {
 }
 
 function getSimpleOp (operation, fn) {
-  var ops = operation.ops
-  var isRetain = TextOperation.isRetain
+  let ops = operation.ops
   switch (ops.length) {
-  case 1:
-    return ops[0]
-  case 2:
-    return ops[0].isRetain() ? ops[1] : (ops[1].isRetain() ? ops[0] : null)
-  case 3:
-    if (ops[0].isRetain() && ops[2].isRetain()) return ops[1]
+    case 1:
+      return ops[0]
+    case 2:
+      return ops[0].isRetain() ? ops[1] : (ops[1].isRetain() ? ops[0] : null)
+    case 3:
+      if (ops[0].isRetain() && ops[2].isRetain()) return ops[1]
   }
   return null
 }
@@ -324,11 +339,13 @@ function getStartIndex (operation) {
 // operations delete text at the same position. You may want to include other
 // factors like the time since the last change in your decision.
 TextOperation.prototype.shouldBeComposedWith = function (other) {
-  if (this.isNoop() || other.isNoop()) { return true; }
+  if (this.isNoop() || other.isNoop()) return true
 
-  var startA = getStartIndex(this), startB = getStartIndex(other)
-  var simpleA = getSimpleOp(this), simpleB = getSimpleOp(other)
-  if (!simpleA || !simpleB) { return false; }
+  let startA = getStartIndex(this)
+  let startB = getStartIndex(other)
+  let simpleA = getSimpleOp(this)
+  let simpleB = getSimpleOp(other)
+  if (!simpleA || !simpleB) return false
 
   if (simpleA.isInsert() && simpleB.isInsert()) {
     return startA + simpleA.len === startB
@@ -347,11 +364,13 @@ TextOperation.prototype.shouldBeComposedWith = function (other) {
 // if they were inverted, that is
 // `shouldBeComposedWith(a, b) = shouldBeComposedWithInverted(b^{-1}, a^{-1})`.
 TextOperation.prototype.shouldBeComposedWithInverted = function (other) {
-  if (this.isNoop() || other.isNoop()) { return true; }
+  if (this.isNoop() || other.isNoop()) return true
 
-  var startA = getStartIndex(this), startB = getStartIndex(other)
-  var simpleA = getSimpleOp(this), simpleB = getSimpleOp(other)
-  if (!simpleA || !simpleB) { return false; }
+  let startA = getStartIndex(this)
+  let startB = getStartIndex(other)
+  let simpleA = getSimpleOp(this)
+  let simpleB = getSimpleOp(other)
+  if (!simpleA || !simpleB) return false
 
   if (simpleA.isInsert() && simpleB.isInsert()) {
     return startA + simpleA.len === startB || startA === startB
@@ -370,14 +389,17 @@ TextOperation.prototype.shouldBeComposedWithInverted = function (other) {
 // heart of OT.
 TextOperation.transform = function (operation1, operation2) {
   if (operation1.baseLength !== operation2.baseLength) {
-    throw new Error("Both operations have to have the same base length")
+    throw new Error('Both operations have to have the same base length')
   }
 
-  var operation1prime = new TextOperation()
-  var operation2prime = new TextOperation()
-  var ops1 = operation1.ops, ops2 = operation2.ops
-  var i1 = 0, i2 = 0
-  var op1 = ops1[i1++], op2 = ops2[i2++]
+  let operation1prime = new TextOperation()
+  let operation2prime = new TextOperation()
+  let ops1 = operation1.ops
+  let ops2 = operation2.ops
+  let i1 = 0
+  let i2 = 0
+  let op1 = ops1[i1++]
+  let op2 = ops2[i2++]
   while (true) {
     // At every iteration of the loop, the imaginary cursor that both
     // operation1 and operation2 have that operates on the input string must
@@ -405,34 +427,32 @@ TextOperation.transform = function (operation1, operation2) {
     }
 
     if (typeof op1 === 'undefined') {
-      throw new Error("Cannot compose operations: first operation is too short.")
+      throw new Error('Cannot compose operations: first operation is too short.')
     }
     if (typeof op2 === 'undefined') {
-      throw new Error("Cannot compose operations: first operation is too long.")
+      throw new Error('Cannot compose operations: first operation is too long.')
     }
 
     var minl
     if (op1.isRetain() && op2.isRetain()) {
       // Simple case: retain/retain
+      let meta1 = op1.meta
+      let meta2 = op2.meta
       if (op1.len > op2.len) {
-        // TODO: metas
         minl = op2.len
         op1.len -= op2.len
         op2 = ops2[i2++]
       } else if (op1.len === op2.len) {
-        // TODO: metas
         minl = op2.len
         op1 = ops1[i1++]
         op2 = ops2[i2++]
       } else {
-        // TODO: metas
         minl = op1.len
         op2.len -= op1.len
         op1 = ops1[i1++]
       }
-      // METAS
-      operation1prime.retain(minl)
-      operation2prime.retain(minl)
+      operation1prime.retain(minl, meta1)
+      operation2prime.retain(minl, meta2)
     } else if (op1.isDelete() && op2.isDelete()) {
       // Both operations delete the same string at the same position. We don't
       // need to produce any operations, we just skip over the delete ops and
@@ -449,7 +469,6 @@ TextOperation.transform = function (operation1, operation2) {
       }
       // next two cases: delete/retain and retain/delete
     } else if (op1.isDelete() && op2.isRetain()) {
-      // TODO: metas probably okay here
       if (op1.len > op2.len) {
         minl = op2.len
         op1.len -= op2.len
@@ -465,7 +484,6 @@ TextOperation.transform = function (operation1, operation2) {
       }
       operation1prime['delete'](minl)
     } else if (op1.isRetain() && op2.isDelete()) {
-      // TODO: metas probably okay here
       if (op1.len > op2.len) {
         minl = op2.len
         op1.len -= op2.len
@@ -481,7 +499,7 @@ TextOperation.transform = function (operation1, operation2) {
       }
       operation2prime['delete'](minl)
     } else {
-      throw new Error("The two operations aren't compatible")
+      throw new Error('The two operations aren\'t compatible')
     }
   }
 

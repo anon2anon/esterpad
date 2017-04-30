@@ -28,14 +28,14 @@ export default {
   mounted () {
     // isn't it a RC?
     this.reinitCM(state.padId)
+    this.cssManager = new CSSManager()
+
     bus.$on('pad-id-changed', this.reinitCM)
-
     bus.$on('new-delta', this.newDelta)
-
-    this.cssManager = new CSSManager('dynamicCSS')
-    bus.$on('user-info', this.userInfo)
     bus.$on('user-leave', this.userLeave)
-    this.userInfo({userId: state.userId, color: state.userColorNum})
+    bus.$on('color-update', this.updateColor)
+
+    this.updateColor(state.userId, state.userColor)
   },
   methods: {
     sendTextOperation (textOp) {
@@ -54,16 +54,14 @@ export default {
       let ourMeta = new TextOperation()
       let needUpdate = false
       for (let op of textOp.ops) {
-        if (op.isRetain()) ourMeta = ourMeta.retain(op)
-        if (op.isDelete()) ourMeta = ourMeta.delete(op)
+        if (op.isRetain()) ourMeta = ourMeta.retain(op.len)
+        // if (op.isDelete()) ourMeta = ourMeta.delete(op)
         if (op.isInsert()) {
           ourMeta = ourMeta.retain(op.len, {userId: state.userId})
           needUpdate = true
         }
       }
-      if (needUpdate) {
-        this.cma.applyOperation(ourMeta)
-      }
+      if (needUpdate) this.cma.applyOperation(ourMeta)
 
       if (this.debounceBuffer !== null) {
         this.debounceBuffer = this.debounceBuffer.compose(textOp)
@@ -80,7 +78,8 @@ export default {
     },
     processDebounceBuffer () {
       var textOp = this.debounceBuffer
-      console.log('processDelta', textOp)
+      console.log('processDebounceBuffer', textOp)
+
       if (this.synchronized) {
         this.sendTextOperation(textOp)
       } else if (this.buffer === null) {
@@ -120,6 +119,7 @@ export default {
 
       let convertMeta = function (meta) {
         let res = {}
+        // TODO: process all meta
         if (meta.changemask & (1 << 5)) res.userId = meta.userId
         return res
       }
@@ -163,9 +163,8 @@ export default {
         }
       }
     },
-    userInfo (info) {
-      this.cssManager.selectorStyle('.author-' + info.userId).background =
-        '#' + ('000000' + info.color.toString(16)).slice(-6)
+    updateColor (userId, newColor) {
+      this.cssManager.selectorStyle('.author-' + userId).background = newColor
     },
     userLeave (info) {
       console.warn('TODO: handle user leave in editor')
