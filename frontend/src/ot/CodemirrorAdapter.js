@@ -150,6 +150,7 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
           let classes = '' // converting meta to classes
           // TODO: process all meta
           if (op.meta.hasOwnProperty('userId')) classes += 'author-' + op.meta.userId
+          let needNewMark = true
 
           if (classes !== '') {
             let to = cm.posFromIndex(index + op.len)
@@ -157,7 +158,10 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
             for (let mark of cm.findMarksAt(from)) { // we need to break existing marks
               let oldPos = mark.find()
               let oldClass = mark.className
-              if (oldClass === classes) continue // it's same mark
+              if (oldClass === classes) { // it's same mark
+                needNewMark = false
+                continue
+              }
               mark.clear()
               if (index !== cm.indexFromPos(oldPos.from)) { // adding mark before new
                 cm.markText(oldPos.from, from, {
@@ -173,10 +177,12 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
               }
             }
 
-            cm.markText(from, to, { // creating new mark
-              className: classes,
-              inclusiveRight: true
-            })
+            if (needNewMark) {
+              cm.markText(from, to, { // creating new mark
+                className: classes,
+                inclusiveRight: true
+              })
+            }
           }
         }
 
