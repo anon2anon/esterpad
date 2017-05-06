@@ -126,7 +126,7 @@ export default {
    display: flex;
    flex-flow: column nowrap;
    flex: 1;
-   white-space: pre;
+   white-space: pre-wrap;
  }
 
  .messages {
