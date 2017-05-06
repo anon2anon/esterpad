@@ -13,7 +13,6 @@
 
 <script>
 import { state, bus } from '@/globs'
-import CSSManager from '@/lib/cssmanager.js'
 
 export default {
   name: 'esterpad-chat',
@@ -22,17 +21,11 @@ export default {
       state: state,
       messageList: [],
       msg: '',
-      lastId: -1,
-      cssManager: null
+      lastId: -1
     }
   },
   mounted () {
-    this.cssManager = new CSSManager()
-
     bus.$on('new-chat-msg', this.appendMsg)
-    bus.$on('color-update', this.updateColor)
-
-    this.updateColor(state.userId, state.userColor)
   },
   methods: {
     enterPressed (e) {
@@ -44,7 +37,7 @@ export default {
 
       // TODO: move to MyUser
       if (this.msg.startsWith('/color')) {
-        var colorName = this.msg.substr(6).trim()
+        let colorName = this.msg.substr(6).trim()
         // parse CSS colors
         state.userColorNum = parseInt(colorName, 16)
         state.colorMap[state.userId] = state.userColor
@@ -76,19 +69,16 @@ export default {
         if (this.lastId === -1) this.lastId = msg.id
         else this.lastId = Math.max(this.lastId, msg.id)
       }
-      var msgdiv = document.createElement('div')
-      var msgtext = document.createTextNode(msg.text)
+      let msgdiv = document.createElement('div')
+      let msgtext = document.createTextNode(msg.text)
       msgdiv.appendChild(msgtext)
-      msgdiv.className = 'chat-author-' + msg.userId
+      msgdiv.className = 'author-' + msg.userId
       let needScroll = this.$refs.messages.scrollTop + this.$refs.messages.offsetHeight >=
         this.$refs.messages.scrollHeight - 1
       this.$refs.messages.appendChild(msgdiv)
       if (needScroll) {
         this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
       }
-    },
-    updateColor (userId, newColor) {
-      this.cssManager.selectorStyle('.chat-author-' + userId).background = newColor
     },
     autoGrow () {
       this.$refs.msgbox.style.height = '5px'

@@ -148,8 +148,13 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
 
         if (Object.keys(op.meta).length > 0) { // have meta, create mark
           let classes = '' // converting meta to classes
-          // TODO: process all meta
-          if (op.meta.hasOwnProperty('userId')) classes += 'author-' + op.meta.userId
+          // TODO: grab actual list from proto
+          if (op.meta.hasOwnProperty('bold')) classes += ' padtext-bold'
+          if (op.meta.hasOwnProperty('italic')) classes += ' padtext-italic'
+          if (op.meta.hasOwnProperty('underline')) classes += ' padtext-underline'
+          if (op.meta.hasOwnProperty('strike')) classes += ' padtext-strike'
+          if (op.meta.hasOwnProperty('fontSize')) classes += ' padtext-fontSize' + op.meta.fontSize
+          if (op.meta.hasOwnProperty('userId')) classes += ' author-' + op.meta.userId
           let needNewMark = true
 
           if (classes !== '') {

@@ -30,7 +30,7 @@ new Vue({
 
 import * as protobuf from 'protobufjs'
 import * as jsonDescr from './assets/proto.json'
-var proto = protobuf.Root.fromJSON(jsonDescr)
+let proto = protobuf.Root.fromJSON(jsonDescr)
 
 import { state, bus } from './globs'
 window['_state'] = state
@@ -53,26 +53,26 @@ bus.$on('push', function (header, body) {
   })
 })
 
-var SMessages = proto.lookup('esterpad.SMessages')
-var CMessages = proto.lookup('esterpad.CMessages')
+let SMessages = proto.lookup('esterpad.SMessages')
+let CMessages = proto.lookup('esterpad.CMessages')
 
-var wsUrl = 'ws://' + window.location.host + '/.ws'
+let wsUrl = 'ws://' + window.location.host + '/.ws'
 if (window.location.hostname === 'localhost') {
   wsUrl = 'ws://localhost:9000/.ws'
 }
-var conn = new WebSocket(wsUrl)
+let conn = new WebSocket(wsUrl)
 conn.binaryType = 'arraybuffer'
 
 bus.$on('send', function () {
-  var args = [] // accepts any number of messages
-  for (var i = 0; 2 * i < arguments.length; i++) {
-    var tmp = {}
+  let args = [] // accepts any number of messages
+  for (let i = 0; 2 * i < arguments.length; i++) {
+    let tmp = {}
     tmp[arguments[i]] = arguments[i + 1]
     tmp['CMessages'] = arguments[i]
     console.log('send', arguments[i], arguments[i + 1])
     args.push(tmp)
   }
-  var buffer = CMessages.encode({
+  let buffer = CMessages.encode({
     cm: args
   }).finish()
   conn.send(buffer)
@@ -91,7 +91,7 @@ conn.onclose = function (evt) {
 }
 
 conn.onmessage = function (evt) {
-  var messages = SMessages.decode(new Uint8Array(evt.data)).sm
+  let messages = SMessages.decode(new Uint8Array(evt.data)).sm
   if (!messages) return // ping
   console.log('messages', messages)
   messages.forEach(function (message) {

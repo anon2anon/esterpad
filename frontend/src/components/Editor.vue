@@ -42,7 +42,7 @@ export default {
       console.log('sending textOp', textOp)
       this.synchronized = false
       this.outgoing = textOp
-      var ops = textOp.ops.map(i => i.getProtobufData())
+      let ops = textOp.ops.map(i => i.getProtobufData())
       bus.$emit('send', 'Delta', {
         revision: this.revision,
         ops: ops
@@ -55,7 +55,6 @@ export default {
       let needUpdate = false
       for (let op of textOp.ops) {
         if (op.isRetain()) ourMeta = ourMeta.retain(op.len)
-        // if (op.isDelete()) ourMeta = ourMeta.delete(op)
         if (op.isInsert()) {
           ourMeta = ourMeta.retain(op.len, {userId: state.userId})
           needUpdate = true
@@ -69,7 +68,7 @@ export default {
         this.debounceBuffer = textOp
       }
 
-      var that = this
+      let that = this
       clearTimeout(this.debounceTimer)
       this.debounceTimer = setTimeout(function () {
         that.processDebounceBuffer(textOp)
@@ -77,7 +76,7 @@ export default {
       // maybe send after each whitespace or something
     },
     processDebounceBuffer () {
-      var textOp = this.debounceBuffer
+      let textOp = this.debounceBuffer
       console.log('processDebounceBuffer', textOp)
 
       if (this.synchronized) {
@@ -93,12 +92,17 @@ export default {
       console.log('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
 
-      var cm = CodeMirror(this.$refs.cm, {
+      let cm = CodeMirror(this.$refs.cm, {
         value: '', // (TODO: make cool spinner here)
         tabSize: 4,
         mode: 'text/plain',
         lineNumbers: true,
-        lineWrapping: true
+        lineWrapping: true,
+        extraKeys: {
+          'Ctrl-B': function (cm) {
+            alert('bold')
+          }
+        }
       })
 
       this.cma = new CodemirrorAdapter(cm)
@@ -124,8 +128,8 @@ export default {
         return res
       }
 
-      var to = new TextOperation()
-      // maybe move to Op.js or TextOperation.js
+      let to = new TextOperation()
+      // TODO: move to TextOperation.js
       for (let op of delta.ops) {
         if (op.insert !== null) {
           to = to.insert(op.insert.text, convertMeta(op.insert.meta))
@@ -150,13 +154,13 @@ export default {
           this.cma.applyOperation(to)
         } else {
           if (this.buffer !== null) {
-            var pair1 = TextOperation.transform(this.outgoing, to)
-            var pair2 = TextOperation.transform(this.buffer, pair1[1])
+            let pair1 = TextOperation.transform(this.outgoing, to)
+            let pair2 = TextOperation.transform(this.buffer, pair1[1])
             this.outgoing = pair1[0]
             this.buffer = pair2[0]
             this.cma.applyOperation(pair2[1])
           } else {
-            var pair = TextOperation.transform(this.outgoing, to)
+            let pair = TextOperation.transform(this.outgoing, to)
             this.outgoing = pair[0]
             this.cma.applyOperation(pair[1])
           }

@@ -28,7 +28,7 @@ export default {
     userInfo (info) {
       console.log('user connected', info)
       if (info.online) {
-        var tmp = this.userList.findIndex(
+        let tmp = this.userList.findIndex(
           i => i.userId === info.userId
         )
         if (tmp === -1) { // create new user
