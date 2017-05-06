@@ -16,6 +16,12 @@
         <md-list-item v-if="state.isLoggedIn">
           <router-link exact to="/.padlist">Pad List</router-link>
         </md-list-item>
+        <md-list-item v-if="state.isLoggedIn">
+          <router-link exact to="/.options">Options</router-link>
+        </md-list-item>
+        <md-list-item v-if="state.perms.admin">
+          <router-link exact to="/.admin">Admin</router-link>
+        </md-list-item>
         <md-list-item v-if="state.isLoggedIn" @click.native="signout">
           Sign Out
         </md-list-item>

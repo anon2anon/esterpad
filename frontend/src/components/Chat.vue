@@ -1,6 +1,6 @@
 <template>
   <div class="chat-container">
-    <div class="messages" ref="messages">
+    <div class="messages" ref="messages" @scroll="onScroll">
     </div>
     <div @keydown.prevent.enter="enterPressed">
       <textarea v-model="msg" id="chat-input" ref="msgbox"
@@ -21,7 +21,8 @@ export default {
       state: state,
       messageList: [],
       msg: '',
-      lastId: -1
+      lastId: -1,
+      waitingForHistory: false
     }
   },
   mounted () {
@@ -62,22 +63,40 @@ export default {
     },
     appendMsg (msg) {
       console.log('chat message', msg)
+
       if (document.hidden) { // msg.needPush &&
         bus.$emit('push', state.padId, msg.text)
       }
-      if ('id' in msg) {
-        if (this.lastId === -1) this.lastId = msg.id
-        else this.lastId = Math.max(this.lastId, msg.id)
+
+      let append = true
+      if (this.lastId === -1) {
+        this.lastId = msg.id
+      } else {
+        if (msg.id < this.lastId) append = false
+        this.lastId = Math.min(this.lastId, msg.id)
       }
+      // min because lastId is id of first message in history
+
       let msgdiv = document.createElement('div')
       let msgtext = document.createTextNode(msg.text)
       msgdiv.appendChild(msgtext)
       msgdiv.className = 'author-' + msg.userId
-      let needScroll = this.$refs.messages.scrollTop + this.$refs.messages.offsetHeight >=
-        this.$refs.messages.scrollHeight - 1
-      this.$refs.messages.appendChild(msgdiv)
-      if (needScroll) {
-        this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+      if (append) {
+        let needScroll = this.$refs.messages.scrollTop + this.$refs.messages.offsetHeight >=
+          this.$refs.messages.scrollHeight - 1
+        this.$refs.messages.appendChild(msgdiv)
+        if (needScroll) {
+          this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight
+        }
+      } else {
+        this.$refs.messages.insertBefore(msgdiv,
+                                         this.$refs.messages.childNodes[0])
+
+        if (this.$refs.messages.scrollTop === 0) {
+          this.$refs.messages.scrollTop = msgdiv.clientHeight / 2
+        }
+
+        this.waitingForHistory = false
       }
     },
     autoGrow () {
@@ -85,6 +104,16 @@ export default {
       this.$refs.msgbox.style.height = this.$refs.msgbox.scrollHeight + 'px'
       if (this.$refs.msgbox.scrollHeight >= 100) {
         this.$refs.msgbox.scrollTop = this.$refs.msgbox.scrollHeight
+      }
+    },
+    onScroll () {
+      if (!this.waitingForHistory && this.lastId !== 1 &&
+          this.$refs.messages.scrollTop < 5) {
+        this.waitingForHistory = true
+        bus.$emit('send', 'ChatRequest', {
+          from: this.lastId - 1,
+          count: 50
+        })
       }
     }
   }
