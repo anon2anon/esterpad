@@ -65,9 +65,18 @@ export default new Router({
       component: Pad,
       props: true,
       beforeEnter: (to, from, next) => {
-        if (!state.isLoggedIn) next('/.login?go=' + to.path)
-        state.padId = to.params.padId
-        bus.$emit('pad-id-changed', to.params.padId)
+        if (!state.isLoggedIn) {
+          next('/.login?go=' + to.path)
+          return
+        }
+        let pid = to.params.padId
+        if (pid.indexOf('.') !== -1 || pid.indexOf('/') !== -1) {
+          bus.$emit('auth-error', 'Error 404, redirecting you to main page')
+          next('/')
+          return
+        }
+        state.padId = pid
+        bus.$emit('pad-id-changed', pid)
         next()
       }
     }

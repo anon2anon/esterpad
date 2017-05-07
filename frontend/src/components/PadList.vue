@@ -1,13 +1,21 @@
 <template>
   <div>
-    <md-dialog-prompt
-      md-title="Enter new pad name"
-      md-ok-text="Create!"
-      md-cancel-text="Cancel"
-      v-model="newPadName"
-      @close="onClose"
-      ref="dialog">
-    </md-dialog-prompt>
+    <md-dialog ref="dialog">
+        <md-dialog-title>Enter new pad name</md-dialog-title>
+
+        <md-dialog-content>
+          <md-input-container md-inline :class="{ 'md-input-invalid': haveError }">
+            <label>Name</label>
+            <md-input v-model="newPadName"></md-input>
+            <span class="md-error">Dots and slashes are not allowed!</span>
+          </md-input-container>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+          <md-button class="md-primary" @click.native="newPadCancel">Cancel</md-button>
+          <md-button class="md-primary" @click.native="newPadOk">Ok</md-button>
+        </md-dialog-actions>
+    </md-dialog>
     <md-card>
       <md-card-content>
         <md-list>
@@ -31,17 +39,30 @@ export default {
   data () {
     return {
       state: state,
-      newPadName: ''
+      newPadName: '',
+      haveError: false
+    }
+  },
+  watch: {
+    newPadName (padName) {
+      this.haveError = padName.indexOf('.') !== -1 || padName.indexOf('/') !== -1
     }
   },
   methods: {
     createPad () {
       this.$refs.dialog.open()
     },
-    onClose () {
+    newPadCancel () {
+      this.newPadName = ''
+      this.$refs.dialog.close()
+    },
+    newPadOk () {
+      // TODO: check for pad existence here
+      if (this.haveError) return
       if (this.newPadName) {
         this.$router.push('/' + this.newPadName)
       }
+      this.$refs.dialog.close()
     }
   }
 }
