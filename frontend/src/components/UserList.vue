@@ -1,10 +1,12 @@
 <template>
-  <div style="width: 100%">
-    <div v-for="user in userList" key="user">
-      <md-layout class="user-item" :title="user.ip ? user.ip + '\n' + user.userAgent : ''">
-        <div class="avatar" :style="{ background: num2color(user.color) }"></div>
-        <div>{{ user.nickname }}</div>
-      </md-layout>
+  <div class="container2">
+    <div class="container">
+      <div v-for="user in userList" key="user" >
+        <md-layout class="user-item" :title="user.ip ? user.ip + '\n' + user.userAgent : ''">
+          <div class="avatar" :style="{ background: num2color(user.color) }"></div>
+          <div>{{ user.nickname }}</div>
+        </md-layout>
+      </div>
     </div>
   </div>
 </template>
@@ -52,10 +54,20 @@ export default {
 </script>
 
 <style scoped>
- .container {
-   display: block;
-   height: 100%;
+ .container2 {
+   min-height: 100%;
+   display: flex;
+   flex-flow: column nowrap;
+   flex: 1;
+   white-space: pre-wrap;
  }
+
+ .container {
+   flex: 1 1 0;
+   overflow-y: scroll;
+   word-break: break-all;
+ }
+
  .avatar {
    display: inline-block;
    box-sizing: border-box;
