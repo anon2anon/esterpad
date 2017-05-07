@@ -341,6 +341,7 @@ CodeMirrorAdapter.prototype.trigger = function (event) {
 }
 
 CodeMirrorAdapter.prototype.applyOperation = function (operation) {
+  if (operation.isNoop()) return
   this.ignoreNextChange = true
   CodeMirrorAdapter.applyOperationToCodeMirror(operation, this.cm)
 }
