@@ -20,13 +20,13 @@ export default {
     nameChanged () {
       this.$refs.userName.blur()
       state.userName = this.$refs.userName.textContent.trim()
-      bus.$emit('send', 'UserInfo', {
+      bus.$emit('send', 'EditUser', {
         changemask: 1,
         nickname: state.userName
       })
     },
     colorChanged () {
-      bus.$emit('send', 'UserInfo', {
+      bus.$emit('send', 'EditUser', {
         changemask: 2,
         color: parseInt(this.userColor.substr(1), 16)
       })

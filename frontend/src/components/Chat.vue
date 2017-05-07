@@ -43,7 +43,7 @@ export default {
         state.userColorNum = parseInt(colorName, 16)
         state.colorMap[state.userId] = state.userColor
         bus.$emit('color-update', state.userId, state.userColor)
-        bus.$emit('send', 'UserInfo', {
+        bus.$emit('send', 'EditUser', {
           changemask: 2,
           color: state.userColorNum
         })

@@ -92,6 +92,13 @@ export default {
       console.log('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
 
+      let toggleMeta = function (cm, meta) {
+        let from = cm.indexFromPos(cm.getCursor('from'))
+        let to = cm.indexFromPos(cm.getCursor('to'))
+
+        console.log(from, to, meta)
+      }
+
       let cm = CodeMirror(this.$refs.cm, {
         value: '', // (TODO: make cool spinner here)
         tabSize: 4,
@@ -100,6 +107,22 @@ export default {
         lineWrapping: true,
         extraKeys: {
           'Ctrl-B': function (cm) {
+            toggleMeta(cm, 'bold')
+          },
+          'Ctrl-I': function (cm) {
+            toggleMeta(cm, 'italic')
+          },
+          'Ctrl-U': function (cm) {
+            toggleMeta(cm, 'underline')
+          },
+          'Ctrl-S': function (cm) {
+            toggleMeta(cm, 'strike')
+          },
+          'Ctrl-M': function (cm) {
+            if (!state.perms.mod) {
+              bus.$emit('auth-error', 'Sorry, you don\'t have permission for that')
+              return
+            }
             alert('bold')
           }
         }

@@ -19,6 +19,9 @@
         <md-list-item v-if="state.isLoggedIn">
           <router-link exact to="/.options">Options</router-link>
         </md-list-item>
+        <md-list-item v-if="state.perms.mod">
+          <router-link exact to="/.users">Users</router-link>
+        </md-list-item>
         <md-list-item v-if="state.perms.admin">
           <router-link exact to="/.admin">Admin</router-link>
         </md-list-item>

@@ -6,6 +6,7 @@ import Register from '@/components/Register'
 import PadList from '@/components/PadList'
 import Options from '@/components/Options'
 import Admin from '@/components/Admin'
+import Users from '@/components/Users'
 
 import { state, bus } from '@/globs'
 
@@ -29,7 +30,27 @@ export default new Router({
       name: 'Options',
       component: Options,
       beforeEnter: (to, from, next) => {
-        if (!state.isLoggedIn) next('/.login?go=' + to.path)
+        if (!state.isLoggedIn) {
+          next('/.login?go=' + to.path)
+          return
+        }
+        next()
+      }
+    },
+    {
+      path: '/.users',
+      name: 'Users',
+      component: Users,
+      beforeEnter: (to, from, next) => {
+        if (!state.isLoggedIn) {
+          next('/.login?go=' + to.path)
+          return
+        }
+        if (!state.perms.mod) {
+          bus.$emit('auth-error', 'Hey, you\'re not mod!')
+          next('/')
+          return
+        }
         next()
       }
     },
@@ -38,10 +59,14 @@ export default new Router({
       name: 'Admin',
       component: Admin,
       beforeEnter: (to, from, next) => {
-        if (!state.isLoggedIn) next('/.login?go=' + to.path)
+        if (!state.isLoggedIn) {
+          next('/.login?go=' + to.path)
+          return
+        }
         if (!state.perms.admin) {
           bus.$emit('auth-error', 'Hey, you\'re not admin!')
           next('/')
+          return
         }
         next()
       }
@@ -51,7 +76,10 @@ export default new Router({
       name: 'Pad List',
       component: PadList,
       beforeEnter: (to, from, next) => {
-        if (!state.isLoggedIn) next('/.login?go=' + to.path)
+        if (!state.isLoggedIn) {
+          next('/.login?go=' + to.path)
+          return
+        }
         next()
       }
     },
