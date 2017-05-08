@@ -60,19 +60,22 @@ export default {
           needUpdate = true
         }
       }
-      if (needUpdate) this.cma.applyOperation(ourMeta)
+      if (needUpdate) this.cma.applyOperation(ourMeta, false)
 
+      this.processDelta(textOp)
+    },
+    processDelta (delta) {
       if (this.debounceBuffer !== null) {
-        this.debounceBuffer = this.debounceBuffer.compose(textOp)
+        this.debounceBuffer = this.debounceBuffer.compose(delta)
       } else {
-        this.debounceBuffer = textOp
+        this.debounceBuffer = delta
       }
 
       let that = this
       clearTimeout(this.debounceTimer)
       this.debounceTimer = setTimeout(function () {
-        that.processDebounceBuffer(textOp)
-      }, 300) // maybe we should tune this
+        that.processDebounceBuffer(delta)
+      }, 150) // maybe we should tune this
       // maybe send after each whitespace or something
     },
     processDebounceBuffer () {
@@ -92,11 +95,14 @@ export default {
       console.log('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
 
+      let that = this
+
       let toggleMeta = function (cm, meta) {
         let from = cm.indexFromPos(cm.getCursor('from'))
         let to = cm.indexFromPos(cm.getCursor('to'))
+        console.log('toggleMeta', from, to, meta)
 
-        console.log(from, to, meta)
+        // TODO: check permissions
       }
 
       let cm = CodeMirror(this.$refs.cm, {
@@ -123,7 +129,20 @@ export default {
               bus.$emit('auth-error', 'Sorry, you don\'t have permission for that')
               return
             }
-            alert('bold')
+
+            let from = cm.indexFromPos(cm.getCursor('from'))
+            let to = cm.indexFromPos(cm.getCursor('to'))
+            if (from === to) return
+            let docLen = cm.indexFromPos({ line: cm.lastLine(), ch: 0 }) +
+                         cm.getLine(cm.lastLine()).length
+
+            let whiteMeta = new TextOperation()
+            whiteMeta = whiteMeta.retain(from)
+            whiteMeta = whiteMeta.retain(to - from, {userId: 0})
+            whiteMeta = whiteMeta.retain(docLen - to)
+
+            that.cma.applyOperation(whiteMeta, false)
+            that.processDelta(whiteMeta)
           }
         }
       })

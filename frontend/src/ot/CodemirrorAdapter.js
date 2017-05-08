@@ -149,6 +149,7 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
         if (Object.keys(op.meta).length > 0) { // have meta, create mark
           let classes = '' // converting meta to classes
           // TODO: grab actual list from proto
+          // TODO: merge existing meta
           if (op.meta.hasOwnProperty('bold')) classes += ' padtext-bold'
           if (op.meta.hasOwnProperty('italic')) classes += ' padtext-italic'
           if (op.meta.hasOwnProperty('underline')) classes += ' padtext-underline'
@@ -340,9 +341,9 @@ CodeMirrorAdapter.prototype.trigger = function (event) {
   if (action) { action.apply(this, args) }
 }
 
-CodeMirrorAdapter.prototype.applyOperation = function (operation) {
+CodeMirrorAdapter.prototype.applyOperation = function (operation, ignoreNextChange = true) {
   if (operation.isNoop()) return
-  this.ignoreNextChange = true
+  this.ignoreNextChange = ignoreNextChange
   CodeMirrorAdapter.applyOperationToCodeMirror(operation, this.cm)
 }
 
