@@ -129,6 +129,8 @@ conn.onmessage = function (evt) {
       bus.$emit('new-chat-msg', message.Chat)
     } else if (message.Delta !== null) { // New delta
       bus.$emit('new-delta', message.Delta)
+    } else if (message.Document !== null) { // Document revision
+      bus.$emit('document', message.Document)
     } else if (message.AuthError) {
       bus.$emit('auth-error', 'Login error #' + message.AuthError.error)
     } else if (message.PadList !== null) {

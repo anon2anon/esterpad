@@ -6,7 +6,7 @@
         <md-dialog-content>
           <md-input-container md-inline :class="{ 'md-input-invalid': haveError }">
             <label>Name</label>
-            <md-input v-model="newPadName"></md-input>
+            <md-input v-model="newPadName" ref="newPadInput"></md-input>
             <span class="md-error">Dots and slashes are not allowed!</span>
           </md-input-container>
         </md-dialog-content>
@@ -22,7 +22,7 @@
           <md-list-item v-for="pad in state.padList" key="pad">
             <router-link exact :to="pad">{{ pad }}</router-link>
           </md-list-item>
-          <md-list-item @click.native="createPad">
+          <md-list-item @click.native="createPad" v-if="state.perms.mod">
             Create new?
           </md-list-item>
         </md-list>

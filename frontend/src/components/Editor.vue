@@ -31,6 +31,7 @@ export default {
     this.cssManager = new CSSManager()
 
     bus.$on('pad-id-changed', this.reinitCM)
+    bus.$on('document', this.recvDocument)
     bus.$on('new-delta', this.newDelta)
     bus.$on('user-leave', this.userLeave)
     bus.$on('color-update', this.updateColor)
@@ -149,6 +150,34 @@ export default {
 
       this.cma = new CodemirrorAdapter(cm)
       this.cma.registerCallbacks({'change': this.cmChangeCallback})
+    },
+    recvDocument (doc) {
+      console.log('recv doc', doc)
+      this.revision = doc.revision
+
+      let convertMeta = function (meta) {
+        let res = {}
+        // TODO: process all meta
+        if (meta.changemask & (1 << 5)) res.userId = meta.userId
+        return res
+      }
+
+      let to = new TextOperation()
+      // TODO: move to TextOperation.js
+      for (let op of doc.ops) {
+        if (op.insert !== null) {
+          to = to.insert(op.insert.text, convertMeta(op.insert.meta))
+        }
+        if (op.retain !== null) {
+          to = to.retain(op.retain.len, convertMeta(op.retain.meta))
+        }
+        if (op.delete !== null) {
+          to = to.delete(op.delete.len)
+        }
+      }
+      console.log('Converted delta', to)
+
+      this.cma.applyOperation(to)
     },
     newDelta (delta) {
       if (delta.id !== this.revision + 1 && this.revision !== 0) {
