@@ -29,15 +29,15 @@ export default {
   methods: {
     userInfo (info) {
       console.log('user connected', info)
-      if (info.online) {
-        let tmp = this.userList.findIndex(
-          i => i.userId === info.userId
-        )
-        if (tmp === -1) { // create new user
-          this.userList.push(info)
-        } else { // update existing
-          this.userList.splice(tmp, 1, info)
-        }
+
+      let tmp = this.userList.findIndex(
+        i => i.userId === info.userId
+      )
+
+      if (tmp !== -1) { // update existing
+        this.userList.splice(tmp, 1, info)
+      } else if (info.online) { // create new
+        this.userList.push(info)
       }
     },
     userLeave (info) {
