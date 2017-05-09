@@ -56,7 +56,7 @@ bus.$on('push', function (header, body) {
 let SMessages = proto.lookup('esterpad.SMessages')
 let CMessages = proto.lookup('esterpad.CMessages')
 
-let wsUrl = window.location.scheme === 'https' ? 'wss' : 'ws'
+let wsUrl = window.location.protocol === 'https:' ? 'wss' : 'ws'
 wsUrl += '://'
 if (window.location.hostname === 'localhost') {
   wsUrl += 'localhost:9000'
