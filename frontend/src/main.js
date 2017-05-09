@@ -56,10 +56,14 @@ bus.$on('push', function (header, body) {
 let SMessages = proto.lookup('esterpad.SMessages')
 let CMessages = proto.lookup('esterpad.CMessages')
 
-let wsUrl = 'ws://' + window.location.host + '/.ws'
+let wsUrl = window.location.scheme === 'https' ? 'wss' : 'ws'
+wsUrl += '://'
 if (window.location.hostname === 'localhost') {
-  wsUrl = 'ws://localhost:9000/.ws'
+  wsUrl += 'localhost:9000'
+} else {
+  wsUrl += window.location.host
 }
+wsUrl += '/.ws'
 let conn = new WebSocket(wsUrl)
 conn.binaryType = 'arraybuffer'
 
