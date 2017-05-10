@@ -61,9 +61,13 @@ export default class {
     other = other || {}
     if (other.meta) other = other.meta
 
-    // TODO: write code
+    for (let key in Object.assign({}, this.meta, other)) {
+      // both should have key as own property or inherited prop, so this comparison
+      if (this.meta.hasOwnProperty(key) !== other.hasOwnProperty(key)) return false
+      if (this.meta.hasOwnProperty(key) && this.meta[key] !== other[key]) return false
+    }
 
-    return false
+    return true
   }
 
   isInsert () {

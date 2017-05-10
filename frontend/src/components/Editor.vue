@@ -155,27 +155,8 @@ export default {
       console.log('recv doc', doc)
       this.revision = doc.revision
 
-      let convertMeta = function (meta) {
-        let res = {}
-        // TODO: process all meta
-        if (meta.changemask & (1 << 5)) res.userId = meta.userId
-        return res
-      }
-
-      let to = new TextOperation()
-      // TODO: move to TextOperation.js
-      for (let op of doc.ops) {
-        if (op.insert !== null) {
-          to = to.insert(op.insert.text, convertMeta(op.insert.meta))
-        }
-        if (op.retain !== null) {
-          to = to.retain(op.retain.len, convertMeta(op.retain.meta))
-        }
-        if (op.delete !== null) {
-          to = to.delete(op.delete.len)
-        }
-      }
-      console.log('Converted delta', to)
+      let to = (new TextOperation()).fromProtobuf(doc)
+      console.log('Converted doc', to)
 
       this.cma.applyOperation(to)
     },
@@ -192,26 +173,7 @@ export default {
       }
       this.revision = delta.id
 
-      let convertMeta = function (meta) {
-        let res = {}
-        // TODO: process all meta
-        if (meta.changemask & (1 << 5)) res.userId = meta.userId
-        return res
-      }
-
-      let to = new TextOperation()
-      // TODO: move to TextOperation.js
-      for (let op of delta.ops) {
-        if (op.insert !== null) {
-          to = to.insert(op.insert.text, convertMeta(op.insert.meta))
-        }
-        if (op.retain !== null) {
-          to = to.retain(op.retain.len, convertMeta(op.retain.meta))
-        }
-        if (op.delete !== null) {
-          to = to.delete(op.delete.len)
-        }
-      }
+      let to = (new TextOperation()).fromProtobuf(delta)
       console.log('Converted delta', to)
 
       if (state.userId === delta.userId) {

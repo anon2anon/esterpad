@@ -24,10 +24,10 @@ TextOperation.prototype.equals = function (other) {
   if (this.baseLength !== other.baseLength) return false
   if (this.targetLength !== other.targetLength) return false
   if (this.ops.length !== other.ops.length) return false
-  for (var i = 0; i < this.ops.length; i++) {
+  for (let i = 0; i < this.ops.length; i++) {
     if (this.ops[i].op !== other.ops[i].op) return false
     if (this.ops[i].data !== other.ops[i].data) return false
-    if (this.ops[i].metaEquals(other.ops[i])) return false
+    if (!this.ops[i].metaEquals(other.ops[i])) return false
   }
   return true
 }
@@ -51,7 +51,7 @@ TextOperation.prototype.retain = function (n, meta) {
     this.targetLength += n.len
     if (this.ops.length > 0 && this.ops[this.ops.length - 1].isRetain() &&
         this.ops[this.ops.length - 1].metaEquals(n)) {
-      this.ops[this.ops.length - 1].len += n
+      this.ops[this.ops.length - 1].len += n.len
     } else {
       this.ops.push(n)
     }
@@ -80,7 +80,7 @@ TextOperation.prototype.insert = function (str, meta) {
     this.targetLength += str.len
     if (this.ops.length > 0 && this.ops[this.ops.length - 1].isInsert() &&
         this.ops[this.ops.length - 1].metaEquals(str)) {
-      this.ops[this.ops.length - 1].data += str
+      this.ops[this.ops.length - 1].data += str.data
     } else {
       this.ops.push(str)
     }
@@ -181,9 +181,9 @@ TextOperation.prototype.isNoop = function () {
 // operation 'insert('hello '); skip(6);' then the inverse is 'delete('hello ')
 // skip(6);'. The inverse should be used for implementing undo.
 TextOperation.prototype.invert = function (str) {
-  var strIndex = 0
-  var inverse = new TextOperation()
-  var ops = this.ops
+  let strIndex = 0
+  let inverse = new TextOperation()
+  let ops = this.ops
   for (let op of ops) {
     if (op.isRetain()) {
       inverse.retain(op)
@@ -204,7 +204,7 @@ TextOperation.prototype.invert = function (str) {
 // and a pair of consecutive operations A and B,
 // apply(apply(S, A), B) = apply(S, compose(A, B)) must hold.
 TextOperation.prototype.compose = function (operation2) {
-  var operation1 = this
+  let operation1 = this
   if (operation1.targetLength !== operation2.baseLength) {
     throw new Error('The base length of the second operation has to be the target length of the first operation')
   }
@@ -271,7 +271,7 @@ TextOperation.prototype.compose = function (operation2) {
       let mergedMeta = Object.assign({}, op1.meta, op2.meta)
       if (op1.len > op2.len) {
         operation.insert(op1.data.slice(0, op2.len), mergedMeta)
-        op1.data = op1.data.slice(op2)
+        op1.data = op1.data.slice(op2.len)
         op2 = ops2[i2++]
       } else if (op1.len === op2.len) {
         operation.insert(op1.data, mergedMeta)
@@ -304,6 +304,7 @@ TextOperation.prototype.compose = function (operation2) {
       )
     }
   }
+
   return operation
 }
 
@@ -429,7 +430,7 @@ TextOperation.transform = function (operation1, operation2) {
     }
 
     let deltaMetaComplement = function (to, what) {
-      for (var key in what) {
+      for (let key in what) {
         if (what.hasOwnProperty(key) && to.hasOwnProperty(key)) {
           delete to[key]
         }
@@ -437,7 +438,7 @@ TextOperation.transform = function (operation1, operation2) {
       return to
     }
 
-    var minl
+    let minl
     if (op1.isRetain() && op2.isRetain()) {
       // Simple case: retain/retain
       let meta1 = op1.meta
@@ -508,6 +509,38 @@ TextOperation.transform = function (operation1, operation2) {
   }
 
   return [operation1prime, operation2prime]
+}
+
+// Converts meta from protobuf format
+let convertMeta = function (meta) {
+  let res = {}
+  // TODO: grab this from protobuf
+  let attrs = ['bold', 'italic', 'underline', 'strike', 'fontSize', 'userId']
+  for (let i = 0; i < attrs.length; ++i) {
+    if (meta.changemask & (1 << i)) {
+      res[attrs[i]] = meta[attrs[i]]
+    }
+  }
+  return res
+}
+
+// Parses protobuf data and converts it to normal format
+TextOperation.prototype.fromProtobuf = function (pbData) {
+  let to = new TextOperation()
+
+  for (let op of pbData.ops) {
+    if (op.insert !== null) {
+      to = to.insert(op.insert.text, convertMeta(op.insert.meta))
+    }
+    if (op.retain !== null) {
+      to = to.retain(op.retain.len, convertMeta(op.retain.meta))
+    }
+    if (op.delete !== null) {
+      to = to.delete(op.delete.len)
+    }
+  }
+
+  return to
 }
 
 export default TextOperation

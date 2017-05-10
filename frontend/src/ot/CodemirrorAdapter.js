@@ -132,9 +132,17 @@ CodeMirrorAdapter.operationFromCodeMirrorChanges = function (changes, doc) {
   return [operation, inverse]
 }
 
-// Singular form for backwards compatibility.
-CodeMirrorAdapter.operationFromCodeMirrorChange =
-  CodeMirrorAdapter.operationFromCodeMirrorChanges
+let metaToCMClasses = function (meta) {
+  let classes = ''
+  // TODO: grab actual list from proto
+  for (let key of ['bold', 'italic', 'underline', 'strike']) {
+    if (meta.hasOwnProperty(key) &&
+        meta[key]) classes += ' padtext-' + key
+  }
+  if (meta.hasOwnProperty('fontSize')) classes += ' padtext-fontSize' + meta.fontSize
+  if (meta.hasOwnProperty('userId')) classes += ' author-' + meta.userId
+  return classes
+}
 
 // Apply an operation to a CodeMirror instance.
 CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
@@ -143,52 +151,41 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
     for (let op of operation.ops) {
       let from = cm.posFromIndex(index)
 
-      if (op.isRetain() || op.isInsert()) {
-        if (op.isInsert()) cm.replaceRange(op.data, from)
+      if (op.isInsert()) {
+        cm.replaceRange(op.data, from)
 
         if (Object.keys(op.meta).length > 0) { // have meta, create mark
-          let classes = '' // converting meta to classes
-          // TODO: grab actual list from proto
+          cm.markText(from, cm.posFromIndex(index + op.len), {
+            className: metaToCMClasses(op.meta)
+            // inclusiveRight: true
+          })
+        }
+
+        index += op.len
+      } else if (op.isRetain()) {
+        if (Object.keys(op.meta).length > 0) { // have meta, merge marks classes
+          let to = cm.posFromIndex(index + op.len)
           // TODO: merge existing meta
-          if (op.meta.hasOwnProperty('bold')) classes += ' padtext-bold'
-          if (op.meta.hasOwnProperty('italic')) classes += ' padtext-italic'
-          if (op.meta.hasOwnProperty('underline')) classes += ' padtext-underline'
-          if (op.meta.hasOwnProperty('strike')) classes += ' padtext-strike'
-          if (op.meta.hasOwnProperty('fontSize')) classes += ' padtext-fontSize' + op.meta.fontSize
-          if (op.meta.hasOwnProperty('userId')) classes += ' author-' + op.meta.userId
-          let needNewMark = true
 
-          if (classes !== '') {
-            let to = cm.posFromIndex(index + op.len)
-
-            for (let mark of cm.findMarksAt(from)) { // we need to break existing marks
-              let oldPos = mark.find()
-              let oldClass = mark.className
-              if (oldClass === classes) { // it's same mark
-                needNewMark = false
-                continue
-              }
-              mark.clear()
-              if (index !== cm.indexFromPos(oldPos.from)) { // adding mark before new
-                cm.markText(oldPos.from, from, {
-                  className: oldClass,
-                  inclusiveRight: true
-                })
-              }
-              if (index + op.len !== cm.indexFromPos(oldPos.to)) { // adding after
-                cm.markText(to, oldPos.to, {
-                  className: oldClass,
-                  inclusiveRight: true
-                })
-              }
-            }
-
-            if (needNewMark) {
-              cm.markText(from, to, { // creating new mark
-                className: classes,
-                inclusiveRight: true
-              })
-            }
+          for (let mark of cm.findMarks(from, to)) { // we need to break existing marks
+            let oldPos = mark.find()
+            console.log(mark, oldPos)
+          //   if (oldClass === classes) { // it's same mark
+          //     continue
+          //   }
+          //   mark.clear()
+          //   if (index !== cm.indexFromPos(oldPos.from)) { // adding mark before new
+          //     cm.markText(oldPos.from, from, {
+          //       className: oldClass,
+          //       inclusiveRight: true
+          //     })
+          //   }
+          //   if (to !== cm.indexFromPos(oldPos.to)) { // adding after
+          //     cm.markText(to, oldPos.to, {
+          //       className: oldClass,
+          //       inclusiveRight: true
+          //     })
+          //   }
           }
         }
 
