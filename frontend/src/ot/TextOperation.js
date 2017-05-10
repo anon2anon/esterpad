@@ -242,20 +242,17 @@ TextOperation.prototype.compose = function (operation2) {
     }
 
     if (op1.isRetain() && op2.isRetain()) {
+      let mergedMeta = Object.assign({}, op1.meta, op2.meta)
       if (op1.len > op2.len) {
-        operation.retain(op2)
+        operation.retain(op2.len, mergedMeta)
         op1.len -= op2.len
-        // merge metas
         op2 = ops2[i2++]
       } else if (op1.len === op2.len) {
-        // merge metas
-        operation.retain(op2)
+        operation.retain(op1.len, mergedMeta)
         op1 = ops1[i1++]
         op2 = ops2[i2++]
       } else {
-        let op3 = op1
-        // op3.meta = op1.meta.merge(op2.meta)
-        operation.retain(op3)
+        operation.retain(op1.len, mergedMeta)
         op2.len -= op1.len
         op1 = ops1[i1++]
       }
@@ -271,19 +268,17 @@ TextOperation.prototype.compose = function (operation2) {
         op1 = ops1[i1++]
       }
     } else if (op1.isInsert() && op2.isRetain()) {
+      let mergedMeta = Object.assign({}, op1.meta, op2.meta)
       if (op1.len > op2.len) {
-        // merge metas
-        operation.insert(op1.data.slice(0, op2.len))
+        operation.insert(op1.data.slice(0, op2.len), mergedMeta)
         op1.data = op1.data.slice(op2)
         op2 = ops2[i2++]
       } else if (op1.len === op2.len) {
-        // merge metas
-        operation.insert(op1)
+        operation.insert(op1.data, mergedMeta)
         op1 = ops1[i1++]
         op2 = ops2[i2++]
       } else {
-        // merge metas
-        operation.insert(op1)
+        operation.insert(op1.data, mergedMeta)
         op2.len -= op1.len
         op1 = ops1[i1++]
       }
@@ -433,6 +428,15 @@ TextOperation.transform = function (operation1, operation2) {
       throw new Error('Cannot compose operations: first operation is too long.')
     }
 
+    let deltaMetaComplement = function (to, what) {
+      for (var key in what) {
+        if (what.hasOwnProperty(key) && to.hasOwnProperty(key)) {
+          delete to[key]
+        }
+      }
+      return to
+    }
+
     var minl
     if (op1.isRetain() && op2.isRetain()) {
       // Simple case: retain/retain
@@ -452,7 +456,7 @@ TextOperation.transform = function (operation1, operation2) {
         op1 = ops1[i1++]
       }
       operation1prime.retain(minl, meta1)
-      operation2prime.retain(minl, meta2)
+      operation2prime.retain(minl, deltaMetaComplement(meta2, meta1))
     } else if (op1.isDelete() && op2.isDelete()) {
       // Both operations delete the same string at the same position. We don't
       // need to produce any operations, we just skip over the delete ops and
