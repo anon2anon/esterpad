@@ -177,10 +177,16 @@ export default {
       console.log('Converted delta', to)
 
       if (state.userId === delta.userId) {
-        this.synchronized = true
-        if (this.buffer !== null) {
-          this.sendTextOperation(this.buffer)
-          this.buffer = null
+        if (this.synchronized) {
+          // TODO: fixme
+          // delta undo
+          this.cma.applyOperation(to)
+        } else {
+          this.synchronized = true
+          if (this.buffer !== null) {
+            this.sendTextOperation(this.buffer)
+            this.buffer = null
+          }
         }
       } else {
         if (this.synchronized) {
