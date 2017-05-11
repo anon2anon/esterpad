@@ -136,12 +136,37 @@ let metaToCMClasses = function (meta) {
   let classes = ''
   // TODO: grab actual list from proto
   for (let key of ['bold', 'italic', 'underline', 'strike']) {
-    if (meta.hasOwnProperty(key) &&
-        meta[key]) classes += ' padtext-' + key
+    if (meta.hasOwnProperty(key)) {
+      classes += ' padtext-' + (meta[key] ? '' : '-') + key
+    }
   }
   if (meta.hasOwnProperty('fontSize')) classes += ' padtext-fontSize' + meta.fontSize
   if (meta.hasOwnProperty('userId')) classes += ' author-' + meta.userId
   return classes
+}
+
+let CMClassesToMeta = function (classes) {
+  let meta = {}
+  // TODO: grab actual list from proto
+  for (let klass of classes.split(' ').slice(1)) {
+    if (klass.startsWith('padtext-')) {
+      let tmp = klass.slice('padtext-'.length)
+
+      if (tmp.startsWith('fontSize')) {
+        meta.fontSize = +(tmp.slice('fontSize'.length))
+        continue
+      }
+
+      if (tmp.startsWith('-')) {
+        meta[tmp.slice(1)] = false
+      } else {
+        meta[tmp] = true
+      }
+    } else if (klass.startsWith('author-')) {
+      meta.userId = +(klass.slice('author-'.length))
+    }
+  }
+  return meta
 }
 
 // Apply an operation to a CodeMirror instance.
@@ -151,41 +176,53 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
     for (let op of operation.ops) {
       let from = cm.posFromIndex(index)
 
-      if (op.isInsert()) {
-        cm.replaceRange(op.data, from)
+      if (op.isInsert() || op.isRetain()) {
+        if (op.isInsert()) cm.replaceRange(op.data, from)
 
-        if (Object.keys(op.meta).length > 0) { // have meta, create mark
-          cm.markText(from, cm.posFromIndex(index + op.len), {
-            className: metaToCMClasses(op.meta)
-            // inclusiveRight: true
-          })
-        }
-
-        index += op.len
-      } else if (op.isRetain()) {
         if (Object.keys(op.meta).length > 0) { // have meta, merge marks classes
           let to = cm.posFromIndex(index + op.len)
-          // TODO: merge existing meta
+          let classes = metaToCMClasses(op.meta)
 
-          for (let mark of cm.findMarks(from, to)) { // we need to break existing marks
-            let oldPos = mark.find()
-            console.log(mark, oldPos)
-          //   if (oldClass === classes) { // it's same mark
-          //     continue
-          //   }
-          //   mark.clear()
-          //   if (index !== cm.indexFromPos(oldPos.from)) { // adding mark before new
-          //     cm.markText(oldPos.from, from, {
-          //       className: oldClass,
-          //       inclusiveRight: true
-          //     })
-          //   }
-          //   if (to !== cm.indexFromPos(oldPos.to)) { // adding after
-          //     cm.markText(to, oldPos.to, {
-          //       className: oldClass,
-          //       inclusiveRight: true
-          //     })
-          //   }
+          if (cm.findMarks(from, to).length === 0) { // this happens sometimes
+            cm.markText(from, to, {
+              className: classes,
+              inclusiveRight: true
+            })
+          } else {
+            for (let mark of cm.findMarks(from, to)) { // we need to update existing marks
+              // generally, they should fully cover range once, but
+              // TODO: check range coverage
+
+              let oldPos = mark.find()
+              let oldClass = mark.className
+
+              // this comparison is okay since metaToCMClasses converts with static order
+              if (oldClass === classes) { // it's same mark
+                continue
+              }
+              mark.clear()
+              // breaking mark
+              if (index > cm.indexFromPos(oldPos.from)) { // adding mark before new
+                cm.markText(oldPos.from, from, {
+                  className: oldClass,
+                  inclusiveRight: true
+                })
+              }
+              if (index + op.len < cm.indexFromPos(oldPos.to)) { // adding after
+                cm.markText(to, oldPos.to, {
+                  className: oldClass,
+                  inclusiveRight: true
+                })
+              }
+              let newfrom = cm.posFromIndex(Math.max(index, cm.indexFromPos(oldPos.from)))
+              let newto = cm.posFromIndex(Math.min(index + op.len, cm.indexFromPos(oldPos.to)))
+              let newMeta = Object.assign({}, CMClassesToMeta(oldClass), op.meta)
+
+              cm.markText(newfrom, newto, {
+                className: metaToCMClasses(newMeta),
+                inclusiveRight: true
+              })
+            }
           }
         }
 
