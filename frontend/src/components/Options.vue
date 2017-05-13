@@ -1,6 +1,6 @@
 <template>
   <div>
-    Options
+    Here you can edit some local settings
   </div>
 </template>
 

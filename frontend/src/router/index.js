@@ -7,6 +7,7 @@ import PadList from '@/components/PadList'
 import Options from '@/components/Options'
 import Admin from '@/components/Admin'
 import Users from '@/components/Users'
+import Timeslider from '@/components/Timeslider'
 
 import { state, bus } from '@/globs'
 
@@ -47,7 +48,7 @@ export default new Router({
           return
         }
         if (!state.perms.mod) {
-          bus.$emit('auth-error', 'Hey, you\'re not mod!')
+          bus.$emit('snack-msg', 'Hey, you\'re not mod!')
           next('/')
           return
         }
@@ -64,7 +65,7 @@ export default new Router({
           return
         }
         if (!state.perms.admin) {
-          bus.$emit('auth-error', 'Hey, you\'re not admin!')
+          bus.$emit('snack-msg', 'Hey, you\'re not admin!')
           next('/')
           return
         }
@@ -88,6 +89,19 @@ export default new Router({
       redirect: '/.padlist'
     },
     {
+      path: '/.timeslider',
+      name: 'Timeslider',
+      component: Timeslider,
+      props: true,
+      beforeEnter: (to, from, next) => {
+        if (!state.isLoggedIn) {
+          next('/')
+          return
+        }
+        next()
+      }
+    },
+    {
       path: '/:padId',
       name: 'Pad',
       component: Pad,
@@ -99,7 +113,7 @@ export default new Router({
         }
         let pid = to.params.padId
         if (pid.indexOf('.') !== -1 || pid.indexOf('/') !== -1) {
-          bus.$emit('auth-error', 'Error 404, redirecting you to main page')
+          bus.$emit('snack-msg', 'Error 404, redirecting you to main page')
           next('/')
           return
         }

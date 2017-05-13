@@ -1,6 +1,6 @@
 <template>
   <div>
-    Users
+    Here you can edit users and approve invites
   </div>
 </template>
 

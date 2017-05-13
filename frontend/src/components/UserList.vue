@@ -35,7 +35,7 @@ export default {
       )
 
       if (tmp !== -1) { // update existing
-        this.userList.splice(tmp, 1, info)
+        Object.assign(this.userList[tmp], info)
       } else if (info.online) { // create new
         this.userList.push(info)
       }

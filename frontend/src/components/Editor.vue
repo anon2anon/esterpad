@@ -52,6 +52,8 @@ export default {
     cmChangeCallback (textOp, inverse) {
       console.log('cmChangeCallback', textOp, inverse)
 
+      // TODO: check possibilty of delete and apply inverse
+
       let ourMeta = new TextOperation()
       let needUpdate = false
       for (let op of textOp.ops) {
@@ -99,11 +101,19 @@ export default {
       let that = this
 
       let toggleMeta = function (cm, meta) {
-        let from = cm.indexFromPos(cm.getCursor('from'))
-        let to = cm.indexFromPos(cm.getCursor('to'))
+        let from = cm.getCursor('from')
+        let to = cm.getCursor('to')
         console.log('toggleMeta', from, to, meta)
 
-        // TODO: check permissions
+        let tmp = that.cma.toggleMeta(from, to, meta, state.perms.edit, state.userId)
+        if (!tmp.ok) {
+          bus.$emit('snack-msg', 'Sorry, you don\'t have permission for that, some edits dropped')
+        }
+
+        if (!tmp.delta.isNoop()) {
+          that.cma.applyOperation(tmp.delta, false)
+          that.processDelta(tmp.delta)
+        }
       }
 
       let cm = CodeMirror(this.$refs.cm, {
@@ -126,8 +136,8 @@ export default {
             toggleMeta(cm, 'strike')
           },
           'Ctrl-M': function (cm) {
-            if (!state.perms.mod) {
-              bus.$emit('auth-error', 'Sorry, you don\'t have permission for that')
+            if (!state.perms.whitewash) {
+              bus.$emit('snack-msg', 'Sorry, you don\'t have permission for that')
               return
             }
 
@@ -137,10 +147,9 @@ export default {
             let docLen = cm.indexFromPos({ line: cm.lastLine(), ch: 0 }) +
                          cm.getLine(cm.lastLine()).length
 
-            let whiteMeta = new TextOperation()
-            whiteMeta = whiteMeta.retain(from)
-            whiteMeta = whiteMeta.retain(to - from, {userId: 0})
-            whiteMeta = whiteMeta.retain(docLen - to)
+            let whiteMeta = new TextOperation().retain(from)
+                                               .retain(to - from, {userId: 0})
+                                               .retain(docLen - to)
 
             that.cma.applyOperation(whiteMeta, false)
             that.processDelta(whiteMeta)
@@ -208,6 +217,12 @@ export default {
     },
     updateColor (userId, newColor) {
       this.cssManager.selectorStyle('.author-' + userId).background = newColor
+      let newColorInt = parseInt(newColor.slice(1), 16)
+      let r = ~~(newColorInt / (1 << 16))
+      let g = (~~(newColorInt / (1 << 8))) % (1 << 8)
+      let b = newColorInt % (1 << 8)
+      let l = (Math.max(r, g, b) + Math.min(r, g, b)) / 2 / 255
+      this.cssManager.selectorStyle('.author-' + userId).color = l < 0.5 ? '#fff' : '#000'
     },
     userLeave (info) {
       console.warn('TODO: handle user leave in editor')
@@ -223,5 +238,21 @@ export default {
  }
  .CodeMirror {
    font-family: Arial, sans-serif !important;
+ }
+
+ .padtext-bold {
+   font-weight: bold;
+ }
+ .padtext-italic {
+   font-style: italic;
+ }
+ .padtext-underline {
+   text-decoration: underline;
+ }
+ .padtext-strike {
+   text-decoration: line-through;
+ }
+ .padtext-underline.padtext-strike {
+   text-decoration: underline line-through;
  }
 </style>

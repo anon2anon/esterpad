@@ -68,7 +68,7 @@ export default {
     }
   },
   mounted () {
-    bus.$on('auth-error', this.snackbarMsg)
+    bus.$on('snack-msg', this.snackbarMsg)
   },
   methods: {
     toggleSidenav () {
@@ -92,10 +92,12 @@ export default {
   },
   watch: {
     '$route' (to, from) {
-      if (to.name !== 'Pad') {
-        this.title = to.name
-      } else {
+      if (to.name === 'Pad') {
         this.title = state.padId
+      } else if (to.name === 'Timeslider') {
+        this.title = to.name + ' for ' + state.padId
+      } else {
+        this.title = to.name
       }
     }
   }

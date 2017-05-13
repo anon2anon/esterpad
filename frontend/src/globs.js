@@ -15,17 +15,18 @@ var state = {
     localStorage.setItem('sessId', val)
   },
 
-  colorMap: {},
-
   isLoggedIn: false,
   perms: {
-    view: true,
+    notGuest: true,
     chat: true,
+    write: true,
     edit: true,
     whitewash: true,
-    notGuest: false,
+    mod: true,
     admin: true
-  }
+  },
+
+  pushQueue: ''
 }
 
 import Vue from 'vue'

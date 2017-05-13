@@ -141,7 +141,8 @@ TextOperation.prototype['delete'] = function (n) {
 
 // Tests whether this operation has no effect.
 TextOperation.prototype.isNoop = function () {
-  return this.ops.length === 0
+  return this.ops.length === 0 ||
+    (this.ops.length === 1 && this.ops[0].isRetain() && this.ops[0].metaEquals())
 }
 
 // Apply an operation to a string, returning a new string. Throws an error if

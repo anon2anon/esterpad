@@ -41,7 +41,6 @@ export default {
         let colorName = this.msg.substr(6).trim()
         // parse CSS colors
         state.userColorNum = parseInt(colorName, 16)
-        state.colorMap[state.userId] = state.userColor
         bus.$emit('color-update', state.userId, state.userColor)
         bus.$emit('send', 'EditUser', {
           changemask: 2,

@@ -43,12 +43,17 @@ if (!Push.Permission.has()) {
 }
 
 bus.$on('push', function (header, body) {
+  if (state.pushQueue) {
+    Push.clear()
+  }
+  state.pushQueue = body + '\n' + state.pushQueue
   Push.create(header, {
-    body: body,
+    body: state.pushQueue,
     onClick: function () {
       window.focus()
       this.close()
       Push.clear()
+      state.pushQueue = ''
     }
   })
 })
@@ -105,7 +110,6 @@ conn.onmessage = function (evt) {
       state.userName = message.Auth.nickname
       state.userId = message.Auth.userId
       state.userColorNum = message.Auth.color
-      state.colorMap[message.Auth.userId] = state.userColor
       if (message.Auth.sessId) {
         state.sessId = message.Auth.sessId
       }
@@ -114,9 +118,11 @@ conn.onmessage = function (evt) {
         chat: Boolean(message.Auth.perms & (1 << 1)),
         write: Boolean(message.Auth.perms & (1 << 2)),
         edit: Boolean(message.Auth.perms & (1 << 3)),
-        mod: Boolean(message.Auth.perms & (1 << 4)),
-        admin: Boolean(message.Auth.perms & (1 << 5))
+        whitewash: Boolean(message.Auth.perms & (1 << 4)),
+        mod: Boolean(message.Auth.perms & (1 << 5)),
+        admin: Boolean(message.Auth.perms & (1 << 6))
       }
+      state.padList = []
       if ('go' in router.currentRoute.query) {
         router.push(router.currentRoute.query['go'])
       } else {
@@ -124,7 +130,6 @@ conn.onmessage = function (evt) {
       }
     } else if (message.UserInfo !== null) { // User connected/updated
       let color = '#' + ('000000' + message.UserInfo.color.toString(16)).slice(-6)
-      state.colorMap[message.UserInfo.userId] = color
       bus.$emit('color-update', message.UserInfo.userId, color)
       bus.$emit('user-info', message.UserInfo)
     } else if (message.UserLeave !== null) {
@@ -136,7 +141,7 @@ conn.onmessage = function (evt) {
     } else if (message.Document !== null) { // Document revision
       bus.$emit('document', message.Document)
     } else if (message.AuthError) {
-      bus.$emit('auth-error', 'Login error #' + message.AuthError.error)
+      bus.$emit('snack-msg', 'Login error #' + message.AuthError.error)
     } else if (message.PadList !== null) {
       state.padList = state.padList.concat(message.PadList.pads)
     } else {

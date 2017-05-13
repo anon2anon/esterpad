@@ -1,6 +1,6 @@
 <template>
   <div>
-    Here you can modify Esterpad settings and perform some administrative tasks
+    Timeslider
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 import { state } from '@/globs'
 
 export default {
-  name: 'esterpad-admin',
+  name: 'esterpad-timeslider',
   data () {
     return {
       state: state

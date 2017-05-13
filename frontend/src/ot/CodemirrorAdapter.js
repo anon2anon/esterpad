@@ -138,10 +138,14 @@ let metaToCMClasses = function (meta) {
   for (let key of ['bold', 'italic', 'underline', 'strike']) {
     if (meta.hasOwnProperty(key)) {
       classes += ' padtext-' + (meta[key] ? '' : '-') + key
+    } else {
+      classes += ' padtext--' + key
     }
   }
   if (meta.hasOwnProperty('fontSize')) classes += ' padtext-fontSize' + meta.fontSize
+  else classes += ' padtext-fontSize0'
   if (meta.hasOwnProperty('userId')) classes += ' author-' + meta.userId
+  else classes += ' author-0'
   return classes
 }
 
@@ -217,6 +221,7 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
               let newfrom = cm.posFromIndex(Math.max(index, cm.indexFromPos(oldPos.from)))
               let newto = cm.posFromIndex(Math.min(index + op.len, cm.indexFromPos(oldPos.to)))
               let newMeta = Object.assign({}, CMClassesToMeta(oldClass), op.meta)
+              if (op.isInsert()) newMeta = op.meta
 
               cm.markText(newfrom, newto, {
                 className: metaToCMClasses(newMeta),
@@ -233,6 +238,57 @@ CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
       }
     }
   })
+}
+
+CodeMirrorAdapter.prototype.toggleMeta = function (from, to, meta, perm, uid) {
+  if (this.cm.indexFromPos(from) === this.cm.indexFromPos(to)) {
+    return {
+      ok: true,
+      delta: new TextOperation()
+    }
+  }
+
+  let allMeta = true
+  let allOur = true
+
+  for (let mark of this.cm.findMarks(from, to)) { // we need to check all marks
+    let tmp = CMClassesToMeta(mark.className)
+    if (!tmp.hasOwnProperty(meta) || !tmp[meta]) allMeta = false
+    if (tmp.userId !== uid) allOur = false
+    if (!allMeta && !allOur) break
+  }
+
+  // now creating delta
+  let delta = new TextOperation().retain(this.cm.indexFromPos(from))
+  let metaObj = {}
+  metaObj[meta] = !allMeta
+
+  for (let mark of this.cm.findMarks(from, to)) {
+    // generally, makrs should cover all range, but
+    // TODO: check coverage
+    let tmp = CMClassesToMeta(mark.className)
+    let pos = mark.find()
+    let newfrom = Math.max(this.cm.indexFromPos(from),
+                           this.cm.indexFromPos(pos.from))
+    let newto = Math.min(this.cm.indexFromPos(to),
+                         this.cm.indexFromPos(pos.to))
+    let len = newto - newfrom
+    console.log(newfrom, newto, len)
+
+    if (perm || tmp.userId === uid) {
+      delta = delta.retain(len, metaObj)
+    } else {
+      delta = delta.retain(len)
+    }
+  }
+
+  let docLen = codemirrorDocLength(this.cm)
+  delta = delta.retain(docLen - this.cm.indexFromPos(to))
+
+  return {
+    ok: perm || allOur,
+    delta: delta
+  }
 }
 
 CodeMirrorAdapter.prototype.registerCallbacks = function (cb) {
