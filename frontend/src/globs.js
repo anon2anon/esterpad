@@ -4,10 +4,7 @@ var state = {
 
   userName: 'Guest',
   userId: 0,
-  get userColor () {
-    return '#' + ('000000' + this.userColorNum.toString(16)).slice(-6)
-  },
-  userColorNum: 16761095,
+  userColor: '#ffc107',
   get sessId () {
     return localStorage.getItem('sessId') || ''
   },

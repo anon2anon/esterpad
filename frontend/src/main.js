@@ -32,6 +32,7 @@ import * as protobuf from 'protobufjs'
 import * as jsonDescr from './assets/proto.json'
 let proto = protobuf.Root.fromJSON(jsonDescr)
 
+import { num2color } from './helpers'
 import { state, bus } from './globs'
 window['_state'] = state
 window['_bus'] = bus
@@ -109,7 +110,7 @@ conn.onmessage = function (evt) {
       state.isLoggedIn = true
       state.userName = message.Auth.nickname
       state.userId = message.Auth.userId
-      state.userColorNum = message.Auth.color
+      state.userColor = num2color(message.Auth.color)
       if (message.Auth.sessId) {
         state.sessId = message.Auth.sessId
       }
@@ -129,7 +130,7 @@ conn.onmessage = function (evt) {
         router.push('/.padlist')
       }
     } else if (message.UserInfo !== null) { // User connected/updated
-      let color = '#' + ('000000' + message.UserInfo.color.toString(16)).slice(-6)
+      let color = num2color(message.UserInfo.color)
       bus.$emit('color-update', message.UserInfo.userId, color)
       bus.$emit('user-info', message.UserInfo)
     } else if (message.UserLeave !== null) {

@@ -3,7 +3,7 @@
     <div class="container">
       <div v-for="user in userList" key="user" >
         <md-layout class="user-item" :title="user.ip ? user.ip + '\n' + user.userAgent : ''">
-          <div class="avatar" :style="{ background: num2color(user.color) }"></div>
+          <div class="avatar" :style="{ background: _num2color(user.color) }"></div>
           <div>{{ user.nickname }}</div>
         </md-layout>
       </div>
@@ -13,6 +13,7 @@
 
 <script>
 import { bus } from '@/globs'
+import { num2color } from '@/helpers'
 
 export default {
   name: 'esterpad-userlist',
@@ -46,9 +47,7 @@ export default {
         i => i.userId === info.userId
       ), 1)
     },
-    num2color (num) {
-      return '#' + ('000000' + num.toString(16)).slice(-6)
-    }
+    _num2color: num2color
   }
 }
 </script>

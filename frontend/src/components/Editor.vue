@@ -9,6 +9,7 @@ import 'codemirror/lib/codemirror.css'
 import CodemirrorAdapter from '@/ot/CodemirrorAdapter.js'
 import TextOperation from '@/ot/TextOperation.js'
 import CSSManager from '@/lib/cssmanager.js'
+import { color2num } from '@/helpers'
 
 export default {
   name: 'esterpad-editor',
@@ -122,6 +123,7 @@ export default {
         mode: 'text/plain',
         lineNumbers: true,
         lineWrapping: true,
+        showCursorWhenSelecting: true,
         extraKeys: {
           'Ctrl-B': function (cm) {
             toggleMeta(cm, 'bold')
@@ -217,7 +219,7 @@ export default {
     },
     updateColor (userId, newColor) {
       this.cssManager.selectorStyle('.author-' + userId).background = newColor
-      let newColorInt = parseInt(newColor.slice(1), 16)
+      let newColorInt = color2num(newColor)
       let r = ~~(newColorInt / (1 << 16))
       let g = (~~(newColorInt / (1 << 8))) % (1 << 8)
       let b = newColorInt % (1 << 8)

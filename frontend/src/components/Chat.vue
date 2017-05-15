@@ -13,6 +13,7 @@
 
 <script>
 import { state, bus } from '@/globs'
+import { color2num } from '@/helpers'
 
 export default {
   name: 'esterpad-chat',
@@ -39,12 +40,11 @@ export default {
       // TODO: move to MyUser
       if (this.msg.startsWith('/color')) {
         let colorName = this.msg.substr(6).trim()
-        // parse CSS colors
-        state.userColorNum = parseInt(colorName, 16)
-        bus.$emit('color-update', state.userId, state.userColor)
+        state.userColor = colorName
+        bus.$emit('color-update', state.userId, colorName)
         bus.$emit('send', 'EditUser', {
           changemask: 2,
-          color: state.userColorNum
+          color: color2num(colorName)
         })
         this.msg = ''
         return

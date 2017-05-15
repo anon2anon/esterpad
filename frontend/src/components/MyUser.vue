@@ -9,6 +9,7 @@
 
 <script>
 import { state, bus } from '@/globs'
+import { color2num } from '@/helpers'
 
 export default {
   name: 'esterpad-myuser',
@@ -28,7 +29,7 @@ export default {
     colorChanged () {
       bus.$emit('send', 'EditUser', {
         changemask: 2,
-        color: parseInt(this.userColor.substr(1), 16)
+        color: color2num(this.userColor)
       })
     }
   }
