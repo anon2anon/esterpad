@@ -142,7 +142,7 @@ conn.onmessage = function (evt) {
     } else if (message.Document !== null) { // Document revision
       bus.$emit('document', message.Document)
     } else if (message.AuthError) {
-      bus.$emit('snack-msg', 'Login error #' + message.AuthError.error)
+      bus.$emit('auth-error', message.AuthError.error)
     } else if (message.PadList !== null) {
       state.padList = state.padList.concat(message.PadList.pads)
     } else {

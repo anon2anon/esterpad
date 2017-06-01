@@ -62,10 +62,11 @@ export default {
       if (this.nicknameInvalid || this.emailInvalid ||
           this.passwdInvalid || this.passwd2Invalid) return
 
+      bus.$on('auth-error', function () { bus.$emit('snack-msg', 'User already exists') })
       bus.$emit('send', 'Register', {
         email: this.email,
         nickname: this.nickname,
-        password: this.pass
+        password: this.passwd
       })
     }
   }

@@ -43,10 +43,10 @@ export default {
       this.emailInvalid = this.email === ''
       this.passwdInvalid = this.passwd === ''
       if (this.emailInvalid || this.passwdInvalid) return
-
+      bus.$on('auth-error', function () { bus.$emit('snack-msg', 'Invalid username or password') })
       bus.$emit('send', 'Login', {
         email: this.email,
-        password: this.pass
+        password: this.passwd
       })
     },
     guestLogin () {
