@@ -79,7 +79,7 @@ bus.$on('send', function () {
     let tmp = {}
     tmp[arguments[i]] = arguments[i + 1]
     tmp['CMessages'] = arguments[i]
-    console.log('send', arguments[i], arguments[i + 1])
+    // console.log('send', arguments[i], arguments[i + 1])
     args.push(tmp)
   }
   let buffer = CMessages.encode({
@@ -103,9 +103,9 @@ conn.onclose = function (evt) {
 conn.onmessage = function (evt) {
   let messages = SMessages.decode(new Uint8Array(evt.data)).sm
   if (!messages) return // ping
-  console.log('messages', messages)
+  // console.log('messages', messages)
   messages.forEach(function (message) {
-    console.log(message)
+    // console.log(message)
     if (message.Auth !== null) { // Our info
       state.isLoggedIn = true
       state.userName = message.Auth.nickname
@@ -146,7 +146,7 @@ conn.onmessage = function (evt) {
     } else if (message.PadList !== null) {
       state.padList = state.padList.concat(message.PadList.pads)
     } else {
-      console.error('Unknown message type')
+      console.error('Unknown message type', message)
     }
   })
 }

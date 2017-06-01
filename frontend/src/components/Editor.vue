@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     sendTextOperation (textOp) {
-      console.log('sending textOp', textOp)
+      // console.log('sending textOp', textOp)
       this.synchronized = false
       this.outgoing = textOp
       let ops = textOp.ops.map(i => i.getProtobufData())
@@ -51,7 +51,7 @@ export default {
       })
     },
     cmChangeCallback (textOp, inverse) {
-      console.log('cmChangeCallback', textOp, inverse)
+      // console.log('cmChangeCallback', textOp, inverse)
 
       // TODO: check possibilty of delete and apply inverse
 
@@ -84,7 +84,7 @@ export default {
     },
     processDebounceBuffer () {
       let textOp = this.debounceBuffer
-      console.log('processDebounceBuffer', textOp)
+      // console.log('processDebounceBuffer', textOp)
 
       if (this.synchronized) {
         this.sendTextOperation(textOp)
@@ -96,7 +96,7 @@ export default {
       this.debounceBuffer = null
     },
     reinitCM (padId) {
-      console.log('reinitCM', padId)
+      // console.log('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
 
       let that = this
@@ -104,7 +104,7 @@ export default {
       let toggleMeta = function (cm, meta) {
         let from = cm.getCursor('from')
         let to = cm.getCursor('to')
-        console.log('toggleMeta', from, to, meta)
+        // console.log('toggleMeta', from, to, meta)
 
         let tmp = that.cma.toggleMeta(from, to, meta, state.perms.edit, state.userId)
         if (!tmp.ok) {
@@ -163,20 +163,20 @@ export default {
       this.cma.registerCallbacks({'change': this.cmChangeCallback})
     },
     recvDocument (doc) {
-      console.log('recv doc', doc)
+      // console.log('recv doc', doc)
       this.revision = doc.revision
 
       let to = (new TextOperation()).fromProtobuf(doc)
-      console.log('Converted doc', to)
+      // console.log('Converted doc', to)
 
       this.cma.applyOperation(to)
     },
     newDelta (delta) {
       if (delta.id !== this.revision + 1 && this.revision !== 0) {
-        console.log('too new delta', delta.id, 'saving to queue')
+        // console.log('too new delta', delta.id, 'saving to queue')
         this.incomingQueue[delta.id] = delta
         while ((this.revision + 1) in this.incomingQueue) {
-          console.log('applying delta from queue', this.revision + 1)
+          // console.log('applying delta from queue', this.revision + 1)
           this.newDelta(this.incomingQueue[this.revision + 1])
           delete this.incomingQueue[this.revision + 1]
         }
@@ -185,7 +185,7 @@ export default {
       this.revision = delta.id
 
       let to = (new TextOperation()).fromProtobuf(delta)
-      console.log('Converted delta', to)
+      // console.log('Converted delta', to)
 
       if (state.userId === delta.userId) {
         if (this.synchronized) {
@@ -227,7 +227,7 @@ export default {
       this.cssManager.selectorStyle('.author-' + userId).color = l < 0.5 ? '#fff' : '#000'
     },
     userLeave (info) {
-      console.warn('TODO: handle user leave in editor')
+      // console.warn('TODO: handle user leave in editor')
     }
   }
 }
