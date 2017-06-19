@@ -23,13 +23,13 @@ export default {
     }
   },
   mounted () {
-    // console.log('mounted')
+    log.debug('mounted')
     bus.$on('user-info', this.userInfo)
     bus.$on('user-leave', this.userLeave)
   },
   methods: {
     userInfo (info) {
-      // console.log('user connected', info)
+      log.debug('user connected', info)
 
       let tmp = this.userList.findIndex(
         i => i.userId === info.userId
@@ -42,7 +42,7 @@ export default {
       }
     },
     userLeave (info) {
-      // console.log('user left', info)
+      log.debug('user left', info)
       this.userList.splice(this.userList.findIndex(
         i => i.userId === info.userId
       ), 1)

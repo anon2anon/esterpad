@@ -1,5 +1,7 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import * as log from 'loglevel'
+window.log = log
+log.setLevel('debug')
+
 import Vue from 'vue'
 import App from './App'
 import router from './router'
@@ -79,7 +81,7 @@ bus.$on('send', function () {
     let tmp = {}
     tmp[arguments[i]] = arguments[i + 1]
     tmp['CMessages'] = arguments[i]
-    // console.log('send', arguments[i], arguments[i + 1])
+    log.debug('send', arguments[i], arguments[i + 1])
     args.push(tmp)
   }
   let buffer = CMessages.encode({
@@ -89,23 +91,23 @@ bus.$on('send', function () {
 })
 
 conn.onopen = function (evt) {
-  console.log('WS connected')
+  log.debug('WS connected')
   if (state.sessId) {
     bus.$emit('send', 'Session', {sessId: state.sessId})
   }
 }
 
 conn.onclose = function (evt) {
-  console.log('WS closed')
+  log.debug('WS closed')
   // TODO: reconnect
 }
 
 conn.onmessage = function (evt) {
   let messages = SMessages.decode(new Uint8Array(evt.data)).sm
   if (!messages) return // ping
-  // console.log('messages', messages)
+  log.debug('messages', messages)
   messages.forEach(function (message) {
-    // console.log(message)
+    log.debug(message)
     if (message.Auth !== null) { // Our info
       state.isLoggedIn = true
       state.userName = message.Auth.nickname
@@ -146,7 +148,7 @@ conn.onmessage = function (evt) {
     } else if (message.PadList !== null) {
       state.padList = state.padList.concat(message.PadList.pads)
     } else {
-      console.error('Unknown message type', message)
+      log.error('Unknown message type', message)
     }
   })
 }

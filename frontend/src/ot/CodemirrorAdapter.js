@@ -273,7 +273,7 @@ CodeMirrorAdapter.prototype.toggleMeta = function (from, to, meta, perm, uid) {
     let newto = Math.min(this.cm.indexFromPos(to),
                          this.cm.indexFromPos(pos.to))
     let len = newto - newfrom
-    // console.log(newfrom, newto, len)
+    log.debug(newfrom, newto, len)
 
     if (perm || tmp.userId === uid) {
       delta = delta.retain(len, metaObj)

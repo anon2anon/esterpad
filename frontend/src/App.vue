@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="container">
-    <md-sidenav class="md-left" ref="sidenav">
+    <md-sidenav class="md-left main-sidenav" ref="sidenav">
       <md-toolbar>
         <div class="md-toolbar-container">
           <p class="md-title">Esterpad</p>
@@ -8,13 +8,22 @@
       </md-toolbar>
       <md-list @click.native="closeSidenav">
         <md-list-item v-if="!state.isLoggedIn || !state.perms.notGuest">
-          <router-link exact to="/.login">Login</router-link>
+          <router-link to="/.login">Login</router-link>
         </md-list-item>
         <md-list-item v-if="!state.isLoggedIn || !state.perms.notGuest">
-          <router-link exact to="/.register">Register</router-link>
+          <router-link to="/.register">Register</router-link>
         </md-list-item>
         <md-list-item v-if="state.isLoggedIn">
-          <router-link exact to="/.padlist">Pad List</router-link>
+          <router-link to="/.padlist">Pad List</router-link>
+        </md-list-item>
+        <md-list-item v-if="state.isLoggedIn">
+          <router-link to="/.options">Options</router-link>
+        </md-list-item>
+        <md-list-item v-if="state.perms.mod">
+          <router-link to="/.users">Users</router-link>
+        </md-list-item>
+        <md-list-item v-if="state.perms.admin">
+          <router-link to="/.admin">Admin</router-link>
         </md-list-item>
         <md-list-item v-if="state.isLoggedIn" @click.native="signout">
           Sign Out
@@ -30,7 +39,7 @@
         <md-icon>menu</md-icon>
       </md-button>
 
-      <p class="md-title-left md-title">{{ title }}</p>
+      <p style="margin-left: 10px" class="md-title-left md-title">{{ title }}</p>
       <esterpad-myuser v-if="state.isLoggedIn"
                        :user-name="state.userName" :user-color="state.userColor"
                        class="md-title">
@@ -60,6 +69,7 @@ export default {
   },
   mounted () {
     bus.$on('snack-msg', this.snackbarMsg)
+    this.updateTitle(this.$route)
   },
   methods: {
     toggleSidenav () {
@@ -79,10 +89,8 @@ export default {
     snackbarMsg (msg) {
       this.snckMsg = msg
       this.$refs.snackbar.open()
-    }
-  },
-  watch: {
-    '$route' (to, from) {
+    },
+    updateTitle (to) {
       if (to.name === 'Pad') {
         this.title = state.padId
       } else if (to.name === 'Timeslider') {
@@ -90,6 +98,11 @@ export default {
       } else {
         this.title = to.name
       }
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      this.updateTitle(to)
     }
   }
 }
@@ -132,5 +145,34 @@ export default {
 
  .md-list {
    flex: 1 1 0;
+ }
+
+ .main-sidenav > .md-sidenav-content {
+   width: 200px !important;
+   display: flex;
+   flex-flow: column;
+   overflow: hidden;
+ }
+
+ @media (min-width: 1281px) {
+   .container {
+     padding-left: 200px;
+   }
+
+   .main-sidenav > .md-sidenav-content {
+     top: 0 !important;
+     pointer-events: auto !important;
+     transform: translate3d(0, 0, 0) !important;
+     box-shadow: 0 1px 5px rgba(0,0,0,.2), 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12) !important;
+   }
+
+   .main-sidenav > .md-backdrop {
+     opacity: 0 !important;
+     pointer-events: none !important;
+   }
+
+   .nav-trigger {
+     display: none !important;
+   }
  }
 </style>

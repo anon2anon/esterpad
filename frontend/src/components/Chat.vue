@@ -61,7 +61,7 @@ export default {
       this.msg = ''
     },
     appendMsg (msg) {
-      // console.log('chat message', msg)
+      log.debug('chat message', msg)
 
       if (document.hidden) { // msg.needPush &&
         bus.$emit('push', state.padId, msg.text)
