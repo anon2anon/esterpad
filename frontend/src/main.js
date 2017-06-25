@@ -10,17 +10,51 @@ import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.css'
 Vue.use(VueMaterial)
 
-import MyUser from '@/components/MyUser'
-import Editor from '@/components/Editor'
-import UserList from '@/components/UserList'
-import Chat from '@/components/Chat'
-
-Vue.component('esterpad-myuser', MyUser)
-Vue.component('esterpad-editor', Editor)
-Vue.component('esterpad-userlist', UserList)
-Vue.component('esterpad-chat', Chat)
-
 Vue.config.productionTip = false
+
+import { num2color } from './helpers'
+import { state, bus } from './globs'
+window['_state'] = state
+window['_bus'] = bus
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresLogin)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!state.isLoggedIn) {
+      next({
+        path: '/.login',
+        query: { go: to.fullPath }
+      })
+      return
+    }
+  } else if (to.matched.some(record => record.meta.requiresMod)) {
+    if (!state.perms.mod) {
+      bus.$emit('snack-msg', 'Hey, you\'re not mod!')
+      next('/')
+      return
+    }
+  } else if (to.matched.some(record => record.meta.requiresAdmin)) {
+    if (!state.perms.admin) {
+      bus.$emit('snack-msg', 'Hey, you\'re not admin!')
+      next('/')
+      return
+    }
+  }
+
+  if (to.matched.some(record => record.meta.updatesPadId)) {
+    let pid = to.params.padId
+    if (pid.indexOf('.') !== -1 || pid.indexOf('/') !== -1) {
+      bus.$emit('snack-msg', 'Error 404, redirecting you to main page')
+      next('/')
+      return
+    }
+    state.padId = pid
+    bus.$emit('pad-id-changed', pid)
+  }
+
+  next() // make sure to always call next()!
+})
 
 /* eslint-disable no-new */
 new Vue({
@@ -29,15 +63,6 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
-
-import * as protobuf from 'protobufjs'
-import * as jsonDescr from './assets/proto.json'
-let proto = protobuf.Root.fromJSON(jsonDescr)
-
-import { num2color } from './helpers'
-import { state, bus } from './globs'
-window['_state'] = state
-window['_bus'] = bus
 
 import Push from 'push.js'
 
@@ -60,6 +85,10 @@ bus.$on('push', function (header, body) {
     }
   })
 })
+
+import * as protobuf from 'protobufjs'
+import * as jsonDescr from './assets/proto.json'
+let proto = protobuf.Root.fromJSON(jsonDescr)
 
 let SMessages = proto.lookup('esterpad.SMessages')
 let CMessages = proto.lookup('esterpad.CMessages')
@@ -98,7 +127,7 @@ conn.onopen = function (evt) {
 }
 
 conn.onclose = function (evt) {
-  log.debug('WS closed')
+  log.info('WS closed')
   // TODO: reconnect
 }
 

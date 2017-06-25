@@ -12,7 +12,6 @@ import CSSManager from '@/lib/cssmanager.js'
 import { color2num } from '@/helpers'
 
 export default {
-  name: 'esterpad-editor',
   data () {
     return {
       cma: null,

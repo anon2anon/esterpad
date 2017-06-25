@@ -1,5 +1,5 @@
 <template>
-  <md-card>
+  <md-card class="card">
     <md-card-content>
       <md-input-container :class="{ 'md-input-invalid': emailInvalid }">
         <label>Email</label>
@@ -28,7 +28,6 @@
 import { state, bus } from '@/globs'
 
 export default {
-  name: 'esterpad-login',
   data () {
     return {
       email: '',
@@ -56,3 +55,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+ .card {
+   margin: 15px;
+ }
+</style>

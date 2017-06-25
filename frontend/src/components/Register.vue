@@ -1,5 +1,5 @@
 <template>
-  <md-card>
+  <md-card class="card">
     <md-card-content>
       <md-input-container :class="{ 'md-input-invalid': nicknameInvalid }">
         <label>Nickname</label>
@@ -34,7 +34,6 @@
 import { bus } from '@/globs'
 
 export default {
-  name: 'esterpad-login',
   data () {
     return {
       nickname: '',
@@ -72,3 +71,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+ .card {
+   margin: 15px;
+ }
+</style>

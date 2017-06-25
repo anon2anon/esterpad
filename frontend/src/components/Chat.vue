@@ -16,7 +16,6 @@ import { state, bus } from '@/globs'
 import { color2num } from '@/helpers'
 
 export default {
-  name: 'esterpad-chat',
   data () {
     return {
       state: state,

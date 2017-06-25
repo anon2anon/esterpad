@@ -1,22 +1,22 @@
 <template>
   <div>
     <md-dialog ref="dialog">
-        <md-dialog-title>Enter new pad name</md-dialog-title>
+      <md-dialog-title>Enter new pad name</md-dialog-title>
 
-        <md-dialog-content>
-          <md-input-container md-inline :class="{ 'md-input-invalid': haveError }">
-            <label>Name</label>
-            <md-input v-model="newPadName" ref="newPadInput"></md-input>
-            <span class="md-error">Dots and slashes are not allowed!</span>
-          </md-input-container>
-        </md-dialog-content>
+      <md-dialog-content>
+        <md-input-container md-inline :class="{ 'md-input-invalid': haveError }">
+          <label>Name</label>
+          <md-input v-model="newPadName" ref="newPadInput"></md-input>
+          <span class="md-error">Dots and slashes are not allowed!</span>
+        </md-input-container>
+      </md-dialog-content>
 
-        <md-dialog-actions>
-          <md-button class="md-primary" @click.native="newPadCancel">Cancel</md-button>
-          <md-button class="md-primary" @click.native="newPadOk">Ok</md-button>
-        </md-dialog-actions>
+      <md-dialog-actions>
+        <md-button class="md-primary" @click.native="newPadCancel">Cancel</md-button>
+        <md-button class="md-primary" @click.native="newPadOk">Ok</md-button>
+      </md-dialog-actions>
     </md-dialog>
-    <md-card>
+    <md-card class="card">
       <md-card-content>
         <md-list>
           <md-list-item v-for="pad in state.padList" key="pad">
@@ -35,7 +35,6 @@
 import { state } from '@/globs'
 
 export default {
-  name: 'esterpad-padlist',
   data () {
     return {
       state: state,
@@ -51,6 +50,10 @@ export default {
   methods: {
     createPad () {
       this.$refs.dialog.open()
+      // TODO: for some reason this doesn't work
+      this.$nextTick(() => {
+        this.$refs.newPadInput.$el.focus()
+      })
     },
     newPadCancel () {
       this.newPadName = ''
@@ -67,3 +70,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+ .card {
+   margin: 15px;
+ }
+</style>

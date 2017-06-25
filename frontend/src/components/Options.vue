@@ -8,7 +8,6 @@
 import { state } from '@/globs'
 
 export default {
-  name: 'esterpad-options',
   data () {
     return {
       state: state

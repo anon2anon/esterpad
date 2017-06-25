@@ -16,7 +16,6 @@ import { bus } from '@/globs'
 import { num2color } from '@/helpers'
 
 export default {
-  name: 'esterpad-userlist',
   data () {
     return {
       userList: []

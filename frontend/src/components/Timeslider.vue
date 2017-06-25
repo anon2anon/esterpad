@@ -1,6 +1,6 @@
 <template>
   <div>
-    Timeslider
+    Timeslider for {{ state.padId }}
   </div>
 </template>
 
@@ -8,7 +8,6 @@
 import { state } from '@/globs'
 
 export default {
-  name: 'esterpad-timeslider',
   data () {
     return {
       state: state

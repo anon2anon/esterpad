@@ -12,7 +12,6 @@ import { state, bus } from '@/globs'
 import { color2num } from '@/helpers'
 
 export default {
-  name: 'esterpad-myuser',
   props: {
     userName: String,
     userColor: String

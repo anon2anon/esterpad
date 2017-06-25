@@ -15,8 +15,18 @@
 </template>
 
 <script>
+import MyUser from '@/components/MyUser'
+import Editor from '@/components/Editor'
+import UserList from '@/components/UserList'
+import Chat from '@/components/Chat'
+
 export default {
-  name: 'esterpad-pad'
+  components: {
+    'esterpad-myuser': MyUser,
+    'esterpad-editor': Editor,
+    'esterpad-userlist': UserList,
+    'esterpad-chat': Chat
+  }
 }
 </script>
 
