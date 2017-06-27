@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package esterpad
 
 import (
+.	"esterpad_utils"
 	"strconv"
 	"strings"
 	"sync"
