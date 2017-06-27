@@ -1,0 +1,13 @@
+{
+    "log": {
+        "level": 3,
+        "directory": "log"
+    },
+    "mongodb": {
+        "url": "mongodb://esterpad:esterpad@localhost:27017/pad"
+    },
+    "http" : {
+        "listen" : "0.0.0.0:9000",
+        "use-x-forwarded-for" : "false"
+    }
+}

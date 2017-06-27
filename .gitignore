@@ -1,0 +1,7 @@
+!/src/
+/src/*
+!/src/esterpad/
+/pkg/
+/esterpad
+/config.json
+/log/
