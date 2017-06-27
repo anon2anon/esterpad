@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/anon2anon/esterpad-frontend
+[submodule "utils"]
+	path = utils
+	url = https://github.com/anon2anon/esterpad-utils
