@@ -1,5 +1,12 @@
 <template>
-  <div ref="cm" class="flex"></div>
+  <div class="flex">
+    <vue-slider ref="slider" v-model="revision"
+                :min="0" :max="maxRevision"
+                tooltip="always" tooltip-dir="bottom"
+                style="z-index: 1000" @callback="revChange">
+    </vue-slider>
+    <div ref="cm"></div>
+  </div>
 </template>
 
 <script>
@@ -10,15 +17,20 @@ import CodemirrorAdapter from '@/ot/CodemirrorAdapter.js'
 import TextOperation from '@/ot/TextOperation.js'
 import CSSManager from '@/lib/cssmanager.js'
 import { textColor } from '@/helpers'
+import vueSlider from 'vue-slider-component'
 
 export default {
   data () {
     return {
       cma: null,
+      revision: 0,
       maxRevision: 0,
       cssManager: null,
       state: state
     }
+  },
+  components: {
+    vueSlider
   },
   mounted () {
     log.debug('timeslider mounted')
@@ -60,9 +72,20 @@ export default {
 
       this.cma = new CodemirrorAdapter(cm)
     },
+    revChange (val) {
+      log.debug(val)
+      bus.$emit('send', 'RevisionRequest', {revision: val})
+    },
     recvDocument (doc) {
       log.debug('recv doc', doc)
-      this.maxRevision = doc.revision
+
+      if (this.revision === 0) this.revision = doc.revision
+      this.maxRevision = Math.max(this.maxRevision, doc.revision)
+
+      if (this.cma) {
+        log.debug('Clearing editor')
+        this.cma.clear()
+      }
 
       let to = (new TextOperation()).fromProtobuf(doc)
       log.debug('Converted doc', to)

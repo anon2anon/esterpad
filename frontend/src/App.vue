@@ -94,10 +94,10 @@ export default {
       this.$refs.snackbar.open()
     },
     updateTitle (to) {
-      if (to.name === 'Pad') {
-        this.title = state.padId
-      } else {
+      if (to.name) {
         this.title = to.name
+      } else {
+        this.title = state.padId
       }
     }
   },
