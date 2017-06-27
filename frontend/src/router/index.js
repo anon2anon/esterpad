@@ -70,7 +70,7 @@ export default new Router({
       component: Pad,
       children: [
         {path: '', component: Editor},
-        {path: 'timeslider', component: Timeslider}
+        {path: '.timeslider', component: Timeslider}
       ],
       meta: {
         requiresLogin: true,
