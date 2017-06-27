@@ -9,7 +9,7 @@ import 'codemirror/lib/codemirror.css'
 import CodemirrorAdapter from '@/ot/CodemirrorAdapter.js'
 import TextOperation from '@/ot/TextOperation.js'
 import CSSManager from '@/lib/cssmanager.js'
-import { color2num } from '@/helpers'
+import { textColor } from '@/helpers'
 
 export default {
   data () {
@@ -26,6 +26,7 @@ export default {
     }
   },
   mounted () {
+    log.debug('editor mounted')
     // isn't it a RC?
     this.reinitCM(state.padId)
     this.cssManager = new CSSManager()
@@ -37,6 +38,15 @@ export default {
     bus.$on('color-update', this.updateColor)
 
     this.updateColor(state.userId, state.userColor)
+  },
+  beforeDestroy () {
+    log.debug('editor destroy')
+
+    bus.$off('pad-id-changed', this.reinitCM)
+    bus.$off('document', this.recvDocument)
+    bus.$off('new-delta', this.newDelta)
+    bus.$off('user-leave', this.userLeave)
+    bus.$off('color-update', this.updateColor)
   },
   methods: {
     sendTextOperation (textOp) {
@@ -97,6 +107,11 @@ export default {
     reinitCM (padId) {
       log.debug('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
+
+      if (this.cma) {
+        log.debug('Clearing editor')
+        this.cma.clear()
+      }
 
       let that = this
 
@@ -168,6 +183,7 @@ export default {
       let to = (new TextOperation()).fromProtobuf(doc)
       log.debug('Converted doc', to)
 
+      this.cma.clear()
       this.cma.applyOperation(to)
     },
     newDelta (delta) {
@@ -218,12 +234,8 @@ export default {
     },
     updateColor (userId, newColor) {
       this.cssManager.selectorStyle('.author-' + userId).background = newColor
-      let newColorInt = color2num(newColor)
-      let r = ~~(newColorInt / (1 << 16))
-      let g = (~~(newColorInt / (1 << 8))) % (1 << 8)
-      let b = newColorInt % (1 << 8)
-      let l = (Math.max(r, g, b) + Math.min(r, g, b)) / 2 / 255
-      this.cssManager.selectorStyle('.author-' + userId).color = l < 0.5 ? '#fff' : '#000'
+      let fgColor = textColor(newColor)
+      this.cssManager.selectorStyle('.author-' + userId).color = fgColor
     },
     userLeave (info) {
       log.warn('TODO: handle user leave in editor')

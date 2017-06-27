@@ -49,8 +49,9 @@ router.beforeEach((to, from, next) => {
       next('/')
       return
     }
+    let needEvent = (state.padId !== pid)
     state.padId = pid
-    bus.$emit('pad-id-changed', pid)
+    if (needEvent) bus.$emit('pad-id-changed', pid)
   }
 
   next() // make sure to always call next()!
@@ -127,7 +128,8 @@ conn.onopen = function (evt) {
 }
 
 conn.onclose = function (evt) {
-  log.info('WS closed')
+  log.debug('WS closed')
+  bus.$emit('snack-msg', 'Disconnected from server')
   // TODO: reconnect
 }
 

@@ -37,12 +37,16 @@ export default {
       state: state
     }
   },
+  beforeDestroy () {
+    log.debug('login destroy')
+    bus.$off('auth-error', this.loginError)
+  },
   methods: {
     sendLogin () {
       this.emailInvalid = this.email === ''
       this.passwdInvalid = this.passwd === ''
       if (this.emailInvalid || this.passwdInvalid) return
-      bus.$on('auth-error', function () { bus.$emit('snack-msg', 'Invalid username or password') })
+      bus.$on('auth-error', this.loginError)
       bus.$emit('send', 'Login', {
         email: this.email,
         password: this.passwd
@@ -51,6 +55,9 @@ export default {
     guestLogin () {
       // TODO: read sessId
       bus.$emit('send', 'Session', {sessId: ''})
+    },
+    loginError () {
+      bus.$emit('snack-msg', 'Invalid username or password')
     }
   }
 }

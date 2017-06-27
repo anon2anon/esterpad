@@ -22,9 +22,14 @@ export default {
     }
   },
   mounted () {
-    log.debug('mounted')
+    log.debug('userlist mounted')
     bus.$on('user-info', this.userInfo)
     bus.$on('user-leave', this.userLeave)
+  },
+  beforeDestroy () {
+    log.debug('userlist destroy')
+    bus.$off('user-info', this.userInfo)
+    bus.$off('user-leave', this.userLeave)
   },
   methods: {
     userInfo (info) {

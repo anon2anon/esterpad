@@ -5,7 +5,7 @@
     <div @keydown.prevent.enter="enterPressed">
       <textarea v-model="msg" id="chat-input" ref="msgbox"
                 placeholder="Write a message..."
-                @keyup="autoGrow(this)">
+                @keyup="autoGrow">
       </textarea>
     </div>
   </div>
@@ -26,7 +26,13 @@ export default {
     }
   },
   mounted () {
+    log.debug('chat mounted')
+    log.debug(this.$refs.messages)
     bus.$on('new-chat-msg', this.appendMsg)
+  },
+  beforeDestroy () {
+    log.debug('chat destroy')
+    bus.$off('new-chat-msg', this.appendMsg)
   },
   methods: {
     enterPressed (e) {
@@ -54,7 +60,7 @@ export default {
       })
 
       this.appendMsg({
-        text: state.userName + ': ' + this.msg,
+        text: state.userName + (state.perms.notGuest ? '' : ' (guest)') + ': ' + this.msg,
         userId: state.userId
       })
       this.msg = ''
@@ -79,6 +85,7 @@ export default {
       let msgtext = document.createTextNode(msg.text)
       msgdiv.appendChild(msgtext)
       msgdiv.className = 'author-' + msg.userId
+
       if (append) {
         let needScroll = this.$refs.messages.scrollTop + this.$refs.messages.offsetHeight >=
           this.$refs.messages.scrollHeight - 1

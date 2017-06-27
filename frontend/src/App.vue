@@ -6,7 +6,7 @@
           <p class="md-title">Esterpad</p>
         </div>
       </md-toolbar>
-      <md-list @click.native="closeSidenav">
+      <md-list @click.native="closeSidenav" class="menulist">
         <md-list-item v-if="!state.isLoggedIn || !state.perms.notGuest">
           <router-link to="/.login">Login</router-link>
         </md-list-item>
@@ -19,10 +19,10 @@
         <md-list-item v-if="state.isLoggedIn">
           <router-link to="/.options">Options</router-link>
         </md-list-item>
-        <md-list-item v-if="state.perms.mod">
+        <md-list-item v-if="state.isLoggedIn && state.perms.mod">
           <router-link to="/.users">Users</router-link>
         </md-list-item>
-        <md-list-item v-if="state.perms.admin">
+        <md-list-item v-if="state.isLoggedIn && state.perms.admin">
           <router-link to="/.admin">Admin</router-link>
         </md-list-item>
         <md-list-item v-if="state.isLoggedIn" @click.native="signout">
@@ -46,7 +46,7 @@
       </esterpad-myuser>
     </md-toolbar>
 
-    <router-view></router-view>
+    <router-view class="rview"></router-view>
 
     <md-snackbar md-position="bottom right" ref="snackbar" :md-duration="2000">
       <span>{{ snckMsg }}</span>
@@ -56,10 +56,13 @@
 </template>
 
 <script>
+import MyUser from '@/components/MyUser'
 import { state, bus } from '@/globs'
 
 export default {
-  name: 'app',
+  components: {
+    'esterpad-myuser': MyUser
+  },
   data () {
     return {
       state: state,
@@ -93,8 +96,6 @@ export default {
     updateTitle (to) {
       if (to.name === 'Pad') {
         this.title = state.padId
-      } else if (to.name === 'Timeslider') {
-        this.title = to.name + ' for ' + state.padId
       } else {
         this.title = to.name
       }
@@ -109,8 +110,7 @@ export default {
 </script>
 
 <style>
- html,
- body {
+ html, body, .rview {
    height: 100%;
    overflow: hidden;
  }
@@ -174,5 +174,9 @@ export default {
    .nav-trigger {
      display: none !important;
    }
+ }
+
+ .menulist {
+   overflow-y: auto;
  }
 </style>

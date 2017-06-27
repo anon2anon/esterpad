@@ -332,6 +332,12 @@ CodeMirrorAdapter.prototype.getValue = function () {
   return this.cm.getValue()
 }
 
+CodeMirrorAdapter.prototype.clear = function () {
+  this.ignoreNextChange = true
+  this.cm.setValue('')
+  this.cm.clearHistory()
+}
+
 CodeMirrorAdapter.prototype.getSelection = function () {
   var cm = this.cm
 

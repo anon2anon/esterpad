@@ -7,6 +7,8 @@ import PadList from '@/components/PadList'
 import Options from '@/components/Options'
 import Admin from '@/components/Admin'
 import Users from '@/components/Users'
+
+import Editor from '@/components/Editor'
 import Timeslider from '@/components/Timeslider'
 
 Vue.use(Router)
@@ -63,18 +65,13 @@ export default new Router({
       redirect: '/.padlist'
     },
     {
-      path: '/.timeslider/:padId',
-      name: 'Timeslider',
-      component: Timeslider,
-      meta: {
-        requiresLogin: true,
-        updatesPadId: true
-      }
-    },
-    {
       path: '/:padId',
       name: 'Pad',
       component: Pad,
+      children: [
+        {path: '', component: Editor},
+        {path: 'timeslider', component: Timeslider}
+      ],
       meta: {
         requiresLogin: true,
         updatesPadId: true
