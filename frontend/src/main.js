@@ -91,8 +91,8 @@ import * as protobuf from 'protobufjs'
 import * as jsonDescr from './assets/proto.json'
 let proto = protobuf.Root.fromJSON(jsonDescr)
 
-let SMessages = proto.lookup('esterpad.SMessages')
-let CMessages = proto.lookup('esterpad.CMessages')
+let SMessages = proto.lookup('esterpad_utils.SMessages')
+let CMessages = proto.lookup('esterpad_utils.CMessages')
 
 let wsUrl = window.location.protocol === 'https:' ? 'wss' : 'ws'
 wsUrl += '://'
