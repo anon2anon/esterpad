@@ -110,7 +110,7 @@ export default {
 <style>
  .CodeMirror, .flex {
    min-width: 100%;
-   min-height: 100%;
+   height: 100%;
  }
  .CodeMirror {
    font-family: Arial, sans-serif !important;
