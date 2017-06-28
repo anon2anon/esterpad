@@ -46,10 +46,6 @@ export default {
       passwd2Invalid: false
     }
   },
-  beforeDestroy () {
-    log.debug('register destroy')
-    bus.$off('auth-error', this.regError)
-  },
   methods: {
     register () {
       this.nicknameInvalid = this.nickname === ''
@@ -65,15 +61,11 @@ export default {
       if (this.nicknameInvalid || this.emailInvalid ||
           this.passwdInvalid || this.passwd2Invalid) return
 
-      bus.$on('auth-error', this.regError)
       bus.$emit('send', 'Register', {
         email: this.email,
         nickname: this.nickname,
         password: this.passwd
       })
-    },
-    regError () {
-      bus.$emit('snack-msg', 'User already exists')
     }
   }
 }

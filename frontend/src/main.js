@@ -175,7 +175,24 @@ conn.onmessage = function (evt) {
     } else if (message.Document !== null) { // Document revision
       bus.$emit('document', message.Document)
     } else if (message.AuthError) {
-      bus.$emit('auth-error', message.AuthError.error)
+      let error = ''
+      switch (message.AuthError.error) {
+        case 1:
+          error = 'Invalid username or password'
+          break
+        case 2:
+          error = 'User with this email already exists'
+          break
+        case 3:
+          error = 'Some unknown error'
+          break
+        case 4:
+          error = 'Your session invalidated, please log in'
+          break
+        default:
+          error = 'Error #' + error
+      }
+      bus.$emit('snack-msg', error)
     } else if (message.PadList !== null) {
       state.padList = state.padList.concat(message.PadList.pads)
     } else {
