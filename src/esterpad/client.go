@@ -19,10 +19,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package esterpad
 
 import (
-.	"esterpad_utils"
 	"container/list"
 	"crypto/rand"
 	"encoding/hex"
+	. "esterpad_utils"
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	"sort"

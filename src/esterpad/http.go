@@ -56,7 +56,7 @@ func (this *staticHanlderStruct) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	isStaticFile := false
 	for i, c := range url {
 		if c != '/' {
-			if strings.Contains(url[i:], ".") || strings.HasPrefix(url[i:], "static/") {
+			if !strings.HasPrefix(url[i:], ".") && strings.Contains(url[i:], ".") {
 				isStaticFile = true
 			}
 			break

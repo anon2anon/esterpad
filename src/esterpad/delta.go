@@ -19,8 +19,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package esterpad
 
 import (
-.	"esterpad_utils"
 	"container/list"
+	. "esterpad_utils"
 	"fmt"
 )
 
