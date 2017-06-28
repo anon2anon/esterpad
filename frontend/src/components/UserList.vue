@@ -1,6 +1,6 @@
 <template>
-  <div class="container2">
-    <div class="container">
+  <div class="user-outer-container">
+    <div class="user-inner-container">
       <div v-for="user in userList" key="user" >
         <md-layout class="user-item" :title="user.ip ? user.ip + '\n' + user.userAgent : ''">
           <div class="avatar" :style="{ background: _num2color(user.color) }"></div>
@@ -57,7 +57,7 @@ export default {
 </script>
 
 <style scoped>
- .container2 {
+ .user-outer-container {
    min-height: 100%;
    display: flex;
    flex-flow: column nowrap;
@@ -65,7 +65,7 @@ export default {
    white-space: pre-wrap;
  }
 
- .container {
+ .user-inner-container {
    flex: 1 1 0;
    overflow-y: scroll;
    word-break: break-all;
