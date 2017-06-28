@@ -79,13 +79,14 @@ message CMessage {
         CLogin Login = 5;
         CLogout Logout = 6;
         CRegister Register = 7;
-        CEnterPad EnterPad = 8;
-        CLeavePad LeavePad = 9;
-        CAdminUser AdminUser = 10;
-        CChatRequest ChatRequest = 11;
-        CRevisionRequest RevisionRequest = 12;
-        CInvertDelta InvertDelta = 13;
-        CInvertUserDelta InvertUserDelta = 14;
+        CGuestLogin GuestLogin = 8;
+        CEnterPad EnterPad = 9;
+        CLeavePad LeavePad = 10;
+        CAdminUser AdminUser = 11;
+        CChatRequest ChatRequest = 12;
+        CRevisionRequest RevisionRequest = 13;
+        CInvertDelta InvertDelta = 14;
+        CInvertUserDelta InvertUserDelta = 15;
     }
 }
 
@@ -122,6 +123,9 @@ message CRegister {
     string email = 1;
     string password = 2;
     string nickname = 3;
+}
+
+message CGuestLogin {
 }
 
 message CEnterPad {
