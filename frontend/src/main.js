@@ -184,7 +184,7 @@ conn.onmessage = function (evt) {
           error = 'User with this email already exists'
           break
         case 3:
-          error = 'Some unknown error'
+          error = 'Unknown login error'
           break
         case 4:
           error = 'Your session invalidated, please log in'

@@ -3,7 +3,7 @@
     <vue-slider ref="slider" v-model="revision"
                 :min="0" :max="maxRevision"
                 tooltip="always" tooltip-dir="bottom"
-                style="z-index: 1000" @callback="revChange">
+                style="z-index: 90" @callback="revChange">
     </vue-slider>
     <div ref="cm"></div>
   </div>
