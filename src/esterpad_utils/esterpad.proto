@@ -87,6 +87,7 @@ message CMessage {
         CRevisionRequest RevisionRequest = 13;
         CInvertDelta InvertDelta = 14;
         CInvertUserDelta InvertUserDelta = 15;
+        CRestoreRevision RestoreRevision = 16;
     }
 }
 
@@ -157,8 +158,13 @@ message CRevisionRequest {
 message CInvertDelta {
         uint32 id = 1;
 }
+
 message CInvertUserDelta {
         uint32 userId = 1;
+}
+
+message CRestoreRevision {
+        uint32 rev = 1;
 }
 
 message Op {
