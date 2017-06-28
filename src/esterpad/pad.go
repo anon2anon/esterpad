@@ -320,7 +320,7 @@ func (p *Pad) InvertUserDelta(c *Client, userId uint32) {
 		if p.DeltaArray[rev].UserId == userId {
 			invertedOpsList := DeltaInvert(p.DeltaArray[rev].Ops, p.DocumentArray[rev].Ops)
 			if invertedOpsList == nil {
-				padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't invert delta", rev, DeltaToString(p.DeltaArray[rev].Ops), DeltaToString(p.DocumentArray[rev].Ops))
+				padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't invert user delta", rev, DeltaToString(p.DeltaArray[rev].Ops), DeltaToString(p.DocumentArray[rev].Ops))
 				p.DeltaMutex.Unlock()
 				return
 			}
@@ -351,6 +351,61 @@ func (p *Pad) InvertUserDelta(c *Client, userId uint32) {
 		newOps = DeltaComposeOld(opsList, oldDocument)
 		if newOps == nil {
 			padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose inverted user delta", DeltaToString(opsList), DeltaToString(oldDocument))
+			p.DeltaMutex.Unlock()
+			return
+		}
+	} else {
+		opsList = list.New()
+		newOps = oldDocument
+	}
+	p.DeltaCounter++
+	delta := PDelta{p.DeltaCounter, c.UserId, opsList}
+	p.DeltaArray = append(p.DeltaArray, &delta)
+	p.DocumentArray = append(p.DocumentArray, &PDocument{p.DeltaCounter, newOps})
+	p.DeltaMutex.Unlock()
+
+	p.CacherChannel <- &delta
+
+	p.ClientsMutex.RLock()
+	for clientIter := p.Clients.Front(); clientIter != nil; clientIter = clientIter.Next() {
+		neighbor := clientIter.Value.(*Client)
+		select {
+		case neighbor.Messages <- &delta:
+		default:
+		}
+	}
+	p.ClientsMutex.RUnlock()
+}
+
+func (p *Pad) RestoreRevision(c *Client, rev uint32) {
+	padLogger.Log(LOG_INFO, p.Id, c.UserId, "process restore revision", rev)
+	opsList := (*list.List)(nil)
+	p.DeltaMutex.Lock()
+	for ; rev < p.DeltaCounter; rev++ {
+		invertedOpsList := DeltaInvert(p.DeltaArray[rev].Ops, p.DocumentArray[rev].Ops)
+		if invertedOpsList == nil {
+			padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't invert delta", rev, DeltaToString(p.DeltaArray[rev].Ops), DeltaToString(p.DocumentArray[rev].Ops))
+			p.DeltaMutex.Unlock()
+			return
+		}
+		if opsList != nil {
+			newOpsList := DeltaComposeOld(opsList, invertedOpsList)
+			if newOpsList == nil {
+				padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose inverted delta", rev, DeltaToString(invertedOpsList), DeltaToString(opsList))
+				p.DeltaMutex.Unlock()
+				return
+			}
+			opsList = newOpsList
+		} else {
+			opsList = invertedOpsList
+		}
+	}
+	oldDocument := p.DocumentArray[p.DeltaCounter].Ops
+	newOps := (*list.List)(nil)
+	if opsList != nil {
+		newOps = DeltaComposeOld(opsList, oldDocument)
+		if newOps == nil {
+			padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose inverted delta", DeltaToString(opsList), DeltaToString(oldDocument))
 			p.DeltaMutex.Unlock()
 			return
 		}
@@ -485,24 +540,24 @@ func (p *Pad) CopyDocument() *PDocument {
 	return ret
 }
 
-func (p *Pad) CopyDeltaRevision(revision uint32) *PDelta {
+func (p *Pad) CopyDeltaRevision(rev uint32) *PDelta {
 	p.DeltaMutex.RLock()
-	if p.DeltaCounter <= revision {
+	if p.DeltaCounter <= rev {
 		p.DeltaMutex.RUnlock()
 		return nil
 	}
-	ret := p.DeltaArray[revision]
+	ret := p.DeltaArray[rev]
 	p.DeltaMutex.RUnlock()
 	return ret
 }
 
-func (p *Pad) CopyDocumentRevision(revision uint32) *PDocument {
+func (p *Pad) CopyDocumentRevision(rev uint32) *PDocument {
 	p.DeltaMutex.RLock()
-	if p.DeltaCounter < revision {
+	if p.DeltaCounter < rev {
 		p.DeltaMutex.RUnlock()
 		return nil
 	}
-	ret := p.DocumentArray[revision]
+	ret := p.DocumentArray[rev]
 	p.DeltaMutex.RUnlock()
 	return ret
 }

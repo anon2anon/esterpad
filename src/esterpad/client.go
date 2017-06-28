@@ -125,17 +125,20 @@ func (c *Client) AddAllUsersFromOps(buffer []*SMessage, ops *list.List) []*SMess
 func (c *Client) AddOfflineInfo(buffer []*SMessage) []*SMessage {
 	for _, client := range c.Pad.CopyOnlineUsers() {
 		if c != client {
-			smessage := &SUserInfo{
-				UserId: client.UserId, Nickname: client.User.Nickname, Color: client.User.Color,
-				Perms: client.User.Perms, Online: true}
-			if c.User.Perms&PERM_MOD != 0 {
-				smessage.Ip = client.Ip
-				smessage.UserAgent = client.UserAgent
+			user := client.User
+			if user != nil {
+				smessage := &SUserInfo{
+					UserId: user.Id, Nickname: user.Nickname, Color: user.Color,
+					Perms: user.Perms, Online: true}
+				if c.User.Perms&PERM_MOD != 0 {
+					smessage.Ip = client.Ip
+					smessage.UserAgent = client.UserAgent
+				}
+				clientLogger.Log(LOG_INFO, c.UserId, "send online user", smessage)
+				SMessageOneOf := &SMessage_UserInfo{smessage}
+				buffer = append(buffer, &SMessage{SMessageOneOf})
+				c.pc.SentUsers[user.Id] = false
 			}
-			clientLogger.Log(LOG_INFO, c.UserId, "send online user", smessage)
-			SMessageOneOf := &SMessage_UserInfo{smessage}
-			buffer = append(buffer, &SMessage{SMessageOneOf})
-			c.pc.SentUsers[client.UserId] = false
 		}
 	}
 	offlineChat := c.Pad.CopyChat(50)
@@ -584,11 +587,7 @@ func (c *Client) Process(wsConn *websocket.Conn) {
 				if c.AuthSession(m.Session.SessId) {
 					c.SendWelcome(wsConn, false)
 				} else {
-					if authError := c.NewGuest(); authError == 0 {
-						c.SendWelcome(wsConn, true)
-					} else {
-						c.Messages <- &SAuthError{authError}
-					}
+					c.Messages <- &SAuthError{4}
 				}
 			case *CMessage_Login:
 				if c.User != nil {
@@ -607,8 +606,13 @@ func (c *Client) Process(wsConn *websocket.Conn) {
 					c.User = nil
 					c.UserId = 0
 				}
-				if authError :=
-					c.NewUser(m.Register.Email, m.Register.Password, m.Register.Nickname); authError == 0 {
+				if authError := c.NewUser(m.Register.Email, m.Register.Password, m.Register.Nickname); authError == 0 {
+					c.SendWelcome(wsConn, true)
+				} else {
+					c.Messages <- &SAuthError{authError}
+				}
+			case *CMessage_GuestLogin:
+				if authError := c.NewGuest(); authError == 0 {
 					c.SendWelcome(wsConn, true)
 				} else {
 					c.Messages <- &SAuthError{authError}
@@ -633,13 +637,17 @@ func (c *Client) Process(wsConn *websocket.Conn) {
 				if c.User != nil && c.User.Perms&PERM_MOD != 0 && c.Pad != nil {
 					c.Pad.InvertUserDelta(c, m.InvertUserDelta.UserId)
 				}
+			case *CMessage_RestoreRevision:
+				if c.User != nil && c.User.Perms&PERM_MOD != 0 && c.Pad != nil {
+					c.Pad.RestoreRevision(c, m.RestoreRevision.Rev)
+				}
 			}
 		}
 	}
 	if c.User != nil {
 		c.LeavePad(padClientIter, false)
-		// c.User = nil
-		// c.UserId = 0
+		c.User = nil
+		c.UserId = 0
 	}
 	GlobalClientsMutex.Lock()
 	GlobalClients.Remove(globalClientIter)
