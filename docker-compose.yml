@@ -1,0 +1,10 @@
+version: "3"
+services:
+  esterpad:
+    build: .
+    ports:
+      - "9000:9000"
+  mongo:
+    image: mongo
+    ports:
+      - "5432:5432"
