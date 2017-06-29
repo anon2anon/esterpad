@@ -2,7 +2,7 @@
   "name": "esterpad",
   "version": "0.0.3",
   "description": "Insanely fast collaborative text editor",
-  "author": "Cactus",
+  "author": "Anon2Anon",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",

@@ -12,7 +12,7 @@ Vue.use(VueMaterial)
 
 Vue.config.productionTip = false
 
-import { num2color } from './helpers'
+import { num2color, permsMask } from './helpers'
 import { state, bus } from './globs'
 window['_state'] = state
 window['_bus'] = bus
@@ -152,13 +152,13 @@ conn.onmessage = function (evt) {
         state.sessId = message.Auth.sessId
       }
       state.perms = {
-        notGuest: Boolean(message.Auth.perms & 1),
-        chat: Boolean(message.Auth.perms & (1 << 1)),
-        write: Boolean(message.Auth.perms & (1 << 2)),
-        edit: Boolean(message.Auth.perms & (1 << 3)),
-        whitewash: Boolean(message.Auth.perms & (1 << 4)),
-        mod: Boolean(message.Auth.perms & (1 << 5)),
-        admin: Boolean(message.Auth.perms & (1 << 6))
+        notGuest: Boolean(message.Auth.perms & permsMask.notGuest),
+        chat: Boolean(message.Auth.perms & permsMask.chat),
+        write: Boolean(message.Auth.perms & permsMask.write),
+        edit: Boolean(message.Auth.perms & permsMask.edit),
+        whitewash: Boolean(message.Auth.perms & permsMask.whitewash),
+        mod: Boolean(message.Auth.perms & permsMask.mod),
+        admin: Boolean(message.Auth.perms & permsMask.admin)
       }
       state.padList = []
       let loginPage = (['/.login', '/.register'].indexOf(router.currentRoute.path) >= 0)

@@ -3,8 +3,8 @@
     <div class="user-inner-container">
       <div v-for="user in userList" key="user" >
         <md-layout class="user-item" :title="user.ip ? user.ip + '\n' + user.userAgent : ''">
-          <div class="avatar" :style="{ background: _num2color(user.color) }"></div>
-          <div>{{ user.nickname }}</div>
+          <div class="avatar" :style="{ background: num2color(user.color) }"></div>
+          <div :style="{ color: userColor(user.perms) }">{{ user.nickname }}</div>
         </md-layout>
       </div>
     </div>
@@ -13,7 +13,7 @@
 
 <script>
 import { bus } from '@/globs'
-import { num2color } from '@/helpers'
+import { num2color, permsMask } from '@/helpers'
 
 export default {
   data () {
@@ -51,7 +51,20 @@ export default {
         i => i.userId === info.userId
       ), 1)
     },
-    _num2color: num2color
+    num2color: num2color,
+    userColor (perms) {
+      log.debug(!(perms & permsMask.notGuest))
+      if (!(perms & permsMask.notGuest)) {
+        return '#999'
+      } else if (perms & permsMask.admin) {
+        return '#831'
+      } else if (perms & permsMask.mod) {
+        return '#138'
+      } else if (perms & permsMask.whitewash) {
+        return '#163'
+      }
+      return '#000'
+    }
   }
 }
 </script>
