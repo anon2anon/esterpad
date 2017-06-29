@@ -161,10 +161,14 @@ conn.onmessage = function (evt) {
         admin: Boolean(message.Auth.perms & (1 << 6))
       }
       state.padList = []
-      if ('go' in router.currentRoute.query) {
+      let loginPage = (['/.login', '/.register'].indexOf(router.currentRoute.path) >= 0)
+      if (loginPage && 'go' in router.currentRoute.query) {
         router.push(router.currentRoute.query['go'])
-      } else {
+      } else if (loginPage) {
         router.push('/.padlist')
+      } else if (!router.currentRoute.name) { // we're in pad
+        bus.$emit('pad-id-changed', state.padId)
+        bus.$emit('color-update', state.userId, state.userColor)
       }
     } else if (message.UserInfo !== null) { // User connected/updated
       let color = num2color(message.UserInfo.color)

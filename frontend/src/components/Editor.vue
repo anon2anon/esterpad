@@ -108,11 +108,6 @@ export default {
       log.debug('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
 
-      if (this.cma) {
-        log.debug('Clearing editor')
-        this.cma.clear()
-      }
-
       let that = this
 
       let toggleMeta = function (cm, meta) {
@@ -131,50 +126,57 @@ export default {
         }
       }
 
-      let cm = CodeMirror(this.$refs.cm, {
-        value: '', // (TODO: make cool spinner here)
-        tabSize: 4,
-        mode: 'text/plain',
-        lineNumbers: true,
-        lineWrapping: true,
-        showCursorWhenSelecting: true,
-        extraKeys: {
-          'Ctrl-B': function (cm) {
-            toggleMeta(cm, 'bold')
-          },
-          'Ctrl-I': function (cm) {
-            toggleMeta(cm, 'italic')
-          },
-          'Ctrl-U': function (cm) {
-            toggleMeta(cm, 'underline')
-          },
-          'Ctrl-S': function (cm) {
-            toggleMeta(cm, 'strike')
-          },
-          'Ctrl-M': function (cm) {
-            if (!state.perms.whitewash) {
-              bus.$emit('snack-msg', 'Sorry, you don\'t have permission for that')
-              return
+      if (this.cma) {
+        log.debug('Clearing editor')
+        this.cma.clear()
+      } else {
+        log.debug('Creating editor')
+
+        let cm = CodeMirror(this.$refs.cm, {
+          value: '', // (TODO: make cool spinner here)
+          tabSize: 4,
+          mode: 'text/plain',
+          lineNumbers: true,
+          lineWrapping: true,
+          showCursorWhenSelecting: true,
+          extraKeys: {
+            'Ctrl-B': function (cm) {
+              toggleMeta(cm, 'bold')
+            },
+            'Ctrl-I': function (cm) {
+              toggleMeta(cm, 'italic')
+            },
+            'Ctrl-U': function (cm) {
+              toggleMeta(cm, 'underline')
+            },
+            'Ctrl-S': function (cm) {
+              toggleMeta(cm, 'strike')
+            },
+            'Ctrl-M': function (cm) {
+              if (!state.perms.whitewash) {
+                bus.$emit('snack-msg', 'Sorry, you don\'t have permission for that')
+                return
+              }
+
+              let from = cm.indexFromPos(cm.getCursor('from'))
+              let to = cm.indexFromPos(cm.getCursor('to'))
+              if (from === to) return
+              let docLen = cm.indexFromPos({ line: cm.lastLine(), ch: 0 }) +
+                           cm.getLine(cm.lastLine()).length
+
+              let whiteMeta = new TextOperation().retain(from)
+                                                 .retain(to - from, {userId: 0})
+                                                 .retain(docLen - to)
+
+              that.cma.applyOperation(whiteMeta, false)
+              that.processDelta(whiteMeta)
             }
-
-            let from = cm.indexFromPos(cm.getCursor('from'))
-            let to = cm.indexFromPos(cm.getCursor('to'))
-            if (from === to) return
-            let docLen = cm.indexFromPos({ line: cm.lastLine(), ch: 0 }) +
-                         cm.getLine(cm.lastLine()).length
-
-            let whiteMeta = new TextOperation().retain(from)
-                                               .retain(to - from, {userId: 0})
-                                               .retain(docLen - to)
-
-            that.cma.applyOperation(whiteMeta, false)
-            that.processDelta(whiteMeta)
           }
-        }
-      })
+        })
 
-      this.cma = new CodemirrorAdapter(cm)
-      this.cma.registerCallbacks({'change': this.cmChangeCallback})
+        this.cma = new CodemirrorAdapter(cm)
+        this.cma.registerCallbacks({'change': this.cmChangeCallback})
+      }
     },
     recvDocument (doc) {
       log.debug('recv doc', doc)

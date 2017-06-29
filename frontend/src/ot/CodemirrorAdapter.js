@@ -336,6 +336,9 @@ CodeMirrorAdapter.prototype.clear = function () {
   this.ignoreNextChange = true
   this.cm.setValue('')
   this.cm.clearHistory()
+  this.cm.getAllMarks().forEach(mark => {
+    mark.clear()
+  })
 }
 
 CodeMirrorAdapter.prototype.getSelection = function () {
