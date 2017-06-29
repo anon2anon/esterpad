@@ -21,7 +21,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresLogin)) {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
-    if (!state.isLoggedIn) {
+    if (!state.isLoggedIn && !state.sessId) {
       next({
         path: '/.login',
         query: { go: to.fullPath }
@@ -124,6 +124,8 @@ conn.onopen = function (evt) {
   log.debug('WS connected')
   if (state.sessId) {
     bus.$emit('send', 'Session', {sessId: state.sessId})
+  } else {
+    state.loading = false
   }
 }
 
@@ -140,6 +142,8 @@ conn.onmessage = function (evt) {
   messages.forEach(function (message) {
     log.debug(message)
     if (message.Auth !== null) { // Our info
+      state.loading = false
+
       state.isLoggedIn = true
       state.userName = message.Auth.nickname
       state.userId = message.Auth.userId
@@ -175,6 +179,8 @@ conn.onmessage = function (evt) {
     } else if (message.Document !== null) { // Document revision
       bus.$emit('document', message.Document)
     } else if (message.AuthError) {
+      state.loading = false
+
       let error = ''
       switch (message.AuthError.error) {
         case 1:
@@ -187,7 +193,14 @@ conn.onmessage = function (evt) {
           error = 'Unknown login error'
           break
         case 4:
+          state.sessId = ''
           error = 'Your session invalidated, please log in'
+          if (['/.login', '/.register'].indexOf(router.currentRoute.path) < 0) {
+            router.push({
+              path: '/.login',
+              query: { go: router.currentRoute.fullPath }
+            })
+          }
           break
         default:
           error = 'Error #' + error

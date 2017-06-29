@@ -23,7 +23,8 @@ var state = {
     admin: true
   },
 
-  pushQueue: ''
+  pushQueue: '',
+  loading: true
 }
 
 import Vue from 'vue'

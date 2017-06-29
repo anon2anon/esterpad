@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { bus } from '@/globs'
+import { state, bus } from '@/globs'
 
 export default {
   data () {
@@ -60,6 +60,8 @@ export default {
       }
       if (this.nicknameInvalid || this.emailInvalid ||
           this.passwdInvalid || this.passwd2Invalid) return
+
+      state.loading = true
 
       bus.$emit('send', 'Register', {
         email: this.email,

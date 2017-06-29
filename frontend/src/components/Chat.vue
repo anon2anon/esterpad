@@ -27,7 +27,6 @@ export default {
   },
   mounted () {
     log.debug('chat mounted')
-    log.debug(this.$refs.messages)
     bus.$on('new-chat-msg', this.appendMsg)
   },
   beforeDestroy () {

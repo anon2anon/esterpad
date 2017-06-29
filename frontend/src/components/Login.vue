@@ -43,12 +43,16 @@ export default {
       this.passwdInvalid = this.passwd === ''
       if (this.emailInvalid || this.passwdInvalid) return
 
+      state.loading = true
+
       bus.$emit('send', 'Login', {
         email: this.email,
         password: this.passwd
       })
     },
     guestLogin () {
+      state.loading = true
+
       bus.$emit('send', 'GuestLogin', {})
     }
   }

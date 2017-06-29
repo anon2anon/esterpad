@@ -66,7 +66,6 @@ export default new Router({
     },
     {
       path: '/:padId',
-      name: 'Pad',
       component: Pad,
       children: [
         {path: '', component: Editor},

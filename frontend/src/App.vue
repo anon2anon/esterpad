@@ -52,6 +52,12 @@
       <span>{{ snckMsg }}</span>
       <md-button class="md-accent" md-theme="light-blue" @click.native="$refs.snackbar.close()">OK</md-button>
     </md-snackbar>
+
+    <transition name="fade">
+      <div v-if="state.loading" class="loading">
+        <md-spinner :md-size="100" md-indeterminate class="md-warn"></md-spinner>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -179,4 +185,37 @@ export default {
  .menulist {
    overflow-y: auto;
  }
+
+ /* Absolute Center Spinner */
+.loading {
+  position: fixed;
+  z-index: 999;
+  height: 100px;
+  width: 100px;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+/* Transparent Overlay */
+.loading:before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.3);
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0
+}
 </style>
