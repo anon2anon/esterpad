@@ -60,7 +60,8 @@ export default {
 
       this.appendMsg({
         text: state.userName + (state.perms.notGuest ? '' : ' (guest)') + ': ' + this.msg,
-        userId: state.userId
+        userId: state.userId,
+        forceScroll: true
       })
       this.msg = ''
     },
@@ -86,8 +87,9 @@ export default {
       msgdiv.className = 'author-' + msg.userId
 
       if (append) {
-        let needScroll = this.$refs.messages.scrollTop + this.$refs.messages.offsetHeight >=
-          this.$refs.messages.scrollHeight - 1
+        let needScroll = msg.forceScroll ||
+          (this.$refs.messages.scrollTop + this.$refs.messages.offsetHeight >=
+            this.$refs.messages.scrollHeight - 1)
         this.$refs.messages.appendChild(msgdiv)
         if (needScroll) {
           this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight

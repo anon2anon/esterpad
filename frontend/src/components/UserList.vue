@@ -53,7 +53,6 @@ export default {
     },
     num2color: num2color,
     userColor (perms) {
-      log.debug(!(perms & permsMask.notGuest))
       if (!(perms & permsMask.notGuest)) {
         return '#999'
       } else if (perms & permsMask.admin) {
