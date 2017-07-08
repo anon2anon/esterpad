@@ -139,24 +139,4 @@ export default {
    min-width: 100%;
    min-height: 100%;
  }
- .CodeMirror {
-   font-family: Arial, sans-serif !important;
- }
-
- /* TODO: move to another CSS file */
- .padtext-bold {
-   font-weight: bold;
- }
- .padtext-italic {
-   font-style: italic;
- }
- .padtext-underline {
-   text-decoration: underline;
- }
- .padtext-strike {
-   text-decoration: line-through;
- }
- .padtext-underline.padtext-strike {
-   text-decoration: underline line-through;
- }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="editor">
+  <div class="editor flex">
     <div class="toolbar">
       <div class="toolbar-buttons">
         <div class="button-group">
@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div ref="cm" class="flex"></div>
+    <div ref="cm"></div>
   </div>
 </template>
 
@@ -287,24 +287,5 @@ export default {
  .CodeMirror, .flex {
    min-width: 100%;
    min-height: 100%;
- }
- .CodeMirror {
-   font-family: Arial, sans-serif !important;
- }
-
- .padtext-bold {
-   font-weight: bold;
- }
- .padtext-italic {
-   font-style: italic;
- }
- .padtext-underline {
-   text-decoration: underline;
- }
- .padtext-strike {
-   text-decoration: line-through;
- }
- .padtext-underline.padtext-strike {
-   text-decoration: underline line-through;
  }
 </style>

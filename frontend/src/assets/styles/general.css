@@ -1,34 +1,54 @@
 .toolbar{
-    background-color: #F3F3F3;
-    border-bottom: 2px solid #D2D2D2;
-    font-size: 16px;
-  }
+  background-color: #F3F3F3;
+  border-bottom: 2px solid #D2D2D2;
+  font-size: 16px;
+}
 
-  .toolbar .button-group{
-    height: 45px;
-    border-right: 1px solid #B9B9B9;
-    float: left;
-  }
+.toolbar .button-group{
+  height: 45px;
+  border-right: 1px solid #B9B9B9;
+  float: left;
+}
 
-  .toolbar .button-group .button{
-    float: left;
-    height: 45px;
-    width: 45px;
-    line-height: 45px;
-    text-align: center;
-    vertical-align: center;
-    cursor: pointer;
-  }
-  .toolbar .button-group .button:hover {
-    background-color: #E6E6E6;
-  }
+.toolbar .button-group .button{
+  float: left;
+  height: 45px;
+  width: 45px;
+  line-height: 45px;
+  text-align: center;
+  vertical-align: center;
+  cursor: pointer;
+}
+.toolbar .button-group .button:hover {
+  background-color: #E6E6E6;
+}
 
-  .toolbar .button-group .button.pressed {
-    background-color: #D2D2D2;
-  }
+.toolbar .button-group .button.pressed {
+  background-color: #D2D2D2;
+}
 
-   .toolbar .button-group .button span{
-    display: inline-block;
-    vertical-align: middle;
-    line-height: normal;
-  }
+.toolbar .button-group .button span{
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+}
+
+.CodeMirror {
+  font-family: Arial, sans-serif !important;
+}
+
+.padtext-bold {
+  font-weight: bold;
+}
+.padtext-italic {
+  font-style: italic;
+}
+.padtext-underline {
+  text-decoration: underline;
+}
+.padtext-strike {
+  text-decoration: line-through;
+}
+.padtext-underline.padtext-strike {
+  text-decoration: underline line-through;
+}
