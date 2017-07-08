@@ -10,12 +10,13 @@ message SMessage {
     oneof SMessage {
         SChat Chat = 1;
         SDelta Delta = 2;
-        SDocument Document = 3;
-        SAuth Auth = 4;
-        SAuthError AuthError = 5;
-        SUserLeave UserLeave = 6;
-        SUserInfo UserInfo = 7;
-        SPadList PadList = 8;
+        SDeltaDropped DeltaDropped = 3;
+        SDocument Document = 4;
+        SAuth Auth = 5;
+        SAuthError AuthError = 6;
+        SUserLeave UserLeave = 7;
+        SUserInfo UserInfo = 8;
+        SPadList PadList = 9;
     }
 }
 
@@ -29,6 +30,10 @@ message SDelta {
     uint32 id = 1;
     uint32 userId = 2;
     repeated Op ops = 3;
+}
+
+message SDeltaDropped {
+    uint32 revision = 1;
 }
 
 message SDocument {
