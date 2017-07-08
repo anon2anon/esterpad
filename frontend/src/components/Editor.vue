@@ -3,13 +3,15 @@
     <div class="toolbar">
       <div class="toolbar-buttons">
         <div class="button-group">
-          <div class="button button-bold"><span>B</span></div>
-          <div class="button button-italic"><span>I</span></div>
-          <div class="button button-underline"><span>U</span></div>
-          <div class="button button-strike"><span>S</span></div>
+          <div class="button"><i class="material-icons">format_bold</i></div>
+          <div class="button"><i class="material-icons">format_italic</i></div>
+          <div class="button"><i class="material-icons">format_underlined</i></div>
+          <div class="button"><i class="material-icons">strikethrough_s</i></div>
         </div>
         <div class="button-group">
-          <div class="button"><span class="material-icons">list</span></div>
+          <router-link to="timeslider" class="link-black" append>
+            <div class="button"><i class="material-icons">history</i></div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -262,25 +264,13 @@ export default {
 </script>
 
 <style scoped>
-  .editor{
+  .editor {
     display: grid;
     grid-template-rows: 45px 1fr;
     height: 100%;
   }
 
-  .toolbar .button-group .button.button-bold{
-    font-weight: bold;
-  }
-
-  .toolbar .button-group .button.button-italic{
-    font-style: italic;
-  }
-
-  .toolbar .button-group .button.button-underline span{
-    text-decoration: underline;
-  }
-
-  .toolbar .button-group .button.button-strike span{
-    text-decoration: line-through;
-  }
+ .link-black {
+   color: #000;
+ }
 </style>

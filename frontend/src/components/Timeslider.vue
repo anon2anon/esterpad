@@ -8,13 +8,7 @@
     <div class="toolbar">
       <div class="toolbar-buttons">
         <div class="button-group">
-          <div class="button"><span>B</span></div>
-          <div class="button"><span>U</span></div>
-          <div class="button"><span>T</span></div>
-          <div class="button"><span>T</span></div>
-          <div class="button"><span>O</span></div>
-          <div class="button"><span>N</span></div>
-          <div class="button"><span>S</span></div>
+          <div class="button" @click="restoreRevision"><i class="material-icons">replay</i></div>
         </div>
       </div>
     </div>
@@ -39,7 +33,8 @@ export default {
       revision: 0,
       maxRevision: 0,
       cssManager: null,
-      state: state
+      state: state,
+      waitingForRestore: false
     }
   },
   components: {
@@ -93,7 +88,7 @@ export default {
       }
     },
     revChange (val) {
-      log.debug(val)
+      log.debug('Requesting revision', val)
       bus.$emit('send', 'RevisionRequest', {revision: val})
     },
     recvDocument (doc) {
@@ -114,6 +109,10 @@ export default {
     },
     newDelta (delta) {
       this.maxRevision = Math.max(this.maxRevision, delta.id)
+      if (this.waitingForRestore) {
+        this.revision = this.maxRevision
+        this.waitingForRestore = false
+      }
     },
     updateColor (userId, newColor) {
       this.cssManager.selectorStyle('.author-' + userId).background = newColor
@@ -122,6 +121,12 @@ export default {
     },
     userLeave (info) {
       log.warn('TODO: handle user leave in editor')
+    },
+    restoreRevision () {
+      if (this.waitingForRestore) return
+      log.debug('Restoring revision', this.revision)
+      bus.$emit('send', 'RestoreRevision', {rev: this.revision})
+      this.waitingForRestore = true
     }
   }
 }

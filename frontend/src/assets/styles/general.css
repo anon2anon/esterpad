@@ -27,7 +27,7 @@
   background-color: #D2D2D2;
 }
 
-.toolbar .button-group .button span{
+.toolbar .button-group .button span,i{
   display: inline-block;
   vertical-align: middle;
   line-height: normal;
