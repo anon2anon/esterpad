@@ -2,7 +2,7 @@
 
 This is the frontend of the Esterpad.
 
-Basically, you'll want to go to main [esterpad-backend repo](https://github.com/anon2anon/esterpad-backend).
+Basically, you'll want to go to main [esterpad repo](https://github.com/anon2anon/esterpad).
 
 ## Setting up dev environment:
 

@@ -61,16 +61,23 @@ export default {
       log.debug('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
 
-      let cm = CodeMirror(this.$refs.cm, {
-        value: '', // (TODO: make cool spinner here)
-        tabSize: 4,
-        mode: 'text/plain',
-        lineNumbers: true,
-        lineWrapping: true,
-        readOnly: 'nocursor'
-      })
+      if (this.cma) {
+        log.debug('Clearing editor')
+        this.cma.clear()
+      } else {
+        log.debug('Creating editor')
 
-      this.cma = new CodemirrorAdapter(cm)
+        let cm = CodeMirror(this.$refs.cm, {
+          value: '', // (TODO: make cool spinner here)
+          tabSize: 4,
+          mode: 'text/plain',
+          lineNumbers: true,
+          lineWrapping: true,
+          readOnly: 'nocursor'
+        })
+
+        this.cma = new CodemirrorAdapter(cm)
+      }
     },
     revChange (val) {
       log.debug(val)
