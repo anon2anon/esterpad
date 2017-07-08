@@ -127,16 +127,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
   .editor{
     display: grid;
     grid-template-rows: 50px 45px 1fr;
     height: 100%;
   }
-
- .CodeMirror, .flex {
-   min-width: 100%;
-   min-height: 100%;
- }
 </style>
