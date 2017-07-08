@@ -138,7 +138,7 @@ export default {
  .messages {
    flex: 1 1 0;
    overflow-y: scroll;
-   word-break: break-all;
+   word-break: break-word;
  }
 
  #chat-input {

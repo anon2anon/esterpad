@@ -44,7 +44,7 @@
 .CodeMirror, .flex {
     min-width: 100%;
     min-height: 100%;
-    max-width: 1px;
+    max-width: 0;
   }
 
 .padtext-bold {
