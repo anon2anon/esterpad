@@ -62,6 +62,7 @@
 </template>
 
 <script>
+require('./assets/styles/general.css')
 import MyUser from '@/components/MyUser'
 import { state, bus } from '@/globs'
 
