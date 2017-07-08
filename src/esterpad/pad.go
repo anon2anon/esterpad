@@ -102,7 +102,7 @@ func PadLoad(id uint32, name string) *Pad {
 	chat := MongoChat{}
 	for chatIter.Next(&chat) {
 		for i := p.ChatCounter + 1; i < chat.Id; i++ {
-			p.ChatArray = append(p.ChatArray, nil)
+			p.ChatArray = append(p.ChatArray, &PChat{i, nil, ""})
 		}
 		p.ChatCounter = chat.Id
 		user := CacherGetUser(chat.UserId)
@@ -116,7 +116,7 @@ func PadLoad(id uint32, name string) *Pad {
 	oldDocument := DefaultDocument
 	for deltaIter.Next(&delta) {
 		for i := p.DeltaCounter + 1; i < delta.Id; i++ {
-			p.DeltaArray = append(p.DeltaArray, nil)
+			p.DeltaArray = append(p.DeltaArray, &PDelta{i, 0, list.New()})
 			p.DocumentArray = append(p.DocumentArray, &PDocument{i, oldDocument})
 		}
 		p.DeltaCounter = delta.Id
@@ -133,7 +133,7 @@ func PadLoad(id uint32, name string) *Pad {
 		newDocument := DeltaComposeOld(newOps, oldDocument)
 		if newDocument == nil {
 			padLogger.Log(LOG_ERROR, p.Id, "can't compose delta on load", DeltaToString(newOps), DeltaToString(oldDocument))
-			p.DeltaArray = append(p.DeltaArray, nil)
+			p.DeltaArray = append(p.DeltaArray, &PDelta{delta.Id, 0, list.New()})
 			p.DocumentArray = append(p.DocumentArray, &PDocument{delta.Id, oldDocument})
 		} else {
 			pdelta := PDelta{delta.Id, delta.UserId, newOps}
@@ -355,8 +355,9 @@ func (p *Pad) InvertUserDelta(c *Client, userId uint32) {
 			return
 		}
 	} else {
-		opsList = list.New()
-		newOps = oldDocument
+		padLogger.Log(LOG_INFO, p.Id, c.UserId, "empty delta generated")
+		p.DeltaMutex.Unlock()
+		return
 	}
 	p.DeltaCounter++
 	delta := PDelta{p.DeltaCounter, c.UserId, opsList}
@@ -410,8 +411,9 @@ func (p *Pad) RestoreRevision(c *Client, rev uint32) {
 			return
 		}
 	} else {
-		opsList = list.New()
-		newOps = oldDocument
+		padLogger.Log(LOG_INFO, p.Id, c.UserId, "empty delta generated")
+		p.DeltaMutex.Unlock()
+		return
 	}
 	p.DeltaCounter++
 	delta := PDelta{p.DeltaCounter, c.UserId, opsList}
