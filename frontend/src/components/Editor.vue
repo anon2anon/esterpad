@@ -1,5 +1,20 @@
 <template>
-  <div ref="cm" class="flex"></div>
+  <div class="editor">
+    <div class="toolbar">
+      <div class="toolbar-buttons">
+        <div class="button-group">
+          <div class="button button-bold"><span>B</span></div>
+          <div class="button button-italic"><span>I</span></div>
+          <div class="button button-underline"><span>U</span></div>
+          <div class="button button-strike"><span>S</span></div>
+        </div>
+        <div class="button-group">
+          <div class="button"><span class="material-icons">list</span></div>
+        </div>
+      </div>
+    </div>
+    <div ref="cm" class="flex"></div>
+  </div>
 </template>
 
 <script>
@@ -247,6 +262,28 @@ export default {
 </script>
 
 <style>
+  .editor{
+    display: grid;
+    grid-template-rows: 45px 1fr;
+    height: 100%;
+  }
+
+  .toolbar .button-group .button.button-bold{
+    font-weight: bold;
+  }
+
+  .toolbar .button-group .button.button-italic{
+    font-style: italic;
+  }
+
+  .toolbar .button-group .button.button-underline span{
+    text-decoration: underline;
+  }
+
+  .toolbar .button-group .button.button-strike span{
+    text-decoration: line-through;
+  }
+
  .CodeMirror, .flex {
    min-width: 100%;
    min-height: 100%;

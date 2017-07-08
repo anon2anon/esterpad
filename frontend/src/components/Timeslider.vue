@@ -1,10 +1,23 @@
 <template>
-  <div class="flex">
+  <div class="editor flex">
     <vue-slider ref="slider" v-model="revision"
                 :min="0" :max="maxRevision"
                 tooltip="always" tooltip-dir="bottom"
                 style="z-index: 90" @callback="revChange">
     </vue-slider>
+    <div class="toolbar">
+      <div class="toolbar-buttons">
+        <div class="button-group">
+          <div class="button"><span>B</span></div>
+          <div class="button"><span>U</span></div>
+          <div class="button"><span>T</span></div>
+          <div class="button"><span>T</span></div>
+          <div class="button"><span>O</span></div>
+          <div class="button"><span>N</span></div>
+          <div class="button"><span>S</span></div>
+        </div>
+      </div>
+    </div>
     <div ref="cm"></div>
   </div>
 </template>
@@ -115,9 +128,16 @@ export default {
 </script>
 
 <style>
+
+  .editor{
+    display: grid;
+    grid-template-rows: 50px 45px 1fr;
+    height: 100%;
+  }
+
  .CodeMirror, .flex {
    min-width: 100%;
-   height: 100%;
+   min-height: 100%;
  }
  .CodeMirror {
    font-family: Arial, sans-serif !important;
