@@ -187,6 +187,12 @@ func (c *Client) WritePumpProcessChan(message interface{}, buffer []*SMessage) [
 			SMessageOneOf := &SMessage_Delta{smessage}
 			buffer = append(buffer, &SMessage{SMessageOneOf})
 		}
+	case *SDeltaDropped:
+		if c.pc != nil {
+			clientLogger.Log(LOG_INFO, c.UserId, "send delta dropped message", message)
+			SMessageOneOf := &SMessage_DeltaDropped{message}
+			buffer = append(buffer, &SMessage{SMessageOneOf})
+		}
 	case *SUserLeave:
 		if c.pc != nil {
 			clientLogger.Log(LOG_INFO, c.UserId, "send broadcast user logout", message)
