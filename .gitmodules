@@ -1,6 +1,0 @@
-[submodule "frontend"]
-	path = frontend
-	url = https://github.com/anon2anon/esterpad-frontend
-[submodule "src/esterpad_utils"]
-	path = src/esterpad_utils
-	url = https://github.com/anon2anon/esterpad-utils
