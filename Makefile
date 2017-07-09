@@ -14,3 +14,6 @@ deps:
 
 utils:
 	protoc --go_out=. src/esterpad_utils/esterpad.proto
+
+tester:
+	GOPATH="$(CURDIR)" go build -o tester build_tester.go
