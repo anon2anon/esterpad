@@ -24,7 +24,7 @@ var proxyTable = config.dev.proxyTable
 var protobuf = require('protobufjs')
 var fs = require('fs')
 
-protobuf.load('./utils/esterpad.proto', function(e, p) {
+protobuf.load('../src/esterpad_utils/esterpad.proto', function(e, p) {
   var compiledProto = JSON.stringify(p.toJSON())
   fs.writeFile('src/assets/proto.json', compiledProto, function(err) {
     if (err) return console.log(err)
