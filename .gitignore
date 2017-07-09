@@ -3,5 +3,6 @@
 !/src/esterpad/
 /pkg/
 /esterpad
+/tester
 /config.json
 /log/
