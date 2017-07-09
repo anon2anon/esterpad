@@ -1,7 +1,7 @@
-let commit = require('child_process')
+var commit = require('child_process')
     .execSync('git rev-parse --short HEAD')
     .toString().trim()
-let version = require("../package.json").version
+var version = require("../package.json").version
 
 module.exports = {
   NODE_ENV: '"production"',
