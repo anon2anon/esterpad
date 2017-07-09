@@ -2,6 +2,8 @@ import * as log from 'loglevel'
 window.log = log
 log.setLevel('debug')
 
+log.info('Running version ' + process.env.VERSION + ', commit ' + process.env.COMMIT)
+
 import Vue from 'vue'
 import App from './App'
 import router from './router'
@@ -96,12 +98,13 @@ let CMessages = proto.lookup('esterpad_utils.CMessages')
 
 let wsUrl = window.location.protocol === 'https:' ? 'wss' : 'ws'
 wsUrl += '://'
-if (window.location.hostname === 'localhost') {
+if (process.env.NODE_ENV === 'development') {
   wsUrl += 'localhost:9000'
 } else {
   wsUrl += window.location.host
 }
 wsUrl += '/.ws'
+
 let conn = new WebSocket(wsUrl)
 conn.binaryType = 'arraybuffer'
 

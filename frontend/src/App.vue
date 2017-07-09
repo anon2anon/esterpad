@@ -2,7 +2,7 @@
   <div id="app" class="container">
     <md-sidenav class="md-left main-sidenav" ref="sidenav">
       <md-toolbar>
-        <div class="md-toolbar-container">
+        <div class="md-toolbar-container" :title="version">
           <p class="md-title">Esterpad</p>
         </div>
       </md-toolbar>
@@ -74,7 +74,8 @@ export default {
     return {
       state: state,
       title: '',
-      snckMsg: ''
+      snckMsg: '',
+      version: process.env.VERSION + ' (' + process.env.COMMIT + ')'
     }
   },
   mounted () {
