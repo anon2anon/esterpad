@@ -5,7 +5,7 @@ RUN apt-get upgrade -y
 RUN apt-get install -y nodejs nodejs-legacy npm golang-go
 
 RUN apt-get install -y git
-RUN git clone --recursive https://github.com/anon2anon/esterpad-backend /esterpad
+RUN git clone https://github.com/anon2anon/esterpad /esterpad
 
 WORKDIR /esterpad
 ENV GOPATH /esterpad
