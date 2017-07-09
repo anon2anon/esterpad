@@ -92,7 +92,7 @@ export default {
           needUpdate = true
         }
       }
-      if (needUpdate) this.cma.applyOperation(ourMeta, false)
+      if (needUpdate) this.cma.applyOperation(ourMeta)
 
       this.processDelta(textOp)
     },
@@ -140,7 +140,7 @@ export default {
         }
 
         if (!tmp.delta.isNoop()) {
-          that.cma.applyOperation(tmp.delta, false)
+          that.cma.applyOperation(tmp.delta)
           that.processDelta(tmp.delta)
         }
       }
@@ -187,7 +187,7 @@ export default {
                                                  .retain(to - from, {userId: 0})
                                                  .retain(docLen - to)
 
-              that.cma.applyOperation(whiteMeta, false)
+              that.cma.applyOperation(whiteMeta)
               that.processDelta(whiteMeta)
             }
           }

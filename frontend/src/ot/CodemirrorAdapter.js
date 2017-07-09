@@ -5,7 +5,6 @@ import Selection from './Selection.js'
 
 function CodeMirrorAdapter (cm) {
   this.cm = cm
-  this.ignoreNextChange = false
   this.changeInProgress = false
   this.selectionChanged = false
 
@@ -54,7 +53,7 @@ function codemirrorDocLength (doc) {
 // in CodeMirror v4) or single change or linked list of changes (as returned
 // by the 'change' event in CodeMirror prior to version 4) into a
 // TextOperation and its inverse and returns them as a two-element array.
-CodeMirrorAdapter.operationFromCodeMirrorChanges = function (changes, doc) {
+CodeMirrorAdapter.operationFromCodeMirrorChanges = function (changesDirty, doc) {
   // Approach: Replay the changes, beginning with the most recent one, and
   // construct the operation and its inverse. We have to convert the position
   // in the pre-change coordinate system to an index. We have a method to
@@ -65,6 +64,16 @@ CodeMirrorAdapter.operationFromCodeMirrorChanges = function (changes, doc) {
   // pre-change coordinate system for all changes in the linked list.
   // A disadvantage of this approach is its complexity `O(n^2)` in the length
   // of the linked list of changes.
+
+  let changes = []
+  // changesDirty contains not-user generated changes, we should remove them.
+  // Looks like change.origin undefined in this case.
+  for (let c of changesDirty) {
+    log.debug('change with origin', c.origin)
+    if (typeof c.origin !== 'undefined') {
+      changes.push(c)
+    }
+  }
 
   var docEndLength = codemirrorDocLength(doc)
   var operation = new TextOperation().retain(docEndLength)
@@ -273,7 +282,6 @@ CodeMirrorAdapter.prototype.toggleMeta = function (from, to, meta, perm, uid) {
     let newto = Math.min(this.cm.indexFromPos(to),
                          this.cm.indexFromPos(pos.to))
     let len = newto - newfrom
-    log.debug(newfrom, newto, len)
 
     if (perm || tmp.userId === uid) {
       delta = delta.retain(len, metaObj)
@@ -306,13 +314,12 @@ CodeMirrorAdapter.prototype.onChange = function () {
 }
 
 CodeMirrorAdapter.prototype.onChanges = function (_, changes) {
-  if (!this.ignoreNextChange) {
-    var pair = CodeMirrorAdapter.operationFromCodeMirrorChanges(changes, this.cm)
+  let pair = CodeMirrorAdapter.operationFromCodeMirrorChanges(changes, this.cm)
+  if (!pair[0].isNoop()) {
     this.trigger('change', pair[0], pair[1])
   }
   if (this.selectionChanged) this.trigger('selectionChange')
   this.changeInProgress = false
-  this.ignoreNextChange = false
 }
 
 CodeMirrorAdapter.prototype.onCursorActivity =
@@ -333,7 +340,6 @@ CodeMirrorAdapter.prototype.getValue = function () {
 }
 
 CodeMirrorAdapter.prototype.clear = function () {
-  this.ignoreNextChange = true
   this.cm.setValue('')
   this.cm.clearHistory()
   this.cm.getAllMarks().forEach(mark => {
@@ -440,9 +446,8 @@ CodeMirrorAdapter.prototype.trigger = function (event) {
   if (action) { action.apply(this, args) }
 }
 
-CodeMirrorAdapter.prototype.applyOperation = function (operation, ignoreNextChange = true) {
+CodeMirrorAdapter.prototype.applyOperation = function (operation) {
   if (operation.isNoop()) return
-  this.ignoreNextChange = ignoreNextChange
   CodeMirrorAdapter.applyOperationToCodeMirror(operation, this.cm)
 }
 
