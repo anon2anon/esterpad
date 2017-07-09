@@ -1,0 +1,206 @@
+syntax = "proto3";
+package esterpad_utils;
+
+message SMessages {
+    repeated SMessage sm = 1;
+}
+
+
+message SMessage {
+    oneof SMessage {
+        SChat Chat = 1;
+        SDelta Delta = 2;
+        SDeltaDropped DeltaDropped = 3;
+        SDocument Document = 4;
+        SAuth Auth = 5;
+        SAuthError AuthError = 6;
+        SUserLeave UserLeave = 7;
+        SUserInfo UserInfo = 8;
+        SPadList PadList = 9;
+    }
+}
+
+message SChat {
+    uint32 id = 1;
+    uint32 userId = 2;
+    string text = 3;
+}
+
+message SDelta {
+    uint32 id = 1;
+    uint32 userId = 2;
+    repeated Op ops = 3;
+}
+
+message SDeltaDropped {
+    uint32 revision = 1;
+}
+
+message SDocument {
+    uint32 revision = 1;
+    repeated Op ops = 2;
+}
+
+message SAuth {
+    uint32 userId = 1;
+    string nickname = 2;
+    uint32 color = 3;
+    uint32 perms = 4;
+    string sessId = 5;
+}
+
+message SAuthError {
+    uint32 error = 1;
+}
+
+message SUserLeave {
+    uint32 userId = 1;
+}
+
+message SUserInfo {
+    uint32 userId = 1;
+    string nickname = 2;
+    uint32 color = 3;
+    uint32 perms = 4;
+    bool online = 5;
+    string ip = 6;
+    string userAgent = 7;
+}
+
+message SPadList {
+    repeated string pads = 1;
+}
+
+message CMessages {
+    repeated CMessage cm = 1;
+}
+
+message CMessage {
+    oneof CMessage {
+        CEditUser EditUser = 1;
+        CDelta Delta = 2;
+        CChat Chat = 3;
+        CSession Session = 4;
+        CLogin Login = 5;
+        CLogout Logout = 6;
+        CRegister Register = 7;
+        CGuestLogin GuestLogin = 8;
+        CEnterPad EnterPad = 9;
+        CLeavePad LeavePad = 10;
+        CAdminUser AdminUser = 11;
+        CChatRequest ChatRequest = 12;
+        CRevisionRequest RevisionRequest = 13;
+        CInvertDelta InvertDelta = 14;
+        CInvertUserDelta InvertUserDelta = 15;
+        CRestoreRevision RestoreRevision = 16;
+    }
+}
+
+message CEditUser {
+    uint32 changemask = 1;
+    string nickname = 2;
+    uint32 color = 3;
+    string email = 4;
+    string password = 5;
+}
+
+message CDelta {
+    uint32 revision = 1;
+    repeated Op ops = 2;
+}
+
+message CChat {
+    string text = 1;
+}
+
+message CSession {
+    string sessId = 1;
+}
+
+message CLogin {
+    string email = 1;
+    string password = 2;
+}
+
+message CLogout {
+}
+
+message CRegister {
+    string email = 1;
+    string password = 2;
+    string nickname = 3;
+}
+
+message CGuestLogin {
+}
+
+message CEnterPad {
+    string name = 1;
+}
+
+message CLeavePad {
+}
+
+message CAdminUser {
+        uint32 userId = 1;
+        uint32 changemask = 2;
+        uint32 perms = 3;
+        string nickname = 4;
+        uint32 color = 5;
+        string email = 6;
+        string password = 7;
+}
+
+message CChatRequest {
+        uint32 from = 1;
+        uint32 count = 2;
+}
+
+message CRevisionRequest {
+        uint32 revision = 1;
+}
+
+message CInvertDelta {
+        uint32 id = 1;
+}
+
+message CInvertUserDelta {
+        uint32 userId = 1;
+}
+
+message CRestoreRevision {
+        uint32 rev = 1;
+}
+
+message Op {
+        oneof op {
+             OpInsert insert = 1;
+             OpDelete delete = 2;
+             OpRetain retain = 3;
+        }
+}
+
+message OpInsert {
+        string text = 1;
+        OpMeta meta = 2;
+}
+
+
+message OpDelete {
+        uint32 len = 1;
+}
+
+message OpRetain {
+        uint32 len = 1;
+        OpMeta meta = 2;
+}
+
+message OpMeta {
+        uint32 changemask = 1;
+        bool bold = 2;
+        bool italic = 3;
+        bool underline = 4;
+        bool strike = 5;
+        uint32 fontSize = 6;
+        uint32 userId = 7;
+}
