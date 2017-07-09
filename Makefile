@@ -1,11 +1,11 @@
-all: utils deps backend frontend
+all: backend frontend
 
 frontend:
 	$(MAKE) -C frontend
 	
 .PHONY: frontend
 
-backend:
+backend: utils deps
 	GOPATH="$(CURDIR)" go build -o esterpad build.go
 	mkdir -p log
 
@@ -15,5 +15,5 @@ deps:
 utils:
 	protoc --go_out=. src/esterpad_utils/esterpad.proto
 
-tester:
+tester: utils deps
 	GOPATH="$(CURDIR)" go build -o tester build_tester.go
