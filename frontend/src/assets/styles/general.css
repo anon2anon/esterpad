@@ -62,3 +62,7 @@
 .padtext-underline.padtext-strike {
   text-decoration: underline line-through;
 }
+
+.link-black {
+  color: #000;
+}

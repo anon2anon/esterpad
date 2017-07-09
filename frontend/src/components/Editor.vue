@@ -3,10 +3,18 @@
     <div class="toolbar">
       <div class="toolbar-buttons">
         <div class="button-group">
-          <div class="button"><i class="material-icons">format_bold</i></div>
-          <div class="button"><i class="material-icons">format_italic</i></div>
-          <div class="button"><i class="material-icons">format_underlined</i></div>
-          <div class="button"><i class="material-icons">strikethrough_s</i></div>
+          <div class="button" @click="toggleMeta('bold')">
+            <i class="material-icons">format_bold</i>
+          </div>
+          <div class="button" @click="toggleMeta('italic')">
+            <i class="material-icons">format_italic</i>
+          </div>
+          <div class="button" @click="toggleMeta('underline')">
+            <i class="material-icons">format_underlined</i>
+          </div>
+          <div class="button" @click="toggleMeta('strike')">
+            <i class="material-icons">strikethrough_s</i>
+          </div>
         </div>
         <div class="button-group">
           <router-link to="timeslider" class="link-black" append>
@@ -32,6 +40,7 @@ export default {
   data () {
     return {
       cma: null,
+      cm: null,
       synchronized: true,
       outgoing: null,
       buffer: null,
@@ -123,27 +132,24 @@ export default {
       }
       this.debounceBuffer = null
     },
+    toggleMeta (meta) {
+      let from = this.cm.getCursor('from')
+      let to = this.cm.getCursor('to')
+      log.debug('toggleMeta', from, to, meta)
+
+      let tmp = this.cma.toggleMeta(from, to, meta, state.perms.edit, state.userId)
+      if (!tmp.ok) {
+        bus.$emit('snack-msg', 'Sorry, you don\'t have permission for that, some edits dropped')
+      }
+
+      if (!tmp.delta.isNoop()) {
+        this.cma.applyOperation(tmp.delta)
+        this.processDelta(tmp.delta)
+      }
+    },
     reinitCM (padId) {
       log.debug('reinitCM', padId)
       bus.$emit('send', 'EnterPad', {name: padId})
-
-      let that = this
-
-      let toggleMeta = function (cm, meta) {
-        let from = cm.getCursor('from')
-        let to = cm.getCursor('to')
-        log.debug('toggleMeta', from, to, meta)
-
-        let tmp = that.cma.toggleMeta(from, to, meta, state.perms.edit, state.userId)
-        if (!tmp.ok) {
-          bus.$emit('snack-msg', 'Sorry, you don\'t have permission for that, some edits dropped')
-        }
-
-        if (!tmp.delta.isNoop()) {
-          that.cma.applyOperation(tmp.delta)
-          that.processDelta(tmp.delta)
-        }
-      }
 
       if (this.cma) {
         log.debug('Clearing editor')
@@ -151,7 +157,8 @@ export default {
       } else {
         log.debug('Creating editor')
 
-        let cm = CodeMirror(this.$refs.cm, {
+        let that = this
+        this.cm = CodeMirror(this.$refs.cm, {
           value: '', // (TODO: make cool spinner here)
           tabSize: 4,
           mode: 'text/plain',
@@ -160,16 +167,16 @@ export default {
           showCursorWhenSelecting: true,
           extraKeys: {
             'Ctrl-B': function (cm) {
-              toggleMeta(cm, 'bold')
+              that.toggleMeta('bold')
             },
             'Ctrl-I': function (cm) {
-              toggleMeta(cm, 'italic')
+              that.toggleMeta('italic')
             },
             'Ctrl-U': function (cm) {
-              toggleMeta(cm, 'underline')
+              that.toggleMeta('underline')
             },
             'Ctrl-S': function (cm) {
-              toggleMeta(cm, 'strike')
+              that.toggleMeta('strike')
             },
             'Ctrl-M': function (cm) {
               if (!state.perms.whitewash) {
@@ -193,7 +200,7 @@ export default {
           }
         })
 
-        this.cma = new CodemirrorAdapter(cm)
+        this.cma = new CodemirrorAdapter(this.cm)
         this.cma.registerCallbacks({'change': this.cmChangeCallback})
       }
     },
@@ -271,8 +278,4 @@ export default {
     grid-template-rows: 45px 1fr;
     height: 100%;
   }
-
- .link-black {
-   color: #000;
- }
 </style>

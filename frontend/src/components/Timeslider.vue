@@ -8,7 +8,10 @@
     <div class="toolbar">
       <div class="toolbar-buttons">
         <div class="button-group">
-          <div class="button" @click="restoreRevision"><i class="material-icons">replay</i></div>
+          <router-link to=".." class="link-black" append>
+            <div class="button"><i class="material-icons">mode_edit</i></div>
+          </router-link>
+          <div class="button" @click="restoreRevision"><i class="material-icons">restore_page</i></div>
         </div>
       </div>
     </div>
