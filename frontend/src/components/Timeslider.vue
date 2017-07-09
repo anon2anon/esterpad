@@ -53,7 +53,9 @@ export default {
     bus.$on('user-leave', this.userLeave)
     bus.$on('color-update', this.updateColor)
 
-    this.updateColor(state.userId, state.userColor)
+    if (state.userId !== 0) {
+      this.updateColor(state.userId, state.userColor)
+    }
   },
   beforeDestroy () {
     log.debug('timeslider destroy')

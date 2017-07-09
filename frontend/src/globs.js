@@ -4,7 +4,7 @@ var state = {
 
   userName: 'Guest',
   userId: 0,
-  userColor: '#ffc107',
+  userColor: '#ffffff',
   get sessId () {
     return localStorage.getItem('sessId') || ''
   },
