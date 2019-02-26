@@ -1,206 +1,201 @@
 syntax = "proto3";
 package proto;
 
-message SMessages {
-    repeated SMessage sm = 1;
+message ServerPacket {
+    repeated S msgs = 1;
 }
 
+message ClientPacket {
+    repeated C msgs = 1;
+}
 
-message SMessage {
-    oneof SMessage {
-        SChat Chat = 1;
-        SDelta Delta = 2;
-        SDeltaDropped DeltaDropped = 3;
-        SDocument Document = 4;
-        SAuth Auth = 5;
-        SAuthError AuthError = 6;
-        SUserLeave UserLeave = 7;
-        SUserInfo UserInfo = 8;
-        SPadList PadList = 9;
+// server
+message S {
+    message AuthSuccess {
+        string sess_id = 1;
+        User user = 2;
+    }
+
+    message PadList {
+        repeated string name = 1;
+    }
+
+    message ChatMessage {
+        uint32 id = 1;
+        uint32 user_id = 2;
+        string text = 3;
+    }
+
+    message Delta {
+        uint32 id = 1;
+        uint32 user_id = 2;
+        repeated Op ops = 3;
+    }
+
+    message Document {
+        uint32 revision = 1;
+        repeated Op ops = 2;
+    }
+
+    message ServerStats {
+        message Pad {
+            message Client {
+                string sess_id = 1;
+                User user = 2;
+            }
+            string name = 1;
+            repeated Client clients = 2;
+        }
+
+        string go_version = 1;
+        uint32 goroutines_count = 2;
+        repeated Pad pads = 3;
+    }
+
+    oneof s {
+        // auth
+        AuthSuccess auth_success = 1;
+        string auth_error = 2;
+        // user
+        User user_info = 101;
+        uint32 user_leave = 102;
+        // pads
+        PadList pad_list = 201;
+        PadOptions pad_info = 202;
+        // chat
+        ChatMessage chat_message = 301;
+        uint32 remove_chat_message = 302;
+        // documents
+        Delta delta = 401;
+        uint32 delta_dropped = 402;
+        Document document = 403;
+        // mod
+        // admin
+        ServerStats server_stats = 601;
+        // common
+        string server_error = 701;
     }
 }
 
-message SChat {
-    uint32 id = 1;
-    uint32 userId = 2;
-    string text = 3;
-}
-
-message SDelta {
-    uint32 id = 1;
-    uint32 userId = 2;
-    repeated Op ops = 3;
-}
-
-message SDeltaDropped {
-    uint32 revision = 1;
-}
-
-message SDocument {
-    uint32 revision = 1;
-    repeated Op ops = 2;
-}
-
-message SAuth {
-    uint32 userId = 1;
-    string nickname = 2;
-    uint32 color = 3;
-    uint32 perms = 4;
-    string sessId = 5;
-}
-
-message SAuthError {
-    uint32 error = 1;
-}
-
-message SUserLeave {
-    uint32 userId = 1;
-}
-
-message SUserInfo {
-    uint32 userId = 1;
-    string nickname = 2;
-    uint32 color = 3;
-    uint32 perms = 4;
-    bool online = 5;
-    string ip = 6;
-    string userAgent = 7;
-}
-
-message SPadList {
-    repeated string pads = 1;
-}
-
-message CMessages {
-    repeated CMessage cm = 1;
-}
-
-message CMessage {
-    oneof CMessage {
-        CEditUser EditUser = 1;
-        CDelta Delta = 2;
-        CChat Chat = 3;
-        CSession Session = 4;
-        CLogin Login = 5;
-        CLogout Logout = 6;
-        CRegister Register = 7;
-        CGuestLogin GuestLogin = 8;
-        CEnterPad EnterPad = 9;
-        CLeavePad LeavePad = 10;
-        CAdminUser AdminUser = 11;
-        CChatRequest ChatRequest = 12;
-        CRevisionRequest RevisionRequest = 13;
-        CInvertDelta InvertDelta = 14;
-        CInvertUserDelta InvertUserDelta = 15;
-        CRestoreRevision RestoreRevision = 16;
+// client
+message C {
+    message LoginAuth {
+        string email = 1;
+        string password = 2;
     }
-}
 
-message CEditUser {
-    uint32 changemask = 1;
-    string nickname = 2;
-    uint32 color = 3;
-    string email = 4;
-    string password = 5;
-}
+    message Register {
+        string email = 1;
+        string password = 2;
+        string nickname = 3;
+    }
 
-message CDelta {
-    uint32 revision = 1;
-    repeated Op ops = 2;
-}
-
-message CChat {
-    string text = 1;
-}
-
-message CSession {
-    string sessId = 1;
-}
-
-message CLogin {
-    string email = 1;
-    string password = 2;
-}
-
-message CLogout {
-}
-
-message CRegister {
-    string email = 1;
-    string password = 2;
-    string nickname = 3;
-}
-
-message CGuestLogin {
-}
-
-message CEnterPad {
-    string name = 1;
-}
-
-message CLeavePad {
-}
-
-message CAdminUser {
-        uint32 userId = 1;
-        uint32 changemask = 2;
-        uint32 perms = 3;
-        string nickname = 4;
-        uint32 color = 5;
-        string email = 6;
-        string password = 7;
-}
-
-message CChatRequest {
+    message GetChatHistory {
         uint32 from = 1;
         uint32 count = 2;
-}
+    }
 
-message CRevisionRequest {
+    message AddDelta {
         uint32 revision = 1;
+        repeated Op ops = 2;
+    }
+
+    oneof c {
+        // auth
+        bool guest_auth = 1;
+        string session_auth = 2;
+        LoginAuth login_auth = 3;
+        Register register = 4;
+        bool logout = 5;
+        // user
+        User edit_me = 101;
+        // pads
+        string enter_pad = 201;
+        bool leave_pad = 202;
+        // chat
+        string send_chat_message = 301;
+        GetChatHistory get_chat_history = 302;
+        // documents
+        AddDelta add_delta = 401;
+        uint32 get_doc_revision = 402;
+        uint32 invert_delta = 403;
+        // mod
+        uint32 invert_user_deltas = 501;
+        uint32 restore_revision = 502;
+        User edit_user = 503;
+        User create_user = 504;
+        PadOptions set_pad_options = 505;
+        // admin
+        uint32 delete_user = 601;
+        string delete_pad = 602;
+        uint32 delete_chat_message = 603;
+        uint32 delete_user_messages = 604;
+        bool get_server_stats = 605;
+        bool drop_caches = 606;
+        bool restart_server = 607;
+        string exec_js = 608;
+    }
 }
 
-message CInvertDelta {
-        uint32 id = 1;
-}
-
-message CInvertUserDelta {
-        uint32 userId = 1;
-}
-
-message CRestoreRevision {
-        uint32 rev = 1;
-}
-
+// common
 message Op {
-        oneof op {
-             OpInsert insert = 1;
-             OpDelete delete = 2;
-             OpRetain retain = 3;
-        }
+    oneof op {
+         OpInsert insert = 1;
+         OpDelete delete = 2;
+         OpRetain retain = 3;
+    }
 }
 
 message OpInsert {
-        string text = 1;
-        OpMeta meta = 2;
+    string text = 1;
+    OpMeta meta = 2;
 }
 
 
 message OpDelete {
-        uint32 len = 1;
+    uint32 len = 1;
 }
 
 message OpRetain {
-        uint32 len = 1;
-        OpMeta meta = 2;
+    uint32 len = 1;
+    OpMeta meta = 2;
 }
 
 message OpMeta {
-        uint32 changemask = 1;
-        bool bold = 2;
-        bool italic = 3;
-        bool underline = 4;
-        bool strike = 5;
-        uint32 fontSize = 6;
-        uint32 userId = 7;
+    uint32 changemask = 1;
+    bool bold = 2;
+    bool italic = 3;
+    bool underline = 4;
+    bool strike = 5;
+    uint32 fontSize = 6;
+    uint32 user_id = 7;
+}
+
+message User {
+    uint32 id = 1;
+    string nickname = 101;
+    uint32 color = 102;
+    string email = 201;
+    string password = 202;
+    string ip = 301;
+    string user_agent = 302;
+    UserPerms perms = 401;
+    bool online = 501;
+}
+
+message UserPerms {
+    bool not_guest = 1;
+    bool chat = 2;
+    bool write = 3;
+    bool edit = 4;
+    bool whitewash = 5;
+    bool mod = 6;
+    bool admin = 7;
+}
+
+message PadOptions {
+    bool private = 1;
+    bool guest_ro = 2;
+    bool antiwipe = 3;
+    bool freeze = 4;
 }

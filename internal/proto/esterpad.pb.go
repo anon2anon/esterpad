@@ -20,380 +20,527 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type SMessages struct {
-	Sm                   []*SMessage `protobuf:"bytes,1,rep,name=sm,proto3" json:"sm,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+type ServerPacket struct {
+	Msgs                 []*S     `protobuf:"bytes,1,rep,name=msgs,proto3" json:"msgs,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SMessages) Reset()         { *m = SMessages{} }
-func (m *SMessages) String() string { return proto.CompactTextString(m) }
-func (*SMessages) ProtoMessage()    {}
-func (*SMessages) Descriptor() ([]byte, []int) {
+func (m *ServerPacket) Reset()         { *m = ServerPacket{} }
+func (m *ServerPacket) String() string { return proto.CompactTextString(m) }
+func (*ServerPacket) ProtoMessage()    {}
+func (*ServerPacket) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de4f63176b85ff4e, []int{0}
 }
 
-func (m *SMessages) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SMessages.Unmarshal(m, b)
+func (m *ServerPacket) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ServerPacket.Unmarshal(m, b)
 }
-func (m *SMessages) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SMessages.Marshal(b, m, deterministic)
+func (m *ServerPacket) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ServerPacket.Marshal(b, m, deterministic)
 }
-func (m *SMessages) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SMessages.Merge(m, src)
+func (m *ServerPacket) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ServerPacket.Merge(m, src)
 }
-func (m *SMessages) XXX_Size() int {
-	return xxx_messageInfo_SMessages.Size(m)
+func (m *ServerPacket) XXX_Size() int {
+	return xxx_messageInfo_ServerPacket.Size(m)
 }
-func (m *SMessages) XXX_DiscardUnknown() {
-	xxx_messageInfo_SMessages.DiscardUnknown(m)
+func (m *ServerPacket) XXX_DiscardUnknown() {
+	xxx_messageInfo_ServerPacket.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SMessages proto.InternalMessageInfo
+var xxx_messageInfo_ServerPacket proto.InternalMessageInfo
 
-func (m *SMessages) GetSm() []*SMessage {
+func (m *ServerPacket) GetMsgs() []*S {
 	if m != nil {
-		return m.Sm
+		return m.Msgs
 	}
 	return nil
 }
 
-type SMessage struct {
-	// Types that are valid to be assigned to SMessage:
-	//	*SMessage_Chat
-	//	*SMessage_Delta
-	//	*SMessage_DeltaDropped
-	//	*SMessage_Document
-	//	*SMessage_Auth
-	//	*SMessage_AuthError
-	//	*SMessage_UserLeave
-	//	*SMessage_UserInfo
-	//	*SMessage_PadList
-	SMessage             isSMessage_SMessage `protobuf_oneof:"SMessage"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
+type ClientPacket struct {
+	Msgs                 []*C     `protobuf:"bytes,1,rep,name=msgs,proto3" json:"msgs,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SMessage) Reset()         { *m = SMessage{} }
-func (m *SMessage) String() string { return proto.CompactTextString(m) }
-func (*SMessage) ProtoMessage()    {}
-func (*SMessage) Descriptor() ([]byte, []int) {
+func (m *ClientPacket) Reset()         { *m = ClientPacket{} }
+func (m *ClientPacket) String() string { return proto.CompactTextString(m) }
+func (*ClientPacket) ProtoMessage()    {}
+func (*ClientPacket) Descriptor() ([]byte, []int) {
 	return fileDescriptor_de4f63176b85ff4e, []int{1}
 }
 
-func (m *SMessage) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SMessage.Unmarshal(m, b)
+func (m *ClientPacket) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ClientPacket.Unmarshal(m, b)
 }
-func (m *SMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SMessage.Marshal(b, m, deterministic)
+func (m *ClientPacket) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ClientPacket.Marshal(b, m, deterministic)
 }
-func (m *SMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SMessage.Merge(m, src)
+func (m *ClientPacket) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClientPacket.Merge(m, src)
 }
-func (m *SMessage) XXX_Size() int {
-	return xxx_messageInfo_SMessage.Size(m)
+func (m *ClientPacket) XXX_Size() int {
+	return xxx_messageInfo_ClientPacket.Size(m)
 }
-func (m *SMessage) XXX_DiscardUnknown() {
-	xxx_messageInfo_SMessage.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SMessage proto.InternalMessageInfo
-
-type isSMessage_SMessage interface {
-	isSMessage_SMessage()
+func (m *ClientPacket) XXX_DiscardUnknown() {
+	xxx_messageInfo_ClientPacket.DiscardUnknown(m)
 }
 
-type SMessage_Chat struct {
-	Chat *SChat `protobuf:"bytes,1,opt,name=Chat,proto3,oneof"`
-}
+var xxx_messageInfo_ClientPacket proto.InternalMessageInfo
 
-type SMessage_Delta struct {
-	Delta *SDelta `protobuf:"bytes,2,opt,name=Delta,proto3,oneof"`
-}
-
-type SMessage_DeltaDropped struct {
-	DeltaDropped *SDeltaDropped `protobuf:"bytes,3,opt,name=DeltaDropped,proto3,oneof"`
-}
-
-type SMessage_Document struct {
-	Document *SDocument `protobuf:"bytes,4,opt,name=Document,proto3,oneof"`
-}
-
-type SMessage_Auth struct {
-	Auth *SAuth `protobuf:"bytes,5,opt,name=Auth,proto3,oneof"`
-}
-
-type SMessage_AuthError struct {
-	AuthError *SAuthError `protobuf:"bytes,6,opt,name=AuthError,proto3,oneof"`
-}
-
-type SMessage_UserLeave struct {
-	UserLeave *SUserLeave `protobuf:"bytes,7,opt,name=UserLeave,proto3,oneof"`
-}
-
-type SMessage_UserInfo struct {
-	UserInfo *SUserInfo `protobuf:"bytes,8,opt,name=UserInfo,proto3,oneof"`
-}
-
-type SMessage_PadList struct {
-	PadList *SPadList `protobuf:"bytes,9,opt,name=PadList,proto3,oneof"`
-}
-
-func (*SMessage_Chat) isSMessage_SMessage() {}
-
-func (*SMessage_Delta) isSMessage_SMessage() {}
-
-func (*SMessage_DeltaDropped) isSMessage_SMessage() {}
-
-func (*SMessage_Document) isSMessage_SMessage() {}
-
-func (*SMessage_Auth) isSMessage_SMessage() {}
-
-func (*SMessage_AuthError) isSMessage_SMessage() {}
-
-func (*SMessage_UserLeave) isSMessage_SMessage() {}
-
-func (*SMessage_UserInfo) isSMessage_SMessage() {}
-
-func (*SMessage_PadList) isSMessage_SMessage() {}
-
-func (m *SMessage) GetSMessage() isSMessage_SMessage {
+func (m *ClientPacket) GetMsgs() []*C {
 	if m != nil {
-		return m.SMessage
+		return m.Msgs
 	}
 	return nil
 }
 
-func (m *SMessage) GetChat() *SChat {
-	if x, ok := m.GetSMessage().(*SMessage_Chat); ok {
-		return x.Chat
+// server
+type S struct {
+	// Types that are valid to be assigned to S:
+	//	*S_AuthSuccess_
+	//	*S_AuthError
+	//	*S_UserInfo
+	//	*S_UserLeave
+	//	*S_PadList_
+	//	*S_PadInfo
+	//	*S_ChatMessage_
+	//	*S_RemoveChatMessage
+	//	*S_Delta_
+	//	*S_DeltaDropped
+	//	*S_Document_
+	//	*S_ServerStats_
+	//	*S_ServerError
+	S                    isS_S    `protobuf_oneof:"s"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *S) Reset()         { *m = S{} }
+func (m *S) String() string { return proto.CompactTextString(m) }
+func (*S) ProtoMessage()    {}
+func (*S) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2}
+}
+
+func (m *S) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S.Unmarshal(m, b)
+}
+func (m *S) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S.Marshal(b, m, deterministic)
+}
+func (m *S) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S.Merge(m, src)
+}
+func (m *S) XXX_Size() int {
+	return xxx_messageInfo_S.Size(m)
+}
+func (m *S) XXX_DiscardUnknown() {
+	xxx_messageInfo_S.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_S proto.InternalMessageInfo
+
+type isS_S interface {
+	isS_S()
+}
+
+type S_AuthSuccess_ struct {
+	AuthSuccess *S_AuthSuccess `protobuf:"bytes,1,opt,name=auth_success,json=authSuccess,proto3,oneof"`
+}
+
+type S_AuthError struct {
+	AuthError string `protobuf:"bytes,2,opt,name=auth_error,json=authError,proto3,oneof"`
+}
+
+type S_UserInfo struct {
+	UserInfo *User `protobuf:"bytes,101,opt,name=user_info,json=userInfo,proto3,oneof"`
+}
+
+type S_UserLeave struct {
+	UserLeave uint32 `protobuf:"varint,102,opt,name=user_leave,json=userLeave,proto3,oneof"`
+}
+
+type S_PadList_ struct {
+	PadList *S_PadList `protobuf:"bytes,201,opt,name=pad_list,json=padList,proto3,oneof"`
+}
+
+type S_PadInfo struct {
+	PadInfo *PadOptions `protobuf:"bytes,202,opt,name=pad_info,json=padInfo,proto3,oneof"`
+}
+
+type S_ChatMessage_ struct {
+	ChatMessage *S_ChatMessage `protobuf:"bytes,301,opt,name=chat_message,json=chatMessage,proto3,oneof"`
+}
+
+type S_RemoveChatMessage struct {
+	RemoveChatMessage uint32 `protobuf:"varint,302,opt,name=remove_chat_message,json=removeChatMessage,proto3,oneof"`
+}
+
+type S_Delta_ struct {
+	Delta *S_Delta `protobuf:"bytes,401,opt,name=delta,proto3,oneof"`
+}
+
+type S_DeltaDropped struct {
+	DeltaDropped uint32 `protobuf:"varint,402,opt,name=delta_dropped,json=deltaDropped,proto3,oneof"`
+}
+
+type S_Document_ struct {
+	Document *S_Document `protobuf:"bytes,403,opt,name=document,proto3,oneof"`
+}
+
+type S_ServerStats_ struct {
+	ServerStats *S_ServerStats `protobuf:"bytes,601,opt,name=server_stats,json=serverStats,proto3,oneof"`
+}
+
+type S_ServerError struct {
+	ServerError string `protobuf:"bytes,701,opt,name=server_error,json=serverError,proto3,oneof"`
+}
+
+func (*S_AuthSuccess_) isS_S() {}
+
+func (*S_AuthError) isS_S() {}
+
+func (*S_UserInfo) isS_S() {}
+
+func (*S_UserLeave) isS_S() {}
+
+func (*S_PadList_) isS_S() {}
+
+func (*S_PadInfo) isS_S() {}
+
+func (*S_ChatMessage_) isS_S() {}
+
+func (*S_RemoveChatMessage) isS_S() {}
+
+func (*S_Delta_) isS_S() {}
+
+func (*S_DeltaDropped) isS_S() {}
+
+func (*S_Document_) isS_S() {}
+
+func (*S_ServerStats_) isS_S() {}
+
+func (*S_ServerError) isS_S() {}
+
+func (m *S) GetS() isS_S {
+	if m != nil {
+		return m.S
 	}
 	return nil
 }
 
-func (m *SMessage) GetDelta() *SDelta {
-	if x, ok := m.GetSMessage().(*SMessage_Delta); ok {
-		return x.Delta
+func (m *S) GetAuthSuccess() *S_AuthSuccess {
+	if x, ok := m.GetS().(*S_AuthSuccess_); ok {
+		return x.AuthSuccess
 	}
 	return nil
 }
 
-func (m *SMessage) GetDeltaDropped() *SDeltaDropped {
-	if x, ok := m.GetSMessage().(*SMessage_DeltaDropped); ok {
-		return x.DeltaDropped
-	}
-	return nil
-}
-
-func (m *SMessage) GetDocument() *SDocument {
-	if x, ok := m.GetSMessage().(*SMessage_Document); ok {
-		return x.Document
-	}
-	return nil
-}
-
-func (m *SMessage) GetAuth() *SAuth {
-	if x, ok := m.GetSMessage().(*SMessage_Auth); ok {
-		return x.Auth
-	}
-	return nil
-}
-
-func (m *SMessage) GetAuthError() *SAuthError {
-	if x, ok := m.GetSMessage().(*SMessage_AuthError); ok {
+func (m *S) GetAuthError() string {
+	if x, ok := m.GetS().(*S_AuthError); ok {
 		return x.AuthError
 	}
-	return nil
+	return ""
 }
 
-func (m *SMessage) GetUserLeave() *SUserLeave {
-	if x, ok := m.GetSMessage().(*SMessage_UserLeave); ok {
-		return x.UserLeave
-	}
-	return nil
-}
-
-func (m *SMessage) GetUserInfo() *SUserInfo {
-	if x, ok := m.GetSMessage().(*SMessage_UserInfo); ok {
+func (m *S) GetUserInfo() *User {
+	if x, ok := m.GetS().(*S_UserInfo); ok {
 		return x.UserInfo
 	}
 	return nil
 }
 
-func (m *SMessage) GetPadList() *SPadList {
-	if x, ok := m.GetSMessage().(*SMessage_PadList); ok {
+func (m *S) GetUserLeave() uint32 {
+	if x, ok := m.GetS().(*S_UserLeave); ok {
+		return x.UserLeave
+	}
+	return 0
+}
+
+func (m *S) GetPadList() *S_PadList {
+	if x, ok := m.GetS().(*S_PadList_); ok {
 		return x.PadList
 	}
 	return nil
 }
 
+func (m *S) GetPadInfo() *PadOptions {
+	if x, ok := m.GetS().(*S_PadInfo); ok {
+		return x.PadInfo
+	}
+	return nil
+}
+
+func (m *S) GetChatMessage() *S_ChatMessage {
+	if x, ok := m.GetS().(*S_ChatMessage_); ok {
+		return x.ChatMessage
+	}
+	return nil
+}
+
+func (m *S) GetRemoveChatMessage() uint32 {
+	if x, ok := m.GetS().(*S_RemoveChatMessage); ok {
+		return x.RemoveChatMessage
+	}
+	return 0
+}
+
+func (m *S) GetDelta() *S_Delta {
+	if x, ok := m.GetS().(*S_Delta_); ok {
+		return x.Delta
+	}
+	return nil
+}
+
+func (m *S) GetDeltaDropped() uint32 {
+	if x, ok := m.GetS().(*S_DeltaDropped); ok {
+		return x.DeltaDropped
+	}
+	return 0
+}
+
+func (m *S) GetDocument() *S_Document {
+	if x, ok := m.GetS().(*S_Document_); ok {
+		return x.Document
+	}
+	return nil
+}
+
+func (m *S) GetServerStats() *S_ServerStats {
+	if x, ok := m.GetS().(*S_ServerStats_); ok {
+		return x.ServerStats
+	}
+	return nil
+}
+
+func (m *S) GetServerError() string {
+	if x, ok := m.GetS().(*S_ServerError); ok {
+		return x.ServerError
+	}
+	return ""
+}
+
 // XXX_OneofWrappers is for the internal use of the proto package.
-func (*SMessage) XXX_OneofWrappers() []interface{} {
+func (*S) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*SMessage_Chat)(nil),
-		(*SMessage_Delta)(nil),
-		(*SMessage_DeltaDropped)(nil),
-		(*SMessage_Document)(nil),
-		(*SMessage_Auth)(nil),
-		(*SMessage_AuthError)(nil),
-		(*SMessage_UserLeave)(nil),
-		(*SMessage_UserInfo)(nil),
-		(*SMessage_PadList)(nil),
+		(*S_AuthSuccess_)(nil),
+		(*S_AuthError)(nil),
+		(*S_UserInfo)(nil),
+		(*S_UserLeave)(nil),
+		(*S_PadList_)(nil),
+		(*S_PadInfo)(nil),
+		(*S_ChatMessage_)(nil),
+		(*S_RemoveChatMessage)(nil),
+		(*S_Delta_)(nil),
+		(*S_DeltaDropped)(nil),
+		(*S_Document_)(nil),
+		(*S_ServerStats_)(nil),
+		(*S_ServerError)(nil),
 	}
 }
 
-type SChat struct {
+type S_AuthSuccess struct {
+	SessId               string   `protobuf:"bytes,1,opt,name=sess_id,json=sessId,proto3" json:"sess_id,omitempty"`
+	User                 *User    `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *S_AuthSuccess) Reset()         { *m = S_AuthSuccess{} }
+func (m *S_AuthSuccess) String() string { return proto.CompactTextString(m) }
+func (*S_AuthSuccess) ProtoMessage()    {}
+func (*S_AuthSuccess) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2, 0}
+}
+
+func (m *S_AuthSuccess) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S_AuthSuccess.Unmarshal(m, b)
+}
+func (m *S_AuthSuccess) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S_AuthSuccess.Marshal(b, m, deterministic)
+}
+func (m *S_AuthSuccess) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S_AuthSuccess.Merge(m, src)
+}
+func (m *S_AuthSuccess) XXX_Size() int {
+	return xxx_messageInfo_S_AuthSuccess.Size(m)
+}
+func (m *S_AuthSuccess) XXX_DiscardUnknown() {
+	xxx_messageInfo_S_AuthSuccess.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_S_AuthSuccess proto.InternalMessageInfo
+
+func (m *S_AuthSuccess) GetSessId() string {
+	if m != nil {
+		return m.SessId
+	}
+	return ""
+}
+
+func (m *S_AuthSuccess) GetUser() *User {
+	if m != nil {
+		return m.User
+	}
+	return nil
+}
+
+type S_PadList struct {
+	Name                 []string `protobuf:"bytes,1,rep,name=name,proto3" json:"name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *S_PadList) Reset()         { *m = S_PadList{} }
+func (m *S_PadList) String() string { return proto.CompactTextString(m) }
+func (*S_PadList) ProtoMessage()    {}
+func (*S_PadList) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2, 1}
+}
+
+func (m *S_PadList) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S_PadList.Unmarshal(m, b)
+}
+func (m *S_PadList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S_PadList.Marshal(b, m, deterministic)
+}
+func (m *S_PadList) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S_PadList.Merge(m, src)
+}
+func (m *S_PadList) XXX_Size() int {
+	return xxx_messageInfo_S_PadList.Size(m)
+}
+func (m *S_PadList) XXX_DiscardUnknown() {
+	xxx_messageInfo_S_PadList.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_S_PadList proto.InternalMessageInfo
+
+func (m *S_PadList) GetName() []string {
+	if m != nil {
+		return m.Name
+	}
+	return nil
+}
+
+type S_ChatMessage struct {
 	Id                   uint32   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId               uint32   `protobuf:"varint,2,opt,name=userId,proto3" json:"userId,omitempty"`
+	UserId               uint32   `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Text                 string   `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SChat) Reset()         { *m = SChat{} }
-func (m *SChat) String() string { return proto.CompactTextString(m) }
-func (*SChat) ProtoMessage()    {}
-func (*SChat) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{2}
+func (m *S_ChatMessage) Reset()         { *m = S_ChatMessage{} }
+func (m *S_ChatMessage) String() string { return proto.CompactTextString(m) }
+func (*S_ChatMessage) ProtoMessage()    {}
+func (*S_ChatMessage) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2, 2}
 }
 
-func (m *SChat) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SChat.Unmarshal(m, b)
+func (m *S_ChatMessage) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S_ChatMessage.Unmarshal(m, b)
 }
-func (m *SChat) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SChat.Marshal(b, m, deterministic)
+func (m *S_ChatMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S_ChatMessage.Marshal(b, m, deterministic)
 }
-func (m *SChat) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SChat.Merge(m, src)
+func (m *S_ChatMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S_ChatMessage.Merge(m, src)
 }
-func (m *SChat) XXX_Size() int {
-	return xxx_messageInfo_SChat.Size(m)
+func (m *S_ChatMessage) XXX_Size() int {
+	return xxx_messageInfo_S_ChatMessage.Size(m)
 }
-func (m *SChat) XXX_DiscardUnknown() {
-	xxx_messageInfo_SChat.DiscardUnknown(m)
+func (m *S_ChatMessage) XXX_DiscardUnknown() {
+	xxx_messageInfo_S_ChatMessage.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SChat proto.InternalMessageInfo
+var xxx_messageInfo_S_ChatMessage proto.InternalMessageInfo
 
-func (m *SChat) GetId() uint32 {
+func (m *S_ChatMessage) GetId() uint32 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *SChat) GetUserId() uint32 {
+func (m *S_ChatMessage) GetUserId() uint32 {
 	if m != nil {
 		return m.UserId
 	}
 	return 0
 }
 
-func (m *SChat) GetText() string {
+func (m *S_ChatMessage) GetText() string {
 	if m != nil {
 		return m.Text
 	}
 	return ""
 }
 
-type SDelta struct {
+type S_Delta struct {
 	Id                   uint32   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId               uint32   `protobuf:"varint,2,opt,name=userId,proto3" json:"userId,omitempty"`
+	UserId               uint32   `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Ops                  []*Op    `protobuf:"bytes,3,rep,name=ops,proto3" json:"ops,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SDelta) Reset()         { *m = SDelta{} }
-func (m *SDelta) String() string { return proto.CompactTextString(m) }
-func (*SDelta) ProtoMessage()    {}
-func (*SDelta) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{3}
+func (m *S_Delta) Reset()         { *m = S_Delta{} }
+func (m *S_Delta) String() string { return proto.CompactTextString(m) }
+func (*S_Delta) ProtoMessage()    {}
+func (*S_Delta) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2, 3}
 }
 
-func (m *SDelta) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SDelta.Unmarshal(m, b)
+func (m *S_Delta) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S_Delta.Unmarshal(m, b)
 }
-func (m *SDelta) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SDelta.Marshal(b, m, deterministic)
+func (m *S_Delta) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S_Delta.Marshal(b, m, deterministic)
 }
-func (m *SDelta) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SDelta.Merge(m, src)
+func (m *S_Delta) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S_Delta.Merge(m, src)
 }
-func (m *SDelta) XXX_Size() int {
-	return xxx_messageInfo_SDelta.Size(m)
+func (m *S_Delta) XXX_Size() int {
+	return xxx_messageInfo_S_Delta.Size(m)
 }
-func (m *SDelta) XXX_DiscardUnknown() {
-	xxx_messageInfo_SDelta.DiscardUnknown(m)
+func (m *S_Delta) XXX_DiscardUnknown() {
+	xxx_messageInfo_S_Delta.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SDelta proto.InternalMessageInfo
+var xxx_messageInfo_S_Delta proto.InternalMessageInfo
 
-func (m *SDelta) GetId() uint32 {
+func (m *S_Delta) GetId() uint32 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-func (m *SDelta) GetUserId() uint32 {
+func (m *S_Delta) GetUserId() uint32 {
 	if m != nil {
 		return m.UserId
 	}
 	return 0
 }
 
-func (m *SDelta) GetOps() []*Op {
+func (m *S_Delta) GetOps() []*Op {
 	if m != nil {
 		return m.Ops
 	}
 	return nil
 }
 
-type SDeltaDropped struct {
-	Revision             uint32   `protobuf:"varint,1,opt,name=revision,proto3" json:"revision,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SDeltaDropped) Reset()         { *m = SDeltaDropped{} }
-func (m *SDeltaDropped) String() string { return proto.CompactTextString(m) }
-func (*SDeltaDropped) ProtoMessage()    {}
-func (*SDeltaDropped) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{4}
-}
-
-func (m *SDeltaDropped) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SDeltaDropped.Unmarshal(m, b)
-}
-func (m *SDeltaDropped) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SDeltaDropped.Marshal(b, m, deterministic)
-}
-func (m *SDeltaDropped) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SDeltaDropped.Merge(m, src)
-}
-func (m *SDeltaDropped) XXX_Size() int {
-	return xxx_messageInfo_SDeltaDropped.Size(m)
-}
-func (m *SDeltaDropped) XXX_DiscardUnknown() {
-	xxx_messageInfo_SDeltaDropped.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SDeltaDropped proto.InternalMessageInfo
-
-func (m *SDeltaDropped) GetRevision() uint32 {
-	if m != nil {
-		return m.Revision
-	}
-	return 0
-}
-
-type SDocument struct {
+type S_Document struct {
 	Revision             uint32   `protobuf:"varint,1,opt,name=revision,proto3" json:"revision,omitempty"`
 	Ops                  []*Op    `protobuf:"bytes,2,rep,name=ops,proto3" json:"ops,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -401,846 +548,636 @@ type SDocument struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SDocument) Reset()         { *m = SDocument{} }
-func (m *SDocument) String() string { return proto.CompactTextString(m) }
-func (*SDocument) ProtoMessage()    {}
-func (*SDocument) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{5}
+func (m *S_Document) Reset()         { *m = S_Document{} }
+func (m *S_Document) String() string { return proto.CompactTextString(m) }
+func (*S_Document) ProtoMessage()    {}
+func (*S_Document) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2, 4}
 }
 
-func (m *SDocument) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SDocument.Unmarshal(m, b)
+func (m *S_Document) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S_Document.Unmarshal(m, b)
 }
-func (m *SDocument) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SDocument.Marshal(b, m, deterministic)
+func (m *S_Document) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S_Document.Marshal(b, m, deterministic)
 }
-func (m *SDocument) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SDocument.Merge(m, src)
+func (m *S_Document) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S_Document.Merge(m, src)
 }
-func (m *SDocument) XXX_Size() int {
-	return xxx_messageInfo_SDocument.Size(m)
+func (m *S_Document) XXX_Size() int {
+	return xxx_messageInfo_S_Document.Size(m)
 }
-func (m *SDocument) XXX_DiscardUnknown() {
-	xxx_messageInfo_SDocument.DiscardUnknown(m)
+func (m *S_Document) XXX_DiscardUnknown() {
+	xxx_messageInfo_S_Document.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SDocument proto.InternalMessageInfo
+var xxx_messageInfo_S_Document proto.InternalMessageInfo
 
-func (m *SDocument) GetRevision() uint32 {
+func (m *S_Document) GetRevision() uint32 {
 	if m != nil {
 		return m.Revision
 	}
 	return 0
 }
 
-func (m *SDocument) GetOps() []*Op {
+func (m *S_Document) GetOps() []*Op {
 	if m != nil {
 		return m.Ops
 	}
 	return nil
 }
 
-type SAuth struct {
-	UserId               uint32   `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
-	Nickname             string   `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	Color                uint32   `protobuf:"varint,3,opt,name=color,proto3" json:"color,omitempty"`
-	Perms                uint32   `protobuf:"varint,4,opt,name=perms,proto3" json:"perms,omitempty"`
-	SessId               string   `protobuf:"bytes,5,opt,name=sessId,proto3" json:"sessId,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type S_ServerStats struct {
+	GoVersion            string               `protobuf:"bytes,1,opt,name=go_version,json=goVersion,proto3" json:"go_version,omitempty"`
+	GoroutinesCount      uint32               `protobuf:"varint,2,opt,name=goroutines_count,json=goroutinesCount,proto3" json:"goroutines_count,omitempty"`
+	Pads                 []*S_ServerStats_Pad `protobuf:"bytes,3,rep,name=pads,proto3" json:"pads,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
 }
 
-func (m *SAuth) Reset()         { *m = SAuth{} }
-func (m *SAuth) String() string { return proto.CompactTextString(m) }
-func (*SAuth) ProtoMessage()    {}
-func (*SAuth) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{6}
+func (m *S_ServerStats) Reset()         { *m = S_ServerStats{} }
+func (m *S_ServerStats) String() string { return proto.CompactTextString(m) }
+func (*S_ServerStats) ProtoMessage()    {}
+func (*S_ServerStats) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2, 5}
 }
 
-func (m *SAuth) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SAuth.Unmarshal(m, b)
+func (m *S_ServerStats) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S_ServerStats.Unmarshal(m, b)
 }
-func (m *SAuth) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SAuth.Marshal(b, m, deterministic)
+func (m *S_ServerStats) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S_ServerStats.Marshal(b, m, deterministic)
 }
-func (m *SAuth) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SAuth.Merge(m, src)
+func (m *S_ServerStats) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S_ServerStats.Merge(m, src)
 }
-func (m *SAuth) XXX_Size() int {
-	return xxx_messageInfo_SAuth.Size(m)
+func (m *S_ServerStats) XXX_Size() int {
+	return xxx_messageInfo_S_ServerStats.Size(m)
 }
-func (m *SAuth) XXX_DiscardUnknown() {
-	xxx_messageInfo_SAuth.DiscardUnknown(m)
+func (m *S_ServerStats) XXX_DiscardUnknown() {
+	xxx_messageInfo_S_ServerStats.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SAuth proto.InternalMessageInfo
+var xxx_messageInfo_S_ServerStats proto.InternalMessageInfo
 
-func (m *SAuth) GetUserId() uint32 {
+func (m *S_ServerStats) GetGoVersion() string {
 	if m != nil {
-		return m.UserId
-	}
-	return 0
-}
-
-func (m *SAuth) GetNickname() string {
-	if m != nil {
-		return m.Nickname
+		return m.GoVersion
 	}
 	return ""
 }
 
-func (m *SAuth) GetColor() uint32 {
+func (m *S_ServerStats) GetGoroutinesCount() uint32 {
 	if m != nil {
-		return m.Color
+		return m.GoroutinesCount
 	}
 	return 0
 }
 
-func (m *SAuth) GetPerms() uint32 {
-	if m != nil {
-		return m.Perms
-	}
-	return 0
-}
-
-func (m *SAuth) GetSessId() string {
-	if m != nil {
-		return m.SessId
-	}
-	return ""
-}
-
-type SAuthError struct {
-	Error                uint32   `protobuf:"varint,1,opt,name=error,proto3" json:"error,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SAuthError) Reset()         { *m = SAuthError{} }
-func (m *SAuthError) String() string { return proto.CompactTextString(m) }
-func (*SAuthError) ProtoMessage()    {}
-func (*SAuthError) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{7}
-}
-
-func (m *SAuthError) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SAuthError.Unmarshal(m, b)
-}
-func (m *SAuthError) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SAuthError.Marshal(b, m, deterministic)
-}
-func (m *SAuthError) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SAuthError.Merge(m, src)
-}
-func (m *SAuthError) XXX_Size() int {
-	return xxx_messageInfo_SAuthError.Size(m)
-}
-func (m *SAuthError) XXX_DiscardUnknown() {
-	xxx_messageInfo_SAuthError.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SAuthError proto.InternalMessageInfo
-
-func (m *SAuthError) GetError() uint32 {
-	if m != nil {
-		return m.Error
-	}
-	return 0
-}
-
-type SUserLeave struct {
-	UserId               uint32   `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SUserLeave) Reset()         { *m = SUserLeave{} }
-func (m *SUserLeave) String() string { return proto.CompactTextString(m) }
-func (*SUserLeave) ProtoMessage()    {}
-func (*SUserLeave) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{8}
-}
-
-func (m *SUserLeave) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SUserLeave.Unmarshal(m, b)
-}
-func (m *SUserLeave) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SUserLeave.Marshal(b, m, deterministic)
-}
-func (m *SUserLeave) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SUserLeave.Merge(m, src)
-}
-func (m *SUserLeave) XXX_Size() int {
-	return xxx_messageInfo_SUserLeave.Size(m)
-}
-func (m *SUserLeave) XXX_DiscardUnknown() {
-	xxx_messageInfo_SUserLeave.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SUserLeave proto.InternalMessageInfo
-
-func (m *SUserLeave) GetUserId() uint32 {
-	if m != nil {
-		return m.UserId
-	}
-	return 0
-}
-
-type SUserInfo struct {
-	UserId               uint32   `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
-	Nickname             string   `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	Color                uint32   `protobuf:"varint,3,opt,name=color,proto3" json:"color,omitempty"`
-	Perms                uint32   `protobuf:"varint,4,opt,name=perms,proto3" json:"perms,omitempty"`
-	Online               bool     `protobuf:"varint,5,opt,name=online,proto3" json:"online,omitempty"`
-	Ip                   string   `protobuf:"bytes,6,opt,name=ip,proto3" json:"ip,omitempty"`
-	UserAgent            string   `protobuf:"bytes,7,opt,name=userAgent,proto3" json:"userAgent,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SUserInfo) Reset()         { *m = SUserInfo{} }
-func (m *SUserInfo) String() string { return proto.CompactTextString(m) }
-func (*SUserInfo) ProtoMessage()    {}
-func (*SUserInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{9}
-}
-
-func (m *SUserInfo) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SUserInfo.Unmarshal(m, b)
-}
-func (m *SUserInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SUserInfo.Marshal(b, m, deterministic)
-}
-func (m *SUserInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SUserInfo.Merge(m, src)
-}
-func (m *SUserInfo) XXX_Size() int {
-	return xxx_messageInfo_SUserInfo.Size(m)
-}
-func (m *SUserInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_SUserInfo.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SUserInfo proto.InternalMessageInfo
-
-func (m *SUserInfo) GetUserId() uint32 {
-	if m != nil {
-		return m.UserId
-	}
-	return 0
-}
-
-func (m *SUserInfo) GetNickname() string {
-	if m != nil {
-		return m.Nickname
-	}
-	return ""
-}
-
-func (m *SUserInfo) GetColor() uint32 {
-	if m != nil {
-		return m.Color
-	}
-	return 0
-}
-
-func (m *SUserInfo) GetPerms() uint32 {
-	if m != nil {
-		return m.Perms
-	}
-	return 0
-}
-
-func (m *SUserInfo) GetOnline() bool {
-	if m != nil {
-		return m.Online
-	}
-	return false
-}
-
-func (m *SUserInfo) GetIp() string {
-	if m != nil {
-		return m.Ip
-	}
-	return ""
-}
-
-func (m *SUserInfo) GetUserAgent() string {
-	if m != nil {
-		return m.UserAgent
-	}
-	return ""
-}
-
-type SPadList struct {
-	Pads                 []string `protobuf:"bytes,1,rep,name=pads,proto3" json:"pads,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SPadList) Reset()         { *m = SPadList{} }
-func (m *SPadList) String() string { return proto.CompactTextString(m) }
-func (*SPadList) ProtoMessage()    {}
-func (*SPadList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{10}
-}
-
-func (m *SPadList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SPadList.Unmarshal(m, b)
-}
-func (m *SPadList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SPadList.Marshal(b, m, deterministic)
-}
-func (m *SPadList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SPadList.Merge(m, src)
-}
-func (m *SPadList) XXX_Size() int {
-	return xxx_messageInfo_SPadList.Size(m)
-}
-func (m *SPadList) XXX_DiscardUnknown() {
-	xxx_messageInfo_SPadList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SPadList proto.InternalMessageInfo
-
-func (m *SPadList) GetPads() []string {
+func (m *S_ServerStats) GetPads() []*S_ServerStats_Pad {
 	if m != nil {
 		return m.Pads
 	}
 	return nil
 }
 
-type CMessages struct {
-	Cm                   []*CMessage `protobuf:"bytes,1,rep,name=cm,proto3" json:"cm,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+type S_ServerStats_Pad struct {
+	Name                 string                      `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Clients              []*S_ServerStats_Pad_Client `protobuf:"bytes,2,rep,name=clients,proto3" json:"clients,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                    `json:"-"`
+	XXX_unrecognized     []byte                      `json:"-"`
+	XXX_sizecache        int32                       `json:"-"`
 }
 
-func (m *CMessages) Reset()         { *m = CMessages{} }
-func (m *CMessages) String() string { return proto.CompactTextString(m) }
-func (*CMessages) ProtoMessage()    {}
-func (*CMessages) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{11}
+func (m *S_ServerStats_Pad) Reset()         { *m = S_ServerStats_Pad{} }
+func (m *S_ServerStats_Pad) String() string { return proto.CompactTextString(m) }
+func (*S_ServerStats_Pad) ProtoMessage()    {}
+func (*S_ServerStats_Pad) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2, 5, 0}
 }
 
-func (m *CMessages) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CMessages.Unmarshal(m, b)
+func (m *S_ServerStats_Pad) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S_ServerStats_Pad.Unmarshal(m, b)
 }
-func (m *CMessages) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CMessages.Marshal(b, m, deterministic)
+func (m *S_ServerStats_Pad) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S_ServerStats_Pad.Marshal(b, m, deterministic)
 }
-func (m *CMessages) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CMessages.Merge(m, src)
+func (m *S_ServerStats_Pad) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S_ServerStats_Pad.Merge(m, src)
 }
-func (m *CMessages) XXX_Size() int {
-	return xxx_messageInfo_CMessages.Size(m)
+func (m *S_ServerStats_Pad) XXX_Size() int {
+	return xxx_messageInfo_S_ServerStats_Pad.Size(m)
 }
-func (m *CMessages) XXX_DiscardUnknown() {
-	xxx_messageInfo_CMessages.DiscardUnknown(m)
+func (m *S_ServerStats_Pad) XXX_DiscardUnknown() {
+	xxx_messageInfo_S_ServerStats_Pad.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CMessages proto.InternalMessageInfo
+var xxx_messageInfo_S_ServerStats_Pad proto.InternalMessageInfo
 
-func (m *CMessages) GetCm() []*CMessage {
+func (m *S_ServerStats_Pad) GetName() string {
 	if m != nil {
-		return m.Cm
+		return m.Name
 	}
-	return nil
+	return ""
 }
 
-type CMessage struct {
-	// Types that are valid to be assigned to CMessage:
-	//	*CMessage_EditUser
-	//	*CMessage_Delta
-	//	*CMessage_Chat
-	//	*CMessage_Session
-	//	*CMessage_Login
-	//	*CMessage_Logout
-	//	*CMessage_Register
-	//	*CMessage_GuestLogin
-	//	*CMessage_EnterPad
-	//	*CMessage_LeavePad
-	//	*CMessage_AdminUser
-	//	*CMessage_ChatRequest
-	//	*CMessage_RevisionRequest
-	//	*CMessage_InvertDelta
-	//	*CMessage_InvertUserDelta
-	//	*CMessage_RestoreRevision
-	CMessage             isCMessage_CMessage `protobuf_oneof:"CMessage"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *CMessage) Reset()         { *m = CMessage{} }
-func (m *CMessage) String() string { return proto.CompactTextString(m) }
-func (*CMessage) ProtoMessage()    {}
-func (*CMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{12}
-}
-
-func (m *CMessage) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CMessage.Unmarshal(m, b)
-}
-func (m *CMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CMessage.Marshal(b, m, deterministic)
-}
-func (m *CMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CMessage.Merge(m, src)
-}
-func (m *CMessage) XXX_Size() int {
-	return xxx_messageInfo_CMessage.Size(m)
-}
-func (m *CMessage) XXX_DiscardUnknown() {
-	xxx_messageInfo_CMessage.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CMessage proto.InternalMessageInfo
-
-type isCMessage_CMessage interface {
-	isCMessage_CMessage()
-}
-
-type CMessage_EditUser struct {
-	EditUser *CEditUser `protobuf:"bytes,1,opt,name=EditUser,proto3,oneof"`
-}
-
-type CMessage_Delta struct {
-	Delta *CDelta `protobuf:"bytes,2,opt,name=Delta,proto3,oneof"`
-}
-
-type CMessage_Chat struct {
-	Chat *CChat `protobuf:"bytes,3,opt,name=Chat,proto3,oneof"`
-}
-
-type CMessage_Session struct {
-	Session *CSession `protobuf:"bytes,4,opt,name=Session,proto3,oneof"`
-}
-
-type CMessage_Login struct {
-	Login *CLogin `protobuf:"bytes,5,opt,name=Login,proto3,oneof"`
-}
-
-type CMessage_Logout struct {
-	Logout *CLogout `protobuf:"bytes,6,opt,name=Logout,proto3,oneof"`
-}
-
-type CMessage_Register struct {
-	Register *CRegister `protobuf:"bytes,7,opt,name=Register,proto3,oneof"`
-}
-
-type CMessage_GuestLogin struct {
-	GuestLogin *CGuestLogin `protobuf:"bytes,8,opt,name=GuestLogin,proto3,oneof"`
-}
-
-type CMessage_EnterPad struct {
-	EnterPad *CEnterPad `protobuf:"bytes,9,opt,name=EnterPad,proto3,oneof"`
-}
-
-type CMessage_LeavePad struct {
-	LeavePad *CLeavePad `protobuf:"bytes,10,opt,name=LeavePad,proto3,oneof"`
-}
-
-type CMessage_AdminUser struct {
-	AdminUser *CAdminUser `protobuf:"bytes,11,opt,name=AdminUser,proto3,oneof"`
-}
-
-type CMessage_ChatRequest struct {
-	ChatRequest *CChatRequest `protobuf:"bytes,12,opt,name=ChatRequest,proto3,oneof"`
-}
-
-type CMessage_RevisionRequest struct {
-	RevisionRequest *CRevisionRequest `protobuf:"bytes,13,opt,name=RevisionRequest,proto3,oneof"`
-}
-
-type CMessage_InvertDelta struct {
-	InvertDelta *CInvertDelta `protobuf:"bytes,14,opt,name=InvertDelta,proto3,oneof"`
-}
-
-type CMessage_InvertUserDelta struct {
-	InvertUserDelta *CInvertUserDelta `protobuf:"bytes,15,opt,name=InvertUserDelta,proto3,oneof"`
-}
-
-type CMessage_RestoreRevision struct {
-	RestoreRevision *CRestoreRevision `protobuf:"bytes,16,opt,name=RestoreRevision,proto3,oneof"`
-}
-
-func (*CMessage_EditUser) isCMessage_CMessage() {}
-
-func (*CMessage_Delta) isCMessage_CMessage() {}
-
-func (*CMessage_Chat) isCMessage_CMessage() {}
-
-func (*CMessage_Session) isCMessage_CMessage() {}
-
-func (*CMessage_Login) isCMessage_CMessage() {}
-
-func (*CMessage_Logout) isCMessage_CMessage() {}
-
-func (*CMessage_Register) isCMessage_CMessage() {}
-
-func (*CMessage_GuestLogin) isCMessage_CMessage() {}
-
-func (*CMessage_EnterPad) isCMessage_CMessage() {}
-
-func (*CMessage_LeavePad) isCMessage_CMessage() {}
-
-func (*CMessage_AdminUser) isCMessage_CMessage() {}
-
-func (*CMessage_ChatRequest) isCMessage_CMessage() {}
-
-func (*CMessage_RevisionRequest) isCMessage_CMessage() {}
-
-func (*CMessage_InvertDelta) isCMessage_CMessage() {}
-
-func (*CMessage_InvertUserDelta) isCMessage_CMessage() {}
-
-func (*CMessage_RestoreRevision) isCMessage_CMessage() {}
-
-func (m *CMessage) GetCMessage() isCMessage_CMessage {
+func (m *S_ServerStats_Pad) GetClients() []*S_ServerStats_Pad_Client {
 	if m != nil {
-		return m.CMessage
+		return m.Clients
 	}
 	return nil
 }
 
-func (m *CMessage) GetEditUser() *CEditUser {
-	if x, ok := m.GetCMessage().(*CMessage_EditUser); ok {
-		return x.EditUser
-	}
-	return nil
-}
-
-func (m *CMessage) GetDelta() *CDelta {
-	if x, ok := m.GetCMessage().(*CMessage_Delta); ok {
-		return x.Delta
-	}
-	return nil
-}
-
-func (m *CMessage) GetChat() *CChat {
-	if x, ok := m.GetCMessage().(*CMessage_Chat); ok {
-		return x.Chat
-	}
-	return nil
-}
-
-func (m *CMessage) GetSession() *CSession {
-	if x, ok := m.GetCMessage().(*CMessage_Session); ok {
-		return x.Session
-	}
-	return nil
-}
-
-func (m *CMessage) GetLogin() *CLogin {
-	if x, ok := m.GetCMessage().(*CMessage_Login); ok {
-		return x.Login
-	}
-	return nil
-}
-
-func (m *CMessage) GetLogout() *CLogout {
-	if x, ok := m.GetCMessage().(*CMessage_Logout); ok {
-		return x.Logout
-	}
-	return nil
-}
-
-func (m *CMessage) GetRegister() *CRegister {
-	if x, ok := m.GetCMessage().(*CMessage_Register); ok {
-		return x.Register
-	}
-	return nil
-}
-
-func (m *CMessage) GetGuestLogin() *CGuestLogin {
-	if x, ok := m.GetCMessage().(*CMessage_GuestLogin); ok {
-		return x.GuestLogin
-	}
-	return nil
-}
-
-func (m *CMessage) GetEnterPad() *CEnterPad {
-	if x, ok := m.GetCMessage().(*CMessage_EnterPad); ok {
-		return x.EnterPad
-	}
-	return nil
-}
-
-func (m *CMessage) GetLeavePad() *CLeavePad {
-	if x, ok := m.GetCMessage().(*CMessage_LeavePad); ok {
-		return x.LeavePad
-	}
-	return nil
-}
-
-func (m *CMessage) GetAdminUser() *CAdminUser {
-	if x, ok := m.GetCMessage().(*CMessage_AdminUser); ok {
-		return x.AdminUser
-	}
-	return nil
-}
-
-func (m *CMessage) GetChatRequest() *CChatRequest {
-	if x, ok := m.GetCMessage().(*CMessage_ChatRequest); ok {
-		return x.ChatRequest
-	}
-	return nil
-}
-
-func (m *CMessage) GetRevisionRequest() *CRevisionRequest {
-	if x, ok := m.GetCMessage().(*CMessage_RevisionRequest); ok {
-		return x.RevisionRequest
-	}
-	return nil
-}
-
-func (m *CMessage) GetInvertDelta() *CInvertDelta {
-	if x, ok := m.GetCMessage().(*CMessage_InvertDelta); ok {
-		return x.InvertDelta
-	}
-	return nil
-}
-
-func (m *CMessage) GetInvertUserDelta() *CInvertUserDelta {
-	if x, ok := m.GetCMessage().(*CMessage_InvertUserDelta); ok {
-		return x.InvertUserDelta
-	}
-	return nil
-}
-
-func (m *CMessage) GetRestoreRevision() *CRestoreRevision {
-	if x, ok := m.GetCMessage().(*CMessage_RestoreRevision); ok {
-		return x.RestoreRevision
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*CMessage) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*CMessage_EditUser)(nil),
-		(*CMessage_Delta)(nil),
-		(*CMessage_Chat)(nil),
-		(*CMessage_Session)(nil),
-		(*CMessage_Login)(nil),
-		(*CMessage_Logout)(nil),
-		(*CMessage_Register)(nil),
-		(*CMessage_GuestLogin)(nil),
-		(*CMessage_EnterPad)(nil),
-		(*CMessage_LeavePad)(nil),
-		(*CMessage_AdminUser)(nil),
-		(*CMessage_ChatRequest)(nil),
-		(*CMessage_RevisionRequest)(nil),
-		(*CMessage_InvertDelta)(nil),
-		(*CMessage_InvertUserDelta)(nil),
-		(*CMessage_RestoreRevision)(nil),
-	}
-}
-
-type CEditUser struct {
-	Changemask           uint32   `protobuf:"varint,1,opt,name=changemask,proto3" json:"changemask,omitempty"`
-	Nickname             string   `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	Color                uint32   `protobuf:"varint,3,opt,name=color,proto3" json:"color,omitempty"`
-	Email                string   `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
-	Password             string   `protobuf:"bytes,5,opt,name=password,proto3" json:"password,omitempty"`
+type S_ServerStats_Pad_Client struct {
+	SessId               string   `protobuf:"bytes,1,opt,name=sess_id,json=sessId,proto3" json:"sess_id,omitempty"`
+	User                 *User    `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CEditUser) Reset()         { *m = CEditUser{} }
-func (m *CEditUser) String() string { return proto.CompactTextString(m) }
-func (*CEditUser) ProtoMessage()    {}
-func (*CEditUser) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{13}
+func (m *S_ServerStats_Pad_Client) Reset()         { *m = S_ServerStats_Pad_Client{} }
+func (m *S_ServerStats_Pad_Client) String() string { return proto.CompactTextString(m) }
+func (*S_ServerStats_Pad_Client) ProtoMessage()    {}
+func (*S_ServerStats_Pad_Client) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{2, 5, 0, 0}
 }
 
-func (m *CEditUser) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CEditUser.Unmarshal(m, b)
+func (m *S_ServerStats_Pad_Client) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_S_ServerStats_Pad_Client.Unmarshal(m, b)
 }
-func (m *CEditUser) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CEditUser.Marshal(b, m, deterministic)
+func (m *S_ServerStats_Pad_Client) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_S_ServerStats_Pad_Client.Marshal(b, m, deterministic)
 }
-func (m *CEditUser) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CEditUser.Merge(m, src)
+func (m *S_ServerStats_Pad_Client) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_S_ServerStats_Pad_Client.Merge(m, src)
 }
-func (m *CEditUser) XXX_Size() int {
-	return xxx_messageInfo_CEditUser.Size(m)
+func (m *S_ServerStats_Pad_Client) XXX_Size() int {
+	return xxx_messageInfo_S_ServerStats_Pad_Client.Size(m)
 }
-func (m *CEditUser) XXX_DiscardUnknown() {
-	xxx_messageInfo_CEditUser.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CEditUser proto.InternalMessageInfo
-
-func (m *CEditUser) GetChangemask() uint32 {
-	if m != nil {
-		return m.Changemask
-	}
-	return 0
+func (m *S_ServerStats_Pad_Client) XXX_DiscardUnknown() {
+	xxx_messageInfo_S_ServerStats_Pad_Client.DiscardUnknown(m)
 }
 
-func (m *CEditUser) GetNickname() string {
-	if m != nil {
-		return m.Nickname
-	}
-	return ""
-}
+var xxx_messageInfo_S_ServerStats_Pad_Client proto.InternalMessageInfo
 
-func (m *CEditUser) GetColor() uint32 {
-	if m != nil {
-		return m.Color
-	}
-	return 0
-}
-
-func (m *CEditUser) GetEmail() string {
-	if m != nil {
-		return m.Email
-	}
-	return ""
-}
-
-func (m *CEditUser) GetPassword() string {
-	if m != nil {
-		return m.Password
-	}
-	return ""
-}
-
-type CDelta struct {
-	Revision             uint32   `protobuf:"varint,1,opt,name=revision,proto3" json:"revision,omitempty"`
-	Ops                  []*Op    `protobuf:"bytes,2,rep,name=ops,proto3" json:"ops,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CDelta) Reset()         { *m = CDelta{} }
-func (m *CDelta) String() string { return proto.CompactTextString(m) }
-func (*CDelta) ProtoMessage()    {}
-func (*CDelta) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{14}
-}
-
-func (m *CDelta) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CDelta.Unmarshal(m, b)
-}
-func (m *CDelta) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CDelta.Marshal(b, m, deterministic)
-}
-func (m *CDelta) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CDelta.Merge(m, src)
-}
-func (m *CDelta) XXX_Size() int {
-	return xxx_messageInfo_CDelta.Size(m)
-}
-func (m *CDelta) XXX_DiscardUnknown() {
-	xxx_messageInfo_CDelta.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CDelta proto.InternalMessageInfo
-
-func (m *CDelta) GetRevision() uint32 {
-	if m != nil {
-		return m.Revision
-	}
-	return 0
-}
-
-func (m *CDelta) GetOps() []*Op {
-	if m != nil {
-		return m.Ops
-	}
-	return nil
-}
-
-type CChat struct {
-	Text                 string   `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CChat) Reset()         { *m = CChat{} }
-func (m *CChat) String() string { return proto.CompactTextString(m) }
-func (*CChat) ProtoMessage()    {}
-func (*CChat) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{15}
-}
-
-func (m *CChat) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CChat.Unmarshal(m, b)
-}
-func (m *CChat) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CChat.Marshal(b, m, deterministic)
-}
-func (m *CChat) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CChat.Merge(m, src)
-}
-func (m *CChat) XXX_Size() int {
-	return xxx_messageInfo_CChat.Size(m)
-}
-func (m *CChat) XXX_DiscardUnknown() {
-	xxx_messageInfo_CChat.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CChat proto.InternalMessageInfo
-
-func (m *CChat) GetText() string {
-	if m != nil {
-		return m.Text
-	}
-	return ""
-}
-
-type CSession struct {
-	SessId               string   `protobuf:"bytes,1,opt,name=sessId,proto3" json:"sessId,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CSession) Reset()         { *m = CSession{} }
-func (m *CSession) String() string { return proto.CompactTextString(m) }
-func (*CSession) ProtoMessage()    {}
-func (*CSession) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{16}
-}
-
-func (m *CSession) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CSession.Unmarshal(m, b)
-}
-func (m *CSession) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CSession.Marshal(b, m, deterministic)
-}
-func (m *CSession) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CSession.Merge(m, src)
-}
-func (m *CSession) XXX_Size() int {
-	return xxx_messageInfo_CSession.Size(m)
-}
-func (m *CSession) XXX_DiscardUnknown() {
-	xxx_messageInfo_CSession.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CSession proto.InternalMessageInfo
-
-func (m *CSession) GetSessId() string {
+func (m *S_ServerStats_Pad_Client) GetSessId() string {
 	if m != nil {
 		return m.SessId
 	}
 	return ""
 }
 
-type CLogin struct {
+func (m *S_ServerStats_Pad_Client) GetUser() *User {
+	if m != nil {
+		return m.User
+	}
+	return nil
+}
+
+// client
+type C struct {
+	// Types that are valid to be assigned to C:
+	//	*C_GuestAuth
+	//	*C_SessionAuth
+	//	*C_LoginAuth_
+	//	*C_Register_
+	//	*C_Logout
+	//	*C_EditMe
+	//	*C_EnterPad
+	//	*C_LeavePad
+	//	*C_SendChatMessage
+	//	*C_GetChatHistory_
+	//	*C_AddDelta_
+	//	*C_GetDocRevision
+	//	*C_InvertDelta
+	//	*C_InvertUserDeltas
+	//	*C_RestoreRevision
+	//	*C_EditUser
+	//	*C_CreateUser
+	//	*C_SetPadOptions
+	//	*C_DeleteUser
+	//	*C_DeletePad
+	//	*C_DeleteChatMessage
+	//	*C_DeleteUserMessages
+	//	*C_GetServerStats
+	//	*C_DropCaches
+	//	*C_RestartServer
+	//	*C_ExecJs
+	C                    isC_C    `protobuf_oneof:"c"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *C) Reset()         { *m = C{} }
+func (m *C) String() string { return proto.CompactTextString(m) }
+func (*C) ProtoMessage()    {}
+func (*C) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{3}
+}
+
+func (m *C) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C.Unmarshal(m, b)
+}
+func (m *C) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C.Marshal(b, m, deterministic)
+}
+func (m *C) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C.Merge(m, src)
+}
+func (m *C) XXX_Size() int {
+	return xxx_messageInfo_C.Size(m)
+}
+func (m *C) XXX_DiscardUnknown() {
+	xxx_messageInfo_C.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_C proto.InternalMessageInfo
+
+type isC_C interface {
+	isC_C()
+}
+
+type C_GuestAuth struct {
+	GuestAuth bool `protobuf:"varint,1,opt,name=guest_auth,json=guestAuth,proto3,oneof"`
+}
+
+type C_SessionAuth struct {
+	SessionAuth string `protobuf:"bytes,2,opt,name=session_auth,json=sessionAuth,proto3,oneof"`
+}
+
+type C_LoginAuth_ struct {
+	LoginAuth *C_LoginAuth `protobuf:"bytes,3,opt,name=login_auth,json=loginAuth,proto3,oneof"`
+}
+
+type C_Register_ struct {
+	Register *C_Register `protobuf:"bytes,4,opt,name=register,proto3,oneof"`
+}
+
+type C_Logout struct {
+	Logout bool `protobuf:"varint,5,opt,name=logout,proto3,oneof"`
+}
+
+type C_EditMe struct {
+	EditMe *User `protobuf:"bytes,101,opt,name=edit_me,json=editMe,proto3,oneof"`
+}
+
+type C_EnterPad struct {
+	EnterPad string `protobuf:"bytes,201,opt,name=enter_pad,json=enterPad,proto3,oneof"`
+}
+
+type C_LeavePad struct {
+	LeavePad bool `protobuf:"varint,202,opt,name=leave_pad,json=leavePad,proto3,oneof"`
+}
+
+type C_SendChatMessage struct {
+	SendChatMessage string `protobuf:"bytes,301,opt,name=send_chat_message,json=sendChatMessage,proto3,oneof"`
+}
+
+type C_GetChatHistory_ struct {
+	GetChatHistory *C_GetChatHistory `protobuf:"bytes,302,opt,name=get_chat_history,json=getChatHistory,proto3,oneof"`
+}
+
+type C_AddDelta_ struct {
+	AddDelta *C_AddDelta `protobuf:"bytes,401,opt,name=add_delta,json=addDelta,proto3,oneof"`
+}
+
+type C_GetDocRevision struct {
+	GetDocRevision uint32 `protobuf:"varint,402,opt,name=get_doc_revision,json=getDocRevision,proto3,oneof"`
+}
+
+type C_InvertDelta struct {
+	InvertDelta uint32 `protobuf:"varint,403,opt,name=invert_delta,json=invertDelta,proto3,oneof"`
+}
+
+type C_InvertUserDeltas struct {
+	InvertUserDeltas uint32 `protobuf:"varint,501,opt,name=invert_user_deltas,json=invertUserDeltas,proto3,oneof"`
+}
+
+type C_RestoreRevision struct {
+	RestoreRevision uint32 `protobuf:"varint,502,opt,name=restore_revision,json=restoreRevision,proto3,oneof"`
+}
+
+type C_EditUser struct {
+	EditUser *User `protobuf:"bytes,503,opt,name=edit_user,json=editUser,proto3,oneof"`
+}
+
+type C_CreateUser struct {
+	CreateUser *User `protobuf:"bytes,504,opt,name=create_user,json=createUser,proto3,oneof"`
+}
+
+type C_SetPadOptions struct {
+	SetPadOptions *PadOptions `protobuf:"bytes,505,opt,name=set_pad_options,json=setPadOptions,proto3,oneof"`
+}
+
+type C_DeleteUser struct {
+	DeleteUser uint32 `protobuf:"varint,601,opt,name=delete_user,json=deleteUser,proto3,oneof"`
+}
+
+type C_DeletePad struct {
+	DeletePad string `protobuf:"bytes,602,opt,name=delete_pad,json=deletePad,proto3,oneof"`
+}
+
+type C_DeleteChatMessage struct {
+	DeleteChatMessage uint32 `protobuf:"varint,603,opt,name=delete_chat_message,json=deleteChatMessage,proto3,oneof"`
+}
+
+type C_DeleteUserMessages struct {
+	DeleteUserMessages uint32 `protobuf:"varint,604,opt,name=delete_user_messages,json=deleteUserMessages,proto3,oneof"`
+}
+
+type C_GetServerStats struct {
+	GetServerStats bool `protobuf:"varint,605,opt,name=get_server_stats,json=getServerStats,proto3,oneof"`
+}
+
+type C_DropCaches struct {
+	DropCaches bool `protobuf:"varint,606,opt,name=drop_caches,json=dropCaches,proto3,oneof"`
+}
+
+type C_RestartServer struct {
+	RestartServer bool `protobuf:"varint,607,opt,name=restart_server,json=restartServer,proto3,oneof"`
+}
+
+type C_ExecJs struct {
+	ExecJs string `protobuf:"bytes,608,opt,name=exec_js,json=execJs,proto3,oneof"`
+}
+
+func (*C_GuestAuth) isC_C() {}
+
+func (*C_SessionAuth) isC_C() {}
+
+func (*C_LoginAuth_) isC_C() {}
+
+func (*C_Register_) isC_C() {}
+
+func (*C_Logout) isC_C() {}
+
+func (*C_EditMe) isC_C() {}
+
+func (*C_EnterPad) isC_C() {}
+
+func (*C_LeavePad) isC_C() {}
+
+func (*C_SendChatMessage) isC_C() {}
+
+func (*C_GetChatHistory_) isC_C() {}
+
+func (*C_AddDelta_) isC_C() {}
+
+func (*C_GetDocRevision) isC_C() {}
+
+func (*C_InvertDelta) isC_C() {}
+
+func (*C_InvertUserDeltas) isC_C() {}
+
+func (*C_RestoreRevision) isC_C() {}
+
+func (*C_EditUser) isC_C() {}
+
+func (*C_CreateUser) isC_C() {}
+
+func (*C_SetPadOptions) isC_C() {}
+
+func (*C_DeleteUser) isC_C() {}
+
+func (*C_DeletePad) isC_C() {}
+
+func (*C_DeleteChatMessage) isC_C() {}
+
+func (*C_DeleteUserMessages) isC_C() {}
+
+func (*C_GetServerStats) isC_C() {}
+
+func (*C_DropCaches) isC_C() {}
+
+func (*C_RestartServer) isC_C() {}
+
+func (*C_ExecJs) isC_C() {}
+
+func (m *C) GetC() isC_C {
+	if m != nil {
+		return m.C
+	}
+	return nil
+}
+
+func (m *C) GetGuestAuth() bool {
+	if x, ok := m.GetC().(*C_GuestAuth); ok {
+		return x.GuestAuth
+	}
+	return false
+}
+
+func (m *C) GetSessionAuth() string {
+	if x, ok := m.GetC().(*C_SessionAuth); ok {
+		return x.SessionAuth
+	}
+	return ""
+}
+
+func (m *C) GetLoginAuth() *C_LoginAuth {
+	if x, ok := m.GetC().(*C_LoginAuth_); ok {
+		return x.LoginAuth
+	}
+	return nil
+}
+
+func (m *C) GetRegister() *C_Register {
+	if x, ok := m.GetC().(*C_Register_); ok {
+		return x.Register
+	}
+	return nil
+}
+
+func (m *C) GetLogout() bool {
+	if x, ok := m.GetC().(*C_Logout); ok {
+		return x.Logout
+	}
+	return false
+}
+
+func (m *C) GetEditMe() *User {
+	if x, ok := m.GetC().(*C_EditMe); ok {
+		return x.EditMe
+	}
+	return nil
+}
+
+func (m *C) GetEnterPad() string {
+	if x, ok := m.GetC().(*C_EnterPad); ok {
+		return x.EnterPad
+	}
+	return ""
+}
+
+func (m *C) GetLeavePad() bool {
+	if x, ok := m.GetC().(*C_LeavePad); ok {
+		return x.LeavePad
+	}
+	return false
+}
+
+func (m *C) GetSendChatMessage() string {
+	if x, ok := m.GetC().(*C_SendChatMessage); ok {
+		return x.SendChatMessage
+	}
+	return ""
+}
+
+func (m *C) GetGetChatHistory() *C_GetChatHistory {
+	if x, ok := m.GetC().(*C_GetChatHistory_); ok {
+		return x.GetChatHistory
+	}
+	return nil
+}
+
+func (m *C) GetAddDelta() *C_AddDelta {
+	if x, ok := m.GetC().(*C_AddDelta_); ok {
+		return x.AddDelta
+	}
+	return nil
+}
+
+func (m *C) GetGetDocRevision() uint32 {
+	if x, ok := m.GetC().(*C_GetDocRevision); ok {
+		return x.GetDocRevision
+	}
+	return 0
+}
+
+func (m *C) GetInvertDelta() uint32 {
+	if x, ok := m.GetC().(*C_InvertDelta); ok {
+		return x.InvertDelta
+	}
+	return 0
+}
+
+func (m *C) GetInvertUserDeltas() uint32 {
+	if x, ok := m.GetC().(*C_InvertUserDeltas); ok {
+		return x.InvertUserDeltas
+	}
+	return 0
+}
+
+func (m *C) GetRestoreRevision() uint32 {
+	if x, ok := m.GetC().(*C_RestoreRevision); ok {
+		return x.RestoreRevision
+	}
+	return 0
+}
+
+func (m *C) GetEditUser() *User {
+	if x, ok := m.GetC().(*C_EditUser); ok {
+		return x.EditUser
+	}
+	return nil
+}
+
+func (m *C) GetCreateUser() *User {
+	if x, ok := m.GetC().(*C_CreateUser); ok {
+		return x.CreateUser
+	}
+	return nil
+}
+
+func (m *C) GetSetPadOptions() *PadOptions {
+	if x, ok := m.GetC().(*C_SetPadOptions); ok {
+		return x.SetPadOptions
+	}
+	return nil
+}
+
+func (m *C) GetDeleteUser() uint32 {
+	if x, ok := m.GetC().(*C_DeleteUser); ok {
+		return x.DeleteUser
+	}
+	return 0
+}
+
+func (m *C) GetDeletePad() string {
+	if x, ok := m.GetC().(*C_DeletePad); ok {
+		return x.DeletePad
+	}
+	return ""
+}
+
+func (m *C) GetDeleteChatMessage() uint32 {
+	if x, ok := m.GetC().(*C_DeleteChatMessage); ok {
+		return x.DeleteChatMessage
+	}
+	return 0
+}
+
+func (m *C) GetDeleteUserMessages() uint32 {
+	if x, ok := m.GetC().(*C_DeleteUserMessages); ok {
+		return x.DeleteUserMessages
+	}
+	return 0
+}
+
+func (m *C) GetGetServerStats() bool {
+	if x, ok := m.GetC().(*C_GetServerStats); ok {
+		return x.GetServerStats
+	}
+	return false
+}
+
+func (m *C) GetDropCaches() bool {
+	if x, ok := m.GetC().(*C_DropCaches); ok {
+		return x.DropCaches
+	}
+	return false
+}
+
+func (m *C) GetRestartServer() bool {
+	if x, ok := m.GetC().(*C_RestartServer); ok {
+		return x.RestartServer
+	}
+	return false
+}
+
+func (m *C) GetExecJs() string {
+	if x, ok := m.GetC().(*C_ExecJs); ok {
+		return x.ExecJs
+	}
+	return ""
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*C) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*C_GuestAuth)(nil),
+		(*C_SessionAuth)(nil),
+		(*C_LoginAuth_)(nil),
+		(*C_Register_)(nil),
+		(*C_Logout)(nil),
+		(*C_EditMe)(nil),
+		(*C_EnterPad)(nil),
+		(*C_LeavePad)(nil),
+		(*C_SendChatMessage)(nil),
+		(*C_GetChatHistory_)(nil),
+		(*C_AddDelta_)(nil),
+		(*C_GetDocRevision)(nil),
+		(*C_InvertDelta)(nil),
+		(*C_InvertUserDeltas)(nil),
+		(*C_RestoreRevision)(nil),
+		(*C_EditUser)(nil),
+		(*C_CreateUser)(nil),
+		(*C_SetPadOptions)(nil),
+		(*C_DeleteUser)(nil),
+		(*C_DeletePad)(nil),
+		(*C_DeleteChatMessage)(nil),
+		(*C_DeleteUserMessages)(nil),
+		(*C_GetServerStats)(nil),
+		(*C_DropCaches)(nil),
+		(*C_RestartServer)(nil),
+		(*C_ExecJs)(nil),
+	}
+}
+
+type C_LoginAuth struct {
 	Email                string   `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1248,77 +1185,46 @@ type CLogin struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CLogin) Reset()         { *m = CLogin{} }
-func (m *CLogin) String() string { return proto.CompactTextString(m) }
-func (*CLogin) ProtoMessage()    {}
-func (*CLogin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{17}
+func (m *C_LoginAuth) Reset()         { *m = C_LoginAuth{} }
+func (m *C_LoginAuth) String() string { return proto.CompactTextString(m) }
+func (*C_LoginAuth) ProtoMessage()    {}
+func (*C_LoginAuth) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{3, 0}
 }
 
-func (m *CLogin) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CLogin.Unmarshal(m, b)
+func (m *C_LoginAuth) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C_LoginAuth.Unmarshal(m, b)
 }
-func (m *CLogin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CLogin.Marshal(b, m, deterministic)
+func (m *C_LoginAuth) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C_LoginAuth.Marshal(b, m, deterministic)
 }
-func (m *CLogin) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CLogin.Merge(m, src)
+func (m *C_LoginAuth) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C_LoginAuth.Merge(m, src)
 }
-func (m *CLogin) XXX_Size() int {
-	return xxx_messageInfo_CLogin.Size(m)
+func (m *C_LoginAuth) XXX_Size() int {
+	return xxx_messageInfo_C_LoginAuth.Size(m)
 }
-func (m *CLogin) XXX_DiscardUnknown() {
-	xxx_messageInfo_CLogin.DiscardUnknown(m)
+func (m *C_LoginAuth) XXX_DiscardUnknown() {
+	xxx_messageInfo_C_LoginAuth.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CLogin proto.InternalMessageInfo
+var xxx_messageInfo_C_LoginAuth proto.InternalMessageInfo
 
-func (m *CLogin) GetEmail() string {
+func (m *C_LoginAuth) GetEmail() string {
 	if m != nil {
 		return m.Email
 	}
 	return ""
 }
 
-func (m *CLogin) GetPassword() string {
+func (m *C_LoginAuth) GetPassword() string {
 	if m != nil {
 		return m.Password
 	}
 	return ""
 }
 
-type CLogout struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CLogout) Reset()         { *m = CLogout{} }
-func (m *CLogout) String() string { return proto.CompactTextString(m) }
-func (*CLogout) ProtoMessage()    {}
-func (*CLogout) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{18}
-}
-
-func (m *CLogout) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CLogout.Unmarshal(m, b)
-}
-func (m *CLogout) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CLogout.Marshal(b, m, deterministic)
-}
-func (m *CLogout) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CLogout.Merge(m, src)
-}
-func (m *CLogout) XXX_Size() int {
-	return xxx_messageInfo_CLogout.Size(m)
-}
-func (m *CLogout) XXX_DiscardUnknown() {
-	xxx_messageInfo_CLogout.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CLogout proto.InternalMessageInfo
-
-type CRegister struct {
+type C_Register struct {
 	Email                string   `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	Nickname             string   `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname,omitempty"`
@@ -1327,241 +1233,53 @@ type CRegister struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CRegister) Reset()         { *m = CRegister{} }
-func (m *CRegister) String() string { return proto.CompactTextString(m) }
-func (*CRegister) ProtoMessage()    {}
-func (*CRegister) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{19}
+func (m *C_Register) Reset()         { *m = C_Register{} }
+func (m *C_Register) String() string { return proto.CompactTextString(m) }
+func (*C_Register) ProtoMessage()    {}
+func (*C_Register) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{3, 1}
 }
 
-func (m *CRegister) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CRegister.Unmarshal(m, b)
+func (m *C_Register) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C_Register.Unmarshal(m, b)
 }
-func (m *CRegister) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CRegister.Marshal(b, m, deterministic)
+func (m *C_Register) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C_Register.Marshal(b, m, deterministic)
 }
-func (m *CRegister) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CRegister.Merge(m, src)
+func (m *C_Register) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C_Register.Merge(m, src)
 }
-func (m *CRegister) XXX_Size() int {
-	return xxx_messageInfo_CRegister.Size(m)
+func (m *C_Register) XXX_Size() int {
+	return xxx_messageInfo_C_Register.Size(m)
 }
-func (m *CRegister) XXX_DiscardUnknown() {
-	xxx_messageInfo_CRegister.DiscardUnknown(m)
+func (m *C_Register) XXX_DiscardUnknown() {
+	xxx_messageInfo_C_Register.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CRegister proto.InternalMessageInfo
+var xxx_messageInfo_C_Register proto.InternalMessageInfo
 
-func (m *CRegister) GetEmail() string {
+func (m *C_Register) GetEmail() string {
 	if m != nil {
 		return m.Email
 	}
 	return ""
 }
 
-func (m *CRegister) GetPassword() string {
+func (m *C_Register) GetPassword() string {
 	if m != nil {
 		return m.Password
 	}
 	return ""
 }
 
-func (m *CRegister) GetNickname() string {
+func (m *C_Register) GetNickname() string {
 	if m != nil {
 		return m.Nickname
 	}
 	return ""
 }
 
-type CGuestLogin struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CGuestLogin) Reset()         { *m = CGuestLogin{} }
-func (m *CGuestLogin) String() string { return proto.CompactTextString(m) }
-func (*CGuestLogin) ProtoMessage()    {}
-func (*CGuestLogin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{20}
-}
-
-func (m *CGuestLogin) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CGuestLogin.Unmarshal(m, b)
-}
-func (m *CGuestLogin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CGuestLogin.Marshal(b, m, deterministic)
-}
-func (m *CGuestLogin) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CGuestLogin.Merge(m, src)
-}
-func (m *CGuestLogin) XXX_Size() int {
-	return xxx_messageInfo_CGuestLogin.Size(m)
-}
-func (m *CGuestLogin) XXX_DiscardUnknown() {
-	xxx_messageInfo_CGuestLogin.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CGuestLogin proto.InternalMessageInfo
-
-type CEnterPad struct {
-	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CEnterPad) Reset()         { *m = CEnterPad{} }
-func (m *CEnterPad) String() string { return proto.CompactTextString(m) }
-func (*CEnterPad) ProtoMessage()    {}
-func (*CEnterPad) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{21}
-}
-
-func (m *CEnterPad) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CEnterPad.Unmarshal(m, b)
-}
-func (m *CEnterPad) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CEnterPad.Marshal(b, m, deterministic)
-}
-func (m *CEnterPad) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CEnterPad.Merge(m, src)
-}
-func (m *CEnterPad) XXX_Size() int {
-	return xxx_messageInfo_CEnterPad.Size(m)
-}
-func (m *CEnterPad) XXX_DiscardUnknown() {
-	xxx_messageInfo_CEnterPad.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CEnterPad proto.InternalMessageInfo
-
-func (m *CEnterPad) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-type CLeavePad struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CLeavePad) Reset()         { *m = CLeavePad{} }
-func (m *CLeavePad) String() string { return proto.CompactTextString(m) }
-func (*CLeavePad) ProtoMessage()    {}
-func (*CLeavePad) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{22}
-}
-
-func (m *CLeavePad) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CLeavePad.Unmarshal(m, b)
-}
-func (m *CLeavePad) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CLeavePad.Marshal(b, m, deterministic)
-}
-func (m *CLeavePad) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CLeavePad.Merge(m, src)
-}
-func (m *CLeavePad) XXX_Size() int {
-	return xxx_messageInfo_CLeavePad.Size(m)
-}
-func (m *CLeavePad) XXX_DiscardUnknown() {
-	xxx_messageInfo_CLeavePad.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CLeavePad proto.InternalMessageInfo
-
-type CAdminUser struct {
-	UserId               uint32   `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
-	Changemask           uint32   `protobuf:"varint,2,opt,name=changemask,proto3" json:"changemask,omitempty"`
-	Perms                uint32   `protobuf:"varint,3,opt,name=perms,proto3" json:"perms,omitempty"`
-	Nickname             string   `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
-	Color                uint32   `protobuf:"varint,5,opt,name=color,proto3" json:"color,omitempty"`
-	Email                string   `protobuf:"bytes,6,opt,name=email,proto3" json:"email,omitempty"`
-	Password             string   `protobuf:"bytes,7,opt,name=password,proto3" json:"password,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CAdminUser) Reset()         { *m = CAdminUser{} }
-func (m *CAdminUser) String() string { return proto.CompactTextString(m) }
-func (*CAdminUser) ProtoMessage()    {}
-func (*CAdminUser) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{23}
-}
-
-func (m *CAdminUser) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CAdminUser.Unmarshal(m, b)
-}
-func (m *CAdminUser) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CAdminUser.Marshal(b, m, deterministic)
-}
-func (m *CAdminUser) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CAdminUser.Merge(m, src)
-}
-func (m *CAdminUser) XXX_Size() int {
-	return xxx_messageInfo_CAdminUser.Size(m)
-}
-func (m *CAdminUser) XXX_DiscardUnknown() {
-	xxx_messageInfo_CAdminUser.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CAdminUser proto.InternalMessageInfo
-
-func (m *CAdminUser) GetUserId() uint32 {
-	if m != nil {
-		return m.UserId
-	}
-	return 0
-}
-
-func (m *CAdminUser) GetChangemask() uint32 {
-	if m != nil {
-		return m.Changemask
-	}
-	return 0
-}
-
-func (m *CAdminUser) GetPerms() uint32 {
-	if m != nil {
-		return m.Perms
-	}
-	return 0
-}
-
-func (m *CAdminUser) GetNickname() string {
-	if m != nil {
-		return m.Nickname
-	}
-	return ""
-}
-
-func (m *CAdminUser) GetColor() uint32 {
-	if m != nil {
-		return m.Color
-	}
-	return 0
-}
-
-func (m *CAdminUser) GetEmail() string {
-	if m != nil {
-		return m.Email
-	}
-	return ""
-}
-
-func (m *CAdminUser) GetPassword() string {
-	if m != nil {
-		return m.Password
-	}
-	return ""
-}
-
-type CChatRequest struct {
+type C_GetChatHistory struct {
 	From                 uint32   `protobuf:"varint,1,opt,name=from,proto3" json:"from,omitempty"`
 	Count                uint32   `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1569,201 +1287,93 @@ type CChatRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CChatRequest) Reset()         { *m = CChatRequest{} }
-func (m *CChatRequest) String() string { return proto.CompactTextString(m) }
-func (*CChatRequest) ProtoMessage()    {}
-func (*CChatRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{24}
+func (m *C_GetChatHistory) Reset()         { *m = C_GetChatHistory{} }
+func (m *C_GetChatHistory) String() string { return proto.CompactTextString(m) }
+func (*C_GetChatHistory) ProtoMessage()    {}
+func (*C_GetChatHistory) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{3, 2}
 }
 
-func (m *CChatRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CChatRequest.Unmarshal(m, b)
+func (m *C_GetChatHistory) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C_GetChatHistory.Unmarshal(m, b)
 }
-func (m *CChatRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CChatRequest.Marshal(b, m, deterministic)
+func (m *C_GetChatHistory) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C_GetChatHistory.Marshal(b, m, deterministic)
 }
-func (m *CChatRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CChatRequest.Merge(m, src)
+func (m *C_GetChatHistory) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C_GetChatHistory.Merge(m, src)
 }
-func (m *CChatRequest) XXX_Size() int {
-	return xxx_messageInfo_CChatRequest.Size(m)
+func (m *C_GetChatHistory) XXX_Size() int {
+	return xxx_messageInfo_C_GetChatHistory.Size(m)
 }
-func (m *CChatRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CChatRequest.DiscardUnknown(m)
+func (m *C_GetChatHistory) XXX_DiscardUnknown() {
+	xxx_messageInfo_C_GetChatHistory.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CChatRequest proto.InternalMessageInfo
+var xxx_messageInfo_C_GetChatHistory proto.InternalMessageInfo
 
-func (m *CChatRequest) GetFrom() uint32 {
+func (m *C_GetChatHistory) GetFrom() uint32 {
 	if m != nil {
 		return m.From
 	}
 	return 0
 }
 
-func (m *CChatRequest) GetCount() uint32 {
+func (m *C_GetChatHistory) GetCount() uint32 {
 	if m != nil {
 		return m.Count
 	}
 	return 0
 }
 
-type CRevisionRequest struct {
+type C_AddDelta struct {
 	Revision             uint32   `protobuf:"varint,1,opt,name=revision,proto3" json:"revision,omitempty"`
+	Ops                  []*Op    `protobuf:"bytes,2,rep,name=ops,proto3" json:"ops,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CRevisionRequest) Reset()         { *m = CRevisionRequest{} }
-func (m *CRevisionRequest) String() string { return proto.CompactTextString(m) }
-func (*CRevisionRequest) ProtoMessage()    {}
-func (*CRevisionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{25}
+func (m *C_AddDelta) Reset()         { *m = C_AddDelta{} }
+func (m *C_AddDelta) String() string { return proto.CompactTextString(m) }
+func (*C_AddDelta) ProtoMessage()    {}
+func (*C_AddDelta) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{3, 3}
 }
 
-func (m *CRevisionRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CRevisionRequest.Unmarshal(m, b)
+func (m *C_AddDelta) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_C_AddDelta.Unmarshal(m, b)
 }
-func (m *CRevisionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CRevisionRequest.Marshal(b, m, deterministic)
+func (m *C_AddDelta) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_C_AddDelta.Marshal(b, m, deterministic)
 }
-func (m *CRevisionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CRevisionRequest.Merge(m, src)
+func (m *C_AddDelta) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_C_AddDelta.Merge(m, src)
 }
-func (m *CRevisionRequest) XXX_Size() int {
-	return xxx_messageInfo_CRevisionRequest.Size(m)
+func (m *C_AddDelta) XXX_Size() int {
+	return xxx_messageInfo_C_AddDelta.Size(m)
 }
-func (m *CRevisionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CRevisionRequest.DiscardUnknown(m)
+func (m *C_AddDelta) XXX_DiscardUnknown() {
+	xxx_messageInfo_C_AddDelta.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CRevisionRequest proto.InternalMessageInfo
+var xxx_messageInfo_C_AddDelta proto.InternalMessageInfo
 
-func (m *CRevisionRequest) GetRevision() uint32 {
+func (m *C_AddDelta) GetRevision() uint32 {
 	if m != nil {
 		return m.Revision
 	}
 	return 0
 }
 
-type CInvertDelta struct {
-	Id                   uint32   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CInvertDelta) Reset()         { *m = CInvertDelta{} }
-func (m *CInvertDelta) String() string { return proto.CompactTextString(m) }
-func (*CInvertDelta) ProtoMessage()    {}
-func (*CInvertDelta) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{26}
-}
-
-func (m *CInvertDelta) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CInvertDelta.Unmarshal(m, b)
-}
-func (m *CInvertDelta) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CInvertDelta.Marshal(b, m, deterministic)
-}
-func (m *CInvertDelta) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CInvertDelta.Merge(m, src)
-}
-func (m *CInvertDelta) XXX_Size() int {
-	return xxx_messageInfo_CInvertDelta.Size(m)
-}
-func (m *CInvertDelta) XXX_DiscardUnknown() {
-	xxx_messageInfo_CInvertDelta.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CInvertDelta proto.InternalMessageInfo
-
-func (m *CInvertDelta) GetId() uint32 {
+func (m *C_AddDelta) GetOps() []*Op {
 	if m != nil {
-		return m.Id
+		return m.Ops
 	}
-	return 0
+	return nil
 }
 
-type CInvertUserDelta struct {
-	UserId               uint32   `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CInvertUserDelta) Reset()         { *m = CInvertUserDelta{} }
-func (m *CInvertUserDelta) String() string { return proto.CompactTextString(m) }
-func (*CInvertUserDelta) ProtoMessage()    {}
-func (*CInvertUserDelta) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{27}
-}
-
-func (m *CInvertUserDelta) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CInvertUserDelta.Unmarshal(m, b)
-}
-func (m *CInvertUserDelta) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CInvertUserDelta.Marshal(b, m, deterministic)
-}
-func (m *CInvertUserDelta) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CInvertUserDelta.Merge(m, src)
-}
-func (m *CInvertUserDelta) XXX_Size() int {
-	return xxx_messageInfo_CInvertUserDelta.Size(m)
-}
-func (m *CInvertUserDelta) XXX_DiscardUnknown() {
-	xxx_messageInfo_CInvertUserDelta.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CInvertUserDelta proto.InternalMessageInfo
-
-func (m *CInvertUserDelta) GetUserId() uint32 {
-	if m != nil {
-		return m.UserId
-	}
-	return 0
-}
-
-type CRestoreRevision struct {
-	Rev                  uint32   `protobuf:"varint,1,opt,name=rev,proto3" json:"rev,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CRestoreRevision) Reset()         { *m = CRestoreRevision{} }
-func (m *CRestoreRevision) String() string { return proto.CompactTextString(m) }
-func (*CRestoreRevision) ProtoMessage()    {}
-func (*CRestoreRevision) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{28}
-}
-
-func (m *CRestoreRevision) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CRestoreRevision.Unmarshal(m, b)
-}
-func (m *CRestoreRevision) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CRestoreRevision.Marshal(b, m, deterministic)
-}
-func (m *CRestoreRevision) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CRestoreRevision.Merge(m, src)
-}
-func (m *CRestoreRevision) XXX_Size() int {
-	return xxx_messageInfo_CRestoreRevision.Size(m)
-}
-func (m *CRestoreRevision) XXX_DiscardUnknown() {
-	xxx_messageInfo_CRestoreRevision.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CRestoreRevision proto.InternalMessageInfo
-
-func (m *CRestoreRevision) GetRev() uint32 {
-	if m != nil {
-		return m.Rev
-	}
-	return 0
-}
-
+// common
 type Op struct {
 	// Types that are valid to be assigned to Op:
 	//	*Op_Insert
@@ -1779,7 +1389,7 @@ func (m *Op) Reset()         { *m = Op{} }
 func (m *Op) String() string { return proto.CompactTextString(m) }
 func (*Op) ProtoMessage()    {}
 func (*Op) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{29}
+	return fileDescriptor_de4f63176b85ff4e, []int{4}
 }
 
 func (m *Op) XXX_Unmarshal(b []byte) error {
@@ -1871,7 +1481,7 @@ func (m *OpInsert) Reset()         { *m = OpInsert{} }
 func (m *OpInsert) String() string { return proto.CompactTextString(m) }
 func (*OpInsert) ProtoMessage()    {}
 func (*OpInsert) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{30}
+	return fileDescriptor_de4f63176b85ff4e, []int{5}
 }
 
 func (m *OpInsert) XXX_Unmarshal(b []byte) error {
@@ -1917,7 +1527,7 @@ func (m *OpDelete) Reset()         { *m = OpDelete{} }
 func (m *OpDelete) String() string { return proto.CompactTextString(m) }
 func (*OpDelete) ProtoMessage()    {}
 func (*OpDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{31}
+	return fileDescriptor_de4f63176b85ff4e, []int{6}
 }
 
 func (m *OpDelete) XXX_Unmarshal(b []byte) error {
@@ -1957,7 +1567,7 @@ func (m *OpRetain) Reset()         { *m = OpRetain{} }
 func (m *OpRetain) String() string { return proto.CompactTextString(m) }
 func (*OpRetain) ProtoMessage()    {}
 func (*OpRetain) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{32}
+	return fileDescriptor_de4f63176b85ff4e, []int{7}
 }
 
 func (m *OpRetain) XXX_Unmarshal(b []byte) error {
@@ -1999,7 +1609,7 @@ type OpMeta struct {
 	Underline            bool     `protobuf:"varint,4,opt,name=underline,proto3" json:"underline,omitempty"`
 	Strike               bool     `protobuf:"varint,5,opt,name=strike,proto3" json:"strike,omitempty"`
 	FontSize             uint32   `protobuf:"varint,6,opt,name=fontSize,proto3" json:"fontSize,omitempty"`
-	UserId               uint32   `protobuf:"varint,7,opt,name=userId,proto3" json:"userId,omitempty"`
+	UserId               uint32   `protobuf:"varint,7,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2009,7 +1619,7 @@ func (m *OpMeta) Reset()         { *m = OpMeta{} }
 func (m *OpMeta) String() string { return proto.CompactTextString(m) }
 func (*OpMeta) ProtoMessage()    {}
 func (*OpMeta) Descriptor() ([]byte, []int) {
-	return fileDescriptor_de4f63176b85ff4e, []int{33}
+	return fileDescriptor_de4f63176b85ff4e, []int{8}
 }
 
 func (m *OpMeta) XXX_Unmarshal(b []byte) error {
@@ -2079,121 +1689,390 @@ func (m *OpMeta) GetUserId() uint32 {
 	return 0
 }
 
+type User struct {
+	Id                   uint32     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Nickname             string     `protobuf:"bytes,101,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Color                uint32     `protobuf:"varint,102,opt,name=color,proto3" json:"color,omitempty"`
+	Email                string     `protobuf:"bytes,201,opt,name=email,proto3" json:"email,omitempty"`
+	Password             string     `protobuf:"bytes,202,opt,name=password,proto3" json:"password,omitempty"`
+	Ip                   string     `protobuf:"bytes,301,opt,name=ip,proto3" json:"ip,omitempty"`
+	UserAgent            string     `protobuf:"bytes,302,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
+	Perms                *UserPerms `protobuf:"bytes,401,opt,name=perms,proto3" json:"perms,omitempty"`
+	Online               bool       `protobuf:"varint,501,opt,name=online,proto3" json:"online,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *User) Reset()         { *m = User{} }
+func (m *User) String() string { return proto.CompactTextString(m) }
+func (*User) ProtoMessage()    {}
+func (*User) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{9}
+}
+
+func (m *User) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_User.Unmarshal(m, b)
+}
+func (m *User) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_User.Marshal(b, m, deterministic)
+}
+func (m *User) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_User.Merge(m, src)
+}
+func (m *User) XXX_Size() int {
+	return xxx_messageInfo_User.Size(m)
+}
+func (m *User) XXX_DiscardUnknown() {
+	xxx_messageInfo_User.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_User proto.InternalMessageInfo
+
+func (m *User) GetId() uint32 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *User) GetNickname() string {
+	if m != nil {
+		return m.Nickname
+	}
+	return ""
+}
+
+func (m *User) GetColor() uint32 {
+	if m != nil {
+		return m.Color
+	}
+	return 0
+}
+
+func (m *User) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *User) GetPassword() string {
+	if m != nil {
+		return m.Password
+	}
+	return ""
+}
+
+func (m *User) GetIp() string {
+	if m != nil {
+		return m.Ip
+	}
+	return ""
+}
+
+func (m *User) GetUserAgent() string {
+	if m != nil {
+		return m.UserAgent
+	}
+	return ""
+}
+
+func (m *User) GetPerms() *UserPerms {
+	if m != nil {
+		return m.Perms
+	}
+	return nil
+}
+
+func (m *User) GetOnline() bool {
+	if m != nil {
+		return m.Online
+	}
+	return false
+}
+
+type UserPerms struct {
+	NotGuest             bool     `protobuf:"varint,1,opt,name=not_guest,json=notGuest,proto3" json:"not_guest,omitempty"`
+	Chat                 bool     `protobuf:"varint,2,opt,name=chat,proto3" json:"chat,omitempty"`
+	Write                bool     `protobuf:"varint,3,opt,name=write,proto3" json:"write,omitempty"`
+	Edit                 bool     `protobuf:"varint,4,opt,name=edit,proto3" json:"edit,omitempty"`
+	Whitewash            bool     `protobuf:"varint,5,opt,name=whitewash,proto3" json:"whitewash,omitempty"`
+	Mod                  bool     `protobuf:"varint,6,opt,name=mod,proto3" json:"mod,omitempty"`
+	Admin                bool     `protobuf:"varint,7,opt,name=admin,proto3" json:"admin,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UserPerms) Reset()         { *m = UserPerms{} }
+func (m *UserPerms) String() string { return proto.CompactTextString(m) }
+func (*UserPerms) ProtoMessage()    {}
+func (*UserPerms) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{10}
+}
+
+func (m *UserPerms) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UserPerms.Unmarshal(m, b)
+}
+func (m *UserPerms) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UserPerms.Marshal(b, m, deterministic)
+}
+func (m *UserPerms) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserPerms.Merge(m, src)
+}
+func (m *UserPerms) XXX_Size() int {
+	return xxx_messageInfo_UserPerms.Size(m)
+}
+func (m *UserPerms) XXX_DiscardUnknown() {
+	xxx_messageInfo_UserPerms.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UserPerms proto.InternalMessageInfo
+
+func (m *UserPerms) GetNotGuest() bool {
+	if m != nil {
+		return m.NotGuest
+	}
+	return false
+}
+
+func (m *UserPerms) GetChat() bool {
+	if m != nil {
+		return m.Chat
+	}
+	return false
+}
+
+func (m *UserPerms) GetWrite() bool {
+	if m != nil {
+		return m.Write
+	}
+	return false
+}
+
+func (m *UserPerms) GetEdit() bool {
+	if m != nil {
+		return m.Edit
+	}
+	return false
+}
+
+func (m *UserPerms) GetWhitewash() bool {
+	if m != nil {
+		return m.Whitewash
+	}
+	return false
+}
+
+func (m *UserPerms) GetMod() bool {
+	if m != nil {
+		return m.Mod
+	}
+	return false
+}
+
+func (m *UserPerms) GetAdmin() bool {
+	if m != nil {
+		return m.Admin
+	}
+	return false
+}
+
+type PadOptions struct {
+	Private              bool     `protobuf:"varint,1,opt,name=private,proto3" json:"private,omitempty"`
+	GuestRo              bool     `protobuf:"varint,2,opt,name=guest_ro,json=guestRo,proto3" json:"guest_ro,omitempty"`
+	Antiwipe             bool     `protobuf:"varint,3,opt,name=antiwipe,proto3" json:"antiwipe,omitempty"`
+	Freeze               bool     `protobuf:"varint,4,opt,name=freeze,proto3" json:"freeze,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PadOptions) Reset()         { *m = PadOptions{} }
+func (m *PadOptions) String() string { return proto.CompactTextString(m) }
+func (*PadOptions) ProtoMessage()    {}
+func (*PadOptions) Descriptor() ([]byte, []int) {
+	return fileDescriptor_de4f63176b85ff4e, []int{11}
+}
+
+func (m *PadOptions) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PadOptions.Unmarshal(m, b)
+}
+func (m *PadOptions) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PadOptions.Marshal(b, m, deterministic)
+}
+func (m *PadOptions) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PadOptions.Merge(m, src)
+}
+func (m *PadOptions) XXX_Size() int {
+	return xxx_messageInfo_PadOptions.Size(m)
+}
+func (m *PadOptions) XXX_DiscardUnknown() {
+	xxx_messageInfo_PadOptions.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PadOptions proto.InternalMessageInfo
+
+func (m *PadOptions) GetPrivate() bool {
+	if m != nil {
+		return m.Private
+	}
+	return false
+}
+
+func (m *PadOptions) GetGuestRo() bool {
+	if m != nil {
+		return m.GuestRo
+	}
+	return false
+}
+
+func (m *PadOptions) GetAntiwipe() bool {
+	if m != nil {
+		return m.Antiwipe
+	}
+	return false
+}
+
+func (m *PadOptions) GetFreeze() bool {
+	if m != nil {
+		return m.Freeze
+	}
+	return false
+}
+
 func init() {
-	proto.RegisterType((*SMessages)(nil), "proto.SMessages")
-	proto.RegisterType((*SMessage)(nil), "proto.SMessage")
-	proto.RegisterType((*SChat)(nil), "proto.SChat")
-	proto.RegisterType((*SDelta)(nil), "proto.SDelta")
-	proto.RegisterType((*SDeltaDropped)(nil), "proto.SDeltaDropped")
-	proto.RegisterType((*SDocument)(nil), "proto.SDocument")
-	proto.RegisterType((*SAuth)(nil), "proto.SAuth")
-	proto.RegisterType((*SAuthError)(nil), "proto.SAuthError")
-	proto.RegisterType((*SUserLeave)(nil), "proto.SUserLeave")
-	proto.RegisterType((*SUserInfo)(nil), "proto.SUserInfo")
-	proto.RegisterType((*SPadList)(nil), "proto.SPadList")
-	proto.RegisterType((*CMessages)(nil), "proto.CMessages")
-	proto.RegisterType((*CMessage)(nil), "proto.CMessage")
-	proto.RegisterType((*CEditUser)(nil), "proto.CEditUser")
-	proto.RegisterType((*CDelta)(nil), "proto.CDelta")
-	proto.RegisterType((*CChat)(nil), "proto.CChat")
-	proto.RegisterType((*CSession)(nil), "proto.CSession")
-	proto.RegisterType((*CLogin)(nil), "proto.CLogin")
-	proto.RegisterType((*CLogout)(nil), "proto.CLogout")
-	proto.RegisterType((*CRegister)(nil), "proto.CRegister")
-	proto.RegisterType((*CGuestLogin)(nil), "proto.CGuestLogin")
-	proto.RegisterType((*CEnterPad)(nil), "proto.CEnterPad")
-	proto.RegisterType((*CLeavePad)(nil), "proto.CLeavePad")
-	proto.RegisterType((*CAdminUser)(nil), "proto.CAdminUser")
-	proto.RegisterType((*CChatRequest)(nil), "proto.CChatRequest")
-	proto.RegisterType((*CRevisionRequest)(nil), "proto.CRevisionRequest")
-	proto.RegisterType((*CInvertDelta)(nil), "proto.CInvertDelta")
-	proto.RegisterType((*CInvertUserDelta)(nil), "proto.CInvertUserDelta")
-	proto.RegisterType((*CRestoreRevision)(nil), "proto.CRestoreRevision")
+	proto.RegisterType((*ServerPacket)(nil), "proto.ServerPacket")
+	proto.RegisterType((*ClientPacket)(nil), "proto.ClientPacket")
+	proto.RegisterType((*S)(nil), "proto.S")
+	proto.RegisterType((*S_AuthSuccess)(nil), "proto.S.AuthSuccess")
+	proto.RegisterType((*S_PadList)(nil), "proto.S.PadList")
+	proto.RegisterType((*S_ChatMessage)(nil), "proto.S.ChatMessage")
+	proto.RegisterType((*S_Delta)(nil), "proto.S.Delta")
+	proto.RegisterType((*S_Document)(nil), "proto.S.Document")
+	proto.RegisterType((*S_ServerStats)(nil), "proto.S.ServerStats")
+	proto.RegisterType((*S_ServerStats_Pad)(nil), "proto.S.ServerStats.Pad")
+	proto.RegisterType((*S_ServerStats_Pad_Client)(nil), "proto.S.ServerStats.Pad.Client")
+	proto.RegisterType((*C)(nil), "proto.C")
+	proto.RegisterType((*C_LoginAuth)(nil), "proto.C.LoginAuth")
+	proto.RegisterType((*C_Register)(nil), "proto.C.Register")
+	proto.RegisterType((*C_GetChatHistory)(nil), "proto.C.GetChatHistory")
+	proto.RegisterType((*C_AddDelta)(nil), "proto.C.AddDelta")
 	proto.RegisterType((*Op)(nil), "proto.Op")
 	proto.RegisterType((*OpInsert)(nil), "proto.OpInsert")
 	proto.RegisterType((*OpDelete)(nil), "proto.OpDelete")
 	proto.RegisterType((*OpRetain)(nil), "proto.OpRetain")
 	proto.RegisterType((*OpMeta)(nil), "proto.OpMeta")
+	proto.RegisterType((*User)(nil), "proto.User")
+	proto.RegisterType((*UserPerms)(nil), "proto.UserPerms")
+	proto.RegisterType((*PadOptions)(nil), "proto.PadOptions")
 }
 
 func init() { proto.RegisterFile("esterpad.proto", fileDescriptor_de4f63176b85ff4e) }
 
 var fileDescriptor_de4f63176b85ff4e = []byte{
-	// 1207 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x56, 0x5f, 0x6f, 0xdc, 0x44,
-	0x10, 0x3f, 0xdf, 0x5f, 0x7b, 0x2e, 0x97, 0x84, 0xa5, 0x02, 0xab, 0xad, 0xda, 0xb2, 0x2a, 0x52,
-	0xa1, 0x28, 0x12, 0x05, 0x09, 0xd4, 0x17, 0x94, 0x5e, 0x2a, 0x2e, 0x52, 0xa2, 0x54, 0x1b, 0xf1,
-	0xc0, 0xa3, 0x7b, 0xde, 0x5c, 0xac, 0xdc, 0xd9, 0xc6, 0xde, 0x0b, 0x88, 0x17, 0x3e, 0x00, 0x0f,
-	0x7c, 0x16, 0x24, 0x9e, 0xfb, 0xce, 0xb7, 0x42, 0x33, 0xfb, 0xc7, 0xde, 0x4b, 0xae, 0x94, 0x3e,
-	0xf0, 0xe4, 0x9d, 0x99, 0xdf, 0xee, 0xcc, 0xec, 0xcc, 0xfc, 0xd6, 0xb0, 0x2b, 0x6b, 0x25, 0xab,
-	0x32, 0x49, 0x0f, 0xca, 0xaa, 0x50, 0x05, 0x1b, 0xd0, 0x87, 0x7f, 0x01, 0xd1, 0xf9, 0xa9, 0xac,
-	0xeb, 0x64, 0x21, 0x6b, 0xf6, 0x10, 0xba, 0xf5, 0x2a, 0x0e, 0x1e, 0xf5, 0x9e, 0x8c, 0x9f, 0xed,
-	0x69, 0xdc, 0x81, 0xb5, 0x8a, 0x6e, 0xbd, 0xe2, 0x7f, 0xf5, 0x20, 0xb4, 0x0a, 0xc6, 0xa1, 0x3f,
-	0xbd, 0x4c, 0x54, 0x1c, 0x3c, 0x0a, 0x9e, 0x8c, 0x9f, 0xed, 0x58, 0x3c, 0xea, 0x66, 0x1d, 0x41,
-	0x36, 0xf6, 0x29, 0x0c, 0x8e, 0xe4, 0x52, 0x25, 0x71, 0x97, 0x40, 0x13, 0x0b, 0x22, 0xe5, 0xac,
-	0x23, 0xb4, 0x95, 0x3d, 0x87, 0x1d, 0x5a, 0x1c, 0x55, 0x45, 0x59, 0xca, 0x34, 0xee, 0x11, 0xfa,
-	0x8e, 0x87, 0x36, 0xb6, 0x59, 0x47, 0x78, 0x58, 0x76, 0x00, 0xe1, 0x51, 0x31, 0x5f, 0xaf, 0x64,
-	0xae, 0xe2, 0x3e, 0xed, 0xdb, 0x77, 0xfb, 0x8c, 0x7e, 0xd6, 0x11, 0x0e, 0x83, 0x61, 0x1f, 0xae,
-	0xd5, 0x65, 0x3c, 0xf0, 0xc3, 0x46, 0x1d, 0x86, 0x8d, 0x5f, 0xf6, 0x25, 0x44, 0xf8, 0x7d, 0x59,
-	0x55, 0x45, 0x15, 0x0f, 0x09, 0xf8, 0x41, 0x1b, 0x48, 0x86, 0x59, 0x47, 0x34, 0x28, 0xdc, 0xf2,
-	0x43, 0x2d, 0xab, 0x13, 0x99, 0x5c, 0xcb, 0x78, 0xe4, 0x6f, 0x71, 0x06, 0xdc, 0xe2, 0x04, 0x8c,
-	0x1c, 0x85, 0xe3, 0xfc, 0xa2, 0x88, 0x43, 0x3f, 0x72, 0xab, 0xc7, 0xc8, 0xed, 0x9a, 0x3d, 0x85,
-	0xd1, 0xab, 0x24, 0x3d, 0xc9, 0x6a, 0x15, 0x47, 0x04, 0x77, 0x35, 0x32, 0xea, 0x59, 0x47, 0x58,
-	0xc4, 0x0b, 0x68, 0x2a, 0xc5, 0xa7, 0x30, 0xa0, 0xb2, 0xb0, 0x5d, 0xe8, 0x66, 0x29, 0x15, 0x6c,
-	0x22, 0xba, 0x59, 0xca, 0x3e, 0x82, 0xe1, 0x1a, 0x4f, 0x4f, 0xa9, 0x3e, 0x13, 0x61, 0x24, 0xc6,
-	0xa0, 0xaf, 0xe4, 0x2f, 0x8a, 0xea, 0x10, 0x09, 0x5a, 0xf3, 0x53, 0x18, 0xea, 0x42, 0xbc, 0xf3,
-	0x29, 0xf7, 0xa0, 0x57, 0x94, 0x75, 0xdc, 0xa3, 0x7e, 0x8a, 0x4c, 0xac, 0x67, 0xa5, 0x40, 0x2d,
-	0x7f, 0x0a, 0x13, 0xaf, 0xae, 0xec, 0x2e, 0x84, 0x95, 0xbc, 0xce, 0xea, 0xac, 0xc8, 0xcd, 0xd9,
-	0x4e, 0xe6, 0x47, 0x10, 0xb9, 0x62, 0xbe, 0x0d, 0x68, 0x5d, 0x76, 0x6f, 0x75, 0xf9, 0x1b, 0x0c,
-	0xa8, 0x7a, 0xad, 0x80, 0x03, 0x2f, 0xe0, 0xbb, 0x10, 0xe6, 0xd9, 0xfc, 0x2a, 0x4f, 0x56, 0x92,
-	0x52, 0x89, 0x84, 0x93, 0xd9, 0x1d, 0x18, 0xcc, 0x8b, 0x65, 0x51, 0xd1, 0x9d, 0x4c, 0x84, 0x16,
-	0x50, 0x5b, 0xca, 0x6a, 0x55, 0x53, 0xe7, 0x4d, 0x84, 0x16, 0xf0, 0xfc, 0x5a, 0xd6, 0xf5, 0x71,
-	0x4a, 0x4d, 0x16, 0x09, 0x23, 0x71, 0x0e, 0xd0, 0xb4, 0x0f, 0xee, 0x95, 0xd4, 0x60, 0x3a, 0x08,
-	0x2d, 0xf0, 0xc7, 0x00, 0x4d, 0xbf, 0x6c, 0x8b, 0x94, 0xff, 0x19, 0x40, 0xe4, 0x9a, 0xe4, 0xff,
-	0xc8, 0xa7, 0xc8, 0x97, 0x59, 0x2e, 0x29, 0x9f, 0x50, 0x18, 0x89, 0x1a, 0xa1, 0xa4, 0xf9, 0x88,
-	0x44, 0x37, 0x2b, 0xd9, 0x7d, 0x88, 0xd0, 0xf3, 0xe1, 0x02, 0x67, 0x71, 0x44, 0xea, 0x46, 0xc1,
-	0x1f, 0x40, 0x68, 0x1b, 0x15, 0x1b, 0xac, 0x4c, 0xd2, 0x9a, 0xb8, 0x26, 0x12, 0xb4, 0x46, 0x2a,
-	0x9a, 0xb6, 0xa9, 0x68, 0xbe, 0x49, 0x45, 0x53, 0x47, 0x45, 0xf3, 0x15, 0xff, 0x7b, 0x08, 0xa1,
-	0x55, 0xe0, 0x24, 0xbd, 0x4c, 0x33, 0x85, 0x17, 0x62, 0xe8, 0xc8, 0x4e, 0xd2, 0xd4, 0xea, 0x71,
-	0x92, 0xec, 0x7a, 0x1b, 0x2d, 0x4d, 0x37, 0x68, 0xc9, 0x32, 0x5c, 0xcf, 0xa3, 0x8a, 0xa9, 0xc7,
-	0x70, 0x4f, 0x61, 0x74, 0x2e, 0x6b, 0x6a, 0xc6, 0xbe, 0x37, 0x94, 0x53, 0xa3, 0xc6, 0xa1, 0x34,
-	0x4b, 0xf4, 0x7b, 0x52, 0x2c, 0xb2, 0xdc, 0x90, 0x8f, 0xf3, 0x4b, 0x4a, 0xf4, 0x4b, 0x0b, 0xf6,
-	0x04, 0x86, 0x27, 0xc5, 0xa2, 0x58, 0x2b, 0xc3, 0x3d, 0xbb, 0x2d, 0x5c, 0xb1, 0x46, 0xdf, 0xc6,
-	0x8e, 0x89, 0x0b, 0xb9, 0xc8, 0x90, 0xda, 0x0d, 0xe9, 0xb8, 0xc4, 0xad, 0x1e, 0x13, 0xb7, 0x6b,
-	0xf6, 0x35, 0xc0, 0xf7, 0x6b, 0x59, 0x2b, 0x1d, 0x85, 0x26, 0x1d, 0x66, 0x77, 0x34, 0x96, 0x59,
-	0x47, 0xb4, 0x70, 0x74, 0xbd, 0xb9, 0x92, 0xd5, 0xab, 0x24, 0x35, 0xcc, 0xd3, 0x5c, 0xaf, 0xd1,
-	0xd3, 0xf5, 0x9a, 0x35, 0xe2, 0xa9, 0x7d, 0x11, 0x0f, 0x3e, 0xde, 0xea, 0x11, 0x6f, 0xd7, 0x44,
-	0xb7, 0xe9, 0x2a, 0xcb, 0xa9, 0x7e, 0x63, 0x8f, 0x3b, 0xa7, 0xce, 0x40, 0x74, 0x6b, 0x05, 0xf6,
-	0x0d, 0x8c, 0xf1, 0xfa, 0x85, 0xfc, 0x09, 0xc3, 0x8c, 0x77, 0x68, 0xd3, 0x87, 0xed, 0x0a, 0x19,
-	0xd3, 0xac, 0x23, 0xda, 0x48, 0x36, 0x85, 0x3d, 0x61, 0xd8, 0xc2, 0x6e, 0x9e, 0xd0, 0xe6, 0x8f,
-	0x9b, 0x8b, 0xf3, 0xcc, 0xb3, 0x8e, 0xd8, 0xdc, 0x81, 0xde, 0x8f, 0xf3, 0x6b, 0x59, 0x29, 0xdd,
-	0x45, 0xbb, 0xbe, 0xf7, 0x96, 0x09, 0xbd, 0xb7, 0x44, 0xf4, 0xae, 0x45, 0x4c, 0x42, 0x6f, 0xde,
-	0xf3, 0xbd, 0x6f, 0x98, 0xd1, 0xfb, 0x86, 0x4a, 0xa7, 0x50, 0xab, 0xa2, 0x92, 0x36, 0xae, 0x78,
-	0x7f, 0x33, 0x05, 0xcf, 0xac, 0x53, 0xf0, 0x54, 0xf8, 0x3e, 0xd8, 0xf1, 0xe1, 0x7f, 0x04, 0x10,
-	0xb9, 0x41, 0x61, 0x0f, 0x00, 0xe6, 0x97, 0x49, 0xbe, 0x90, 0xab, 0xa4, 0xbe, 0x32, 0x8c, 0xd2,
-	0xd2, 0xbc, 0x1f, 0xab, 0xc8, 0x55, 0x92, 0x2d, 0x69, 0x42, 0x22, 0xa1, 0x05, 0x3c, 0xa7, 0x4c,
-	0xea, 0xfa, 0xe7, 0xa2, 0xb2, 0x3c, 0xe9, 0x64, 0x7e, 0x08, 0x43, 0x3d, 0x8c, 0xef, 0xcf, 0xf6,
-	0xf7, 0x60, 0x40, 0x7d, 0xe0, 0x1e, 0xb3, 0xa0, 0xf5, 0x98, 0x71, 0x08, 0xed, 0x7c, 0xb6, 0xd8,
-	0x3a, 0xf0, 0xd8, 0xfa, 0x39, 0x0c, 0xf5, 0x60, 0x36, 0xf1, 0x07, 0xdb, 0xe2, 0xef, 0x6e, 0xc4,
-	0x1f, 0xc1, 0xc8, 0x0c, 0x2b, 0xff, 0x11, 0x22, 0x37, 0x8b, 0xff, 0xfd, 0x24, 0xef, 0xb6, 0x7b,
-	0xfe, 0x6d, 0xf3, 0x09, 0x8c, 0x5b, 0x43, 0xcb, 0x1f, 0x62, 0x15, 0xed, 0x0c, 0x32, 0xe8, 0xd3,
-	0x1e, 0x93, 0x35, 0xe1, 0xc7, 0x10, 0xb9, 0x01, 0xe4, 0x6f, 0x02, 0x80, 0x66, 0xba, 0xb6, 0xbe,
-	0x21, 0x7e, 0x37, 0x74, 0x6f, 0x74, 0x83, 0x7b, 0x31, 0x7a, 0xed, 0x17, 0xa3, 0x1d, 0x75, 0x7f,
-	0x5b, 0x8f, 0x0c, 0x6e, 0xed, 0x91, 0xe1, 0xb6, 0x9b, 0x19, 0x6d, 0xdc, 0xf1, 0xb7, 0xb0, 0xd3,
-	0x1e, 0x74, 0xcc, 0xf8, 0xa2, 0x2a, 0x56, 0x26, 0x7e, 0x5a, 0x6b, 0x5f, 0xeb, 0x5c, 0x99, 0xc0,
-	0xb5, 0xc0, 0x0f, 0x60, 0x7f, 0x73, 0xca, 0xdf, 0xfa, 0xfb, 0xf1, 0x00, 0x76, 0xda, 0x43, 0xbd,
-	0xf9, 0x03, 0xc4, 0x3f, 0x87, 0xfd, 0xcd, 0xb9, 0xdd, 0xfa, 0x72, 0x3f, 0x26, 0xdf, 0xde, 0x2c,
-	0xb2, 0x7d, 0xe8, 0x55, 0xf2, 0xda, 0x00, 0x71, 0xc9, 0x7f, 0x0f, 0xa0, 0x7b, 0x56, 0xb2, 0xcf,
-	0x60, 0x98, 0xe5, 0xb5, 0xac, 0xec, 0x4f, 0xf6, 0x9e, 0xeb, 0xf1, 0x63, 0x52, 0xe3, 0x4b, 0xa0,
-	0x01, 0x08, 0x4d, 0xe5, 0x52, 0x2a, 0x69, 0xde, 0xb4, 0x06, 0x7a, 0x44, 0x6a, 0x84, 0x6a, 0x00,
-	0x42, 0x2b, 0xa9, 0x92, 0x2c, 0x37, 0x0f, 0x5b, 0x03, 0x15, 0xa4, 0x46, 0xa8, 0x06, 0xbc, 0xe8,
-	0x43, 0xb7, 0x28, 0xf9, 0x21, 0x84, 0xd6, 0xe3, 0x6d, 0xd3, 0xc4, 0x3e, 0x81, 0xfe, 0x4a, 0xde,
-	0x78, 0x4d, 0xcf, 0xca, 0x53, 0xa9, 0x12, 0x41, 0x26, 0x7e, 0x1f, 0x8f, 0xd0, 0x91, 0x60, 0xba,
-	0x4b, 0x69, 0x6f, 0x19, 0x97, 0xfc, 0x3b, 0xb4, 0x6a, 0xe7, 0x37, 0xad, 0xef, 0x72, 0xfc, 0x9b,
-	0x00, 0x86, 0x5a, 0xf1, 0xaf, 0xf4, 0xc5, 0xa0, 0xff, 0xba, 0x58, 0xea, 0x41, 0x0b, 0x05, 0xad,
-	0xb1, 0x58, 0x99, 0x4a, 0x96, 0xd9, 0x9c, 0x6e, 0x24, 0x14, 0x46, 0xa2, 0x1f, 0x9a, 0x3c, 0x95,
-	0x15, 0xfd, 0xfb, 0xf4, 0xc9, 0xd4, 0x28, 0x88, 0x38, 0x54, 0x95, 0x5d, 0xb9, 0xdf, 0x22, 0x2d,
-	0x61, 0x2b, 0x5d, 0x14, 0xb9, 0x3a, 0xcf, 0x7e, 0x95, 0xd4, 0xcd, 0x13, 0xe1, 0xe4, 0x56, 0x5b,
-	0x8c, 0xda, 0x6d, 0xf1, 0x7a, 0x48, 0x49, 0x7d, 0xf5, 0x4f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x1c,
-	0xec, 0xf2, 0x34, 0xa7, 0x0d, 0x00, 0x00,
+	// 1628 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x57, 0x4b, 0x93, 0x1c, 0x47,
+	0x11, 0xde, 0x79, 0xec, 0x4c, 0x77, 0xce, 0xbe, 0x54, 0x16, 0xa8, 0x19, 0xc9, 0x92, 0x18, 0x1c,
+	0x66, 0x8d, 0xc5, 0x08, 0x49, 0x27, 0x3b, 0x20, 0x08, 0x69, 0x96, 0xd0, 0xca, 0xa1, 0x0d, 0x6d,
+	0xf4, 0x06, 0x04, 0xb7, 0x8e, 0x72, 0x77, 0xee, 0x4c, 0xb1, 0x33, 0x5d, 0x1d, 0x55, 0x35, 0xbb,
+	0xc6, 0x7f, 0xc1, 0x27, 0xf0, 0x85, 0x23, 0x3f, 0x00, 0xfc, 0x0f, 0x08, 0xce, 0xd6, 0x8d, 0x23,
+	0x6f, 0xfe, 0x01, 0x27, 0xf3, 0xb8, 0x11, 0x59, 0x8f, 0x9e, 0x9e, 0xd5, 0x9a, 0xb0, 0x7d, 0x9a,
+	0xca, 0x2f, 0xbf, 0xce, 0xca, 0xca, 0xcc, 0xca, 0xac, 0x81, 0x1d, 0xd4, 0x06, 0x55, 0xc5, 0x8b,
+	0x71, 0xa5, 0xa4, 0x91, 0x6c, 0xd3, 0xfe, 0x8c, 0xee, 0xc1, 0xd6, 0x09, 0xaa, 0x73, 0x54, 0xc7,
+	0x3c, 0x3f, 0x43, 0xc3, 0x6e, 0x41, 0x77, 0xa1, 0xa7, 0x3a, 0x69, 0xdd, 0xed, 0xec, 0x0f, 0x1e,
+	0x46, 0x8e, 0x3c, 0x3e, 0x49, 0x2d, 0x4a, 0xec, 0xc9, 0x5c, 0x60, 0x69, 0xfe, 0x2f, 0x7b, 0xe2,
+	0xd9, 0x7f, 0x88, 0xa1, 0x75, 0xc2, 0xde, 0x81, 0x2d, 0xbe, 0x34, 0xb3, 0x4c, 0x2f, 0xf3, 0x1c,
+	0x35, 0x71, 0x5b, 0xfb, 0x83, 0x87, 0xd7, 0x83, 0xe5, 0xf1, 0xe3, 0xa5, 0x99, 0x9d, 0x38, 0xdd,
+	0xe1, 0x46, 0x3a, 0xe0, 0x2b, 0x91, 0xdd, 0x01, 0xb0, 0x9f, 0xa2, 0x52, 0x52, 0x25, 0xed, 0xbb,
+	0xad, 0xfd, 0xf8, 0x70, 0x23, 0x8d, 0x09, 0xfb, 0x11, 0x41, 0xec, 0x3b, 0x10, 0x2f, 0x35, 0xaa,
+	0x4c, 0x94, 0xa7, 0x32, 0x41, 0x6b, 0x78, 0xe0, 0x0d, 0xff, 0x58, 0xa3, 0x3a, 0xdc, 0x48, 0x23,
+	0xd2, 0x3f, 0x2b, 0x4f, 0x25, 0x19, 0xb3, 0xdc, 0x39, 0xf2, 0x73, 0x4c, 0x4e, 0xef, 0xb6, 0xf6,
+	0xb7, 0xc9, 0x18, 0x61, 0xcf, 0x09, 0x62, 0x63, 0x88, 0x2a, 0x5e, 0x64, 0x73, 0xa1, 0x4d, 0xf2,
+	0xa9, 0xf3, 0x72, 0xaf, 0xf6, 0xf2, 0x98, 0x17, 0xcf, 0x85, 0x36, 0x87, 0x1b, 0x69, 0xbf, 0x72,
+	0x4b, 0x76, 0xdf, 0xf1, 0xed, 0xde, 0x2f, 0x1d, 0xff, 0x9a, 0xe7, 0x1f, 0xf3, 0xe2, 0x45, 0x65,
+	0x84, 0x2c, 0xb5, 0xff, 0xc0, 0x7a, 0xf0, 0x2e, 0x6c, 0xe5, 0x33, 0x6e, 0xb2, 0x05, 0x6a, 0xcd,
+	0xa7, 0x98, 0xfc, 0xb6, 0x7d, 0x29, 0x14, 0x93, 0x19, 0x37, 0x47, 0x4e, 0x49, 0xa1, 0xc8, 0x57,
+	0x22, 0x7b, 0x00, 0xaf, 0x29, 0x5c, 0xc8, 0x73, 0xcc, 0xd6, 0x4c, 0x7c, 0xd2, 0xf6, 0xe7, 0xb8,
+	0xe6, 0xb4, 0x0d, 0x0b, 0xec, 0xdb, 0xb0, 0x59, 0xe0, 0xdc, 0xf0, 0xe4, 0x17, 0x1d, 0xbb, 0xcf,
+	0x4e, 0xbd, 0xcf, 0x01, 0xc1, 0x87, 0x1b, 0xa9, 0xd3, 0xb3, 0x37, 0x61, 0xdb, 0x2e, 0xb2, 0x42,
+	0xc9, 0xaa, 0xc2, 0x22, 0xf9, 0x65, 0xc7, 0x5b, 0xdd, 0xb2, 0xf8, 0x81, 0x83, 0xd9, 0xf7, 0x20,
+	0x2a, 0x64, 0xbe, 0x5c, 0x60, 0x69, 0x92, 0x8f, 0x3b, 0x6b, 0x07, 0x3e, 0x19, 0x1f, 0x78, 0x0d,
+	0xc5, 0x3c, 0xb0, 0xe8, 0xc4, 0xda, 0x56, 0x57, 0xa6, 0x0d, 0x37, 0x3a, 0xf9, 0x63, 0xf7, 0xd2,
+	0x89, 0x5d, 0xed, 0x9d, 0x90, 0x92, 0x4e, 0xac, 0x57, 0x22, 0x7b, 0xa3, 0xfe, 0xd6, 0xa5, 0xff,
+	0x77, 0x9b, 0x3e, 0xff, 0x9e, 0x65, 0x2b, 0x60, 0xf8, 0x14, 0x06, 0x8d, 0x02, 0x62, 0x37, 0xa0,
+	0xaf, 0x51, 0xeb, 0x4c, 0x14, 0xb6, 0xce, 0xe2, 0xb4, 0x47, 0xe2, 0xb3, 0x82, 0xdd, 0x81, 0x2e,
+	0x65, 0x3a, 0x69, 0xbf, 0x52, 0x24, 0xa9, 0x55, 0x0c, 0x5f, 0x87, 0xbe, 0xcf, 0x31, 0x63, 0xd0,
+	0x2d, 0xf9, 0x02, 0x6d, 0x55, 0xc7, 0xa9, 0x5d, 0x0f, 0xdf, 0x83, 0x41, 0x33, 0xb6, 0x3b, 0xd0,
+	0xf6, 0x5b, 0x6c, 0xa7, 0x6d, 0x51, 0xd0, 0xbe, 0xae, 0x10, 0x0b, 0xbb, 0xc3, 0x76, 0xda, 0xb3,
+	0x75, 0x57, 0x90, 0x2d, 0x83, 0x1f, 0x98, 0xa4, 0x63, 0xbd, 0xb1, 0xeb, 0xe1, 0x11, 0x6c, 0xda,
+	0x0c, 0x7c, 0x71, 0x2b, 0x37, 0xa1, 0x23, 0x2b, 0x9d, 0x74, 0xec, 0x35, 0x8b, 0xbd, 0xf3, 0x2f,
+	0xaa, 0x94, 0xd0, 0xe1, 0x04, 0xa2, 0x10, 0x7c, 0x36, 0x84, 0x48, 0xe1, 0xb9, 0xd0, 0x42, 0x96,
+	0xde, 0x6e, 0x2d, 0x07, 0x23, 0xed, 0x2b, 0x8d, 0xfc, 0xba, 0x0d, 0x83, 0x46, 0x32, 0xd8, 0xeb,
+	0x00, 0x53, 0x99, 0x9d, 0xa3, 0xaa, 0x4d, 0xc5, 0x69, 0x3c, 0x95, 0x3f, 0x71, 0x00, 0x7b, 0x0b,
+	0xf6, 0xa6, 0x52, 0xc9, 0xa5, 0x11, 0x25, 0xea, 0x2c, 0x97, 0xcb, 0xd2, 0x78, 0x97, 0x77, 0x57,
+	0xf8, 0x84, 0x60, 0x76, 0x0f, 0xba, 0x15, 0x2f, 0x82, 0xf3, 0xc9, 0x55, 0xa9, 0xa7, 0xfb, 0x92,
+	0x5a, 0xd6, 0xf0, 0x57, 0x2d, 0xe8, 0x1c, 0xf3, 0xa2, 0x91, 0x83, 0x56, 0xc8, 0x01, 0x7b, 0x07,
+	0xfa, 0xb9, 0xed, 0x3e, 0xe1, 0x10, 0x77, 0x3e, 0xcf, 0xd8, 0xd8, 0x75, 0xa9, 0x34, 0xf0, 0x87,
+	0x4f, 0xa0, 0xe7, 0xa0, 0xaf, 0x5e, 0x21, 0x4f, 0x3a, 0xd0, 0xd2, 0xa3, 0x8f, 0x06, 0xd0, 0x9a,
+	0x50, 0x2f, 0x99, 0x2e, 0x51, 0x9b, 0x8c, 0x5a, 0x91, 0xb5, 0x13, 0x51, 0x2f, 0xb1, 0x18, 0x95,
+	0x23, 0xfb, 0x16, 0x15, 0xaf, 0xa6, 0x50, 0x39, 0x4a, 0x7b, 0x55, 0xbb, 0x16, 0xb5, 0xa4, 0x47,
+	0x00, 0x73, 0x39, 0x15, 0x9e, 0xe2, 0x2e, 0x14, 0x0b, 0x3d, 0x74, 0xfc, 0x9c, 0x54, 0xc4, 0x23,
+	0xcb, 0xf3, 0x20, 0x50, 0xd7, 0x51, 0x38, 0x15, 0xd4, 0xcc, 0x93, 0xee, 0xda, 0x1d, 0x9c, 0x8c,
+	0x53, 0xaf, 0xa0, 0x3b, 0x18, 0x48, 0x2c, 0x81, 0xde, 0x5c, 0x4e, 0xe5, 0xd2, 0x24, 0x9b, 0xde,
+	0x4f, 0x2f, 0xb3, 0x37, 0xa1, 0x8f, 0x85, 0xa0, 0x66, 0x72, 0x75, 0xef, 0xec, 0x91, 0xf6, 0x08,
+	0xd9, 0x6d, 0x88, 0xb1, 0x34, 0xa8, 0xb2, 0x8a, 0x17, 0xae, 0x33, 0xd2, 0x51, 0x22, 0x8b, 0x51,
+	0xae, 0x6e, 0x43, 0x6c, 0x9b, 0xaa, 0xd5, 0xbf, 0x0c, 0xd1, 0x88, 0x2c, 0x46, 0xfa, 0xef, 0xc2,
+	0x35, 0x8d, 0x65, 0x91, 0xbd, 0xda, 0xfc, 0xc8, 0xce, 0x2e, 0xe9, 0x9a, 0x77, 0xeb, 0x00, 0xf6,
+	0xa6, 0x68, 0x1c, 0x7b, 0x26, 0xb4, 0x91, 0xea, 0xe7, 0xae, 0xcf, 0x0d, 0x1e, 0xde, 0xa8, 0x8f,
+	0xfa, 0x14, 0x0d, 0x7d, 0x73, 0xe8, 0xf4, 0x87, 0x1b, 0xe9, 0xce, 0x74, 0x0d, 0x61, 0x0f, 0x20,
+	0xe6, 0x45, 0x91, 0xad, 0x75, 0xc0, 0x55, 0xa4, 0x1e, 0x17, 0x45, 0x68, 0x82, 0x11, 0xf7, 0x6b,
+	0xf6, 0xb6, 0xdb, 0xb8, 0x90, 0x79, 0x56, 0x5f, 0xa2, 0xba, 0x15, 0x92, 0xfd, 0x03, 0x99, 0xa7,
+	0xe1, 0x36, 0xbd, 0x01, 0x5b, 0xa2, 0x3c, 0x47, 0x65, 0xfc, 0x16, 0x1f, 0x07, 0xe2, 0xc0, 0xc1,
+	0xce, 0xe4, 0x7d, 0x60, 0x9e, 0x65, 0x2f, 0xb6, 0xa5, 0xea, 0xe4, 0xb3, 0xc0, 0xdd, 0x73, 0x4a,
+	0x8a, 0xb7, 0xe5, 0x6b, 0x76, 0x0f, 0xf6, 0x14, 0xd2, 0x09, 0x70, 0xe5, 0xc3, 0xbf, 0x02, 0x7d,
+	0xd7, 0xab, 0x6a, 0x27, 0xde, 0x86, 0xd8, 0x66, 0xd0, 0x16, 0xee, 0xbf, 0x3b, 0x57, 0x0e, 0x40,
+	0x22, 0xd0, 0x9a, 0xdd, 0x87, 0x41, 0xae, 0x90, 0x1b, 0x74, 0xf4, 0xff, 0x5c, 0x49, 0x07, 0x47,
+	0xb1, 0x1f, 0x7c, 0x1f, 0x76, 0x35, 0x1a, 0xca, 0x6a, 0x26, 0xdd, 0x34, 0x4b, 0xfe, 0xdb, 0xf9,
+	0xfc, 0x39, 0xb7, 0xad, 0xd1, 0xac, 0x00, 0x36, 0x82, 0x41, 0x81, 0x73, 0x0c, 0xdb, 0xd9, 0xd6,
+	0x4f, 0x87, 0x00, 0x87, 0xda, 0x1d, 0xee, 0x82, 0x97, 0x6c, 0xe9, 0xfc, 0xa9, 0x1b, 0x26, 0xbc,
+	0x03, 0xa9, 0x76, 0x1e, 0xc0, 0x6b, 0x9e, 0xb1, 0x56, 0x3d, 0x7f, 0x0e, 0xd6, 0xae, 0x39, 0x6d,
+	0xb3, 0x7e, 0x1e, 0xc1, 0xf5, 0xc6, 0xc6, 0xe1, 0x13, 0x9d, 0xfc, 0x25, 0x7c, 0xc3, 0x56, 0x1e,
+	0xf8, 0x6f, 0x74, 0xc8, 0xfd, 0xda, 0xb4, 0xfa, 0x6b, 0xd7, 0x97, 0x32, 0xe5, 0xbe, 0xd9, 0x1c,
+	0xe9, 0x68, 0x4a, 0x56, 0x59, 0xce, 0xf3, 0x19, 0xea, 0xe4, 0x6f, 0x81, 0x07, 0x84, 0x4e, 0x2c,
+	0xc8, 0xf6, 0x61, 0x87, 0xb2, 0xc5, 0x55, 0x30, 0x9a, 0xfc, 0x3d, 0xd0, 0xb6, 0xbd, 0xc2, 0x99,
+	0x64, 0x43, 0xe8, 0xe3, 0x07, 0x98, 0x67, 0x3f, 0xd3, 0xc9, 0x3f, 0x42, 0x04, 0x7a, 0x84, 0xbc,
+	0xa7, 0x87, 0x3f, 0x80, 0xb8, 0xee, 0x03, 0xec, 0x3a, 0x6c, 0xe2, 0x82, 0x8b, 0xb9, 0x6f, 0x5c,
+	0x4e, 0xa0, 0x96, 0x5f, 0x71, 0xad, 0x2f, 0xa4, 0x72, 0x53, 0x23, 0x4e, 0x6b, 0x79, 0xf8, 0x53,
+	0x88, 0x42, 0x4f, 0xf8, 0xf2, 0x5f, 0x93, 0xae, 0x14, 0xf9, 0x99, 0xed, 0xc3, 0x6e, 0x7e, 0xd5,
+	0xf2, 0xf0, 0x5d, 0xd8, 0x59, 0xbf, 0x82, 0xd4, 0xb1, 0x4f, 0x95, 0x5c, 0xf8, 0xb1, 0x63, 0xd7,
+	0xb4, 0x67, 0x73, 0x36, 0x38, 0x81, 0x06, 0x56, 0xb8, 0x7f, 0x5f, 0x79, 0x60, 0x51, 0x37, 0xce,
+	0x47, 0x1f, 0xb5, 0xa0, 0xfd, 0xa2, 0x62, 0x6f, 0x41, 0x4f, 0x94, 0x1a, 0x95, 0xf1, 0x8f, 0xcb,
+	0xdd, 0x9a, 0xfb, 0xcc, 0xc2, 0x14, 0x50, 0x47, 0x20, 0xaa, 0xcb, 0xbe, 0xef, 0xf3, 0x2b, 0xea,
+	0x81, 0x85, 0x89, 0xea, 0x08, 0x44, 0x55, 0x68, 0xb8, 0x28, 0x7d, 0x6b, 0x5e, 0x51, 0x53, 0x0b,
+	0x13, 0xd5, 0x11, 0x9e, 0x74, 0xa1, 0x2d, 0xab, 0xd1, 0x63, 0x88, 0xc2, 0x8e, 0xf5, 0xdc, 0x6f,
+	0xad, 0xe6, 0x3e, 0xfb, 0x26, 0x74, 0x17, 0x68, 0xb8, 0xdf, 0x79, 0xbb, 0x36, 0x77, 0x84, 0x86,
+	0xa7, 0x56, 0x35, 0xba, 0x45, 0x26, 0x9c, 0x27, 0x6c, 0x0f, 0x3a, 0x73, 0x0c, 0x51, 0xa1, 0xe5,
+	0xe8, 0x87, 0xa4, 0x75, 0x9b, 0xbf, 0xaa, 0xfd, 0x22, 0xe6, 0x7f, 0xdf, 0x82, 0x9e, 0x03, 0xd8,
+	0x6d, 0x80, 0x7c, 0xc6, 0xcb, 0x29, 0x2e, 0xb8, 0x3e, 0xf3, 0x66, 0x1a, 0x08, 0x1d, 0xe0, 0x7d,
+	0x39, 0x77, 0x45, 0x11, 0xa5, 0x76, 0xcd, 0xbe, 0x0e, 0x3d, 0x61, 0xf8, 0x5c, 0xe4, 0x36, 0x22,
+	0x51, 0xea, 0x25, 0x76, 0x0b, 0xe2, 0x65, 0x59, 0xa0, 0x9a, 0x8b, 0x12, 0xed, 0x50, 0x8a, 0xd2,
+	0x15, 0x40, 0x5f, 0x69, 0xa3, 0xc4, 0x19, 0xba, 0x01, 0x94, 0x7a, 0x89, 0x52, 0x7f, 0x2a, 0x4b,
+	0x73, 0x22, 0x3e, 0xc4, 0xa4, 0xe7, 0x52, 0x1f, 0xe4, 0xe6, 0x4b, 0xa8, 0xdf, 0x7c, 0x09, 0x8d,
+	0xfe, 0xd9, 0x82, 0xae, 0x6d, 0x1d, 0x97, 0xdf, 0x4e, 0xcd, 0x62, 0xc5, 0xf5, 0x62, 0x75, 0x65,
+	0x38, 0x97, 0xca, 0xbd, 0xfa, 0x53, 0x27, 0xb0, 0xaf, 0x85, 0x0b, 0xf1, 0xe9, 0xda, 0x8d, 0xb8,
+	0xd9, 0xb8, 0x11, 0x2f, 0x5b, 0x97, 0xae, 0xc4, 0x2e, 0xb4, 0x45, 0xe5, 0x67, 0x57, 0xda, 0x16,
+	0x15, 0x85, 0xd1, 0x3a, 0xca, 0xa7, 0xf4, 0x2a, 0xfe, 0xc4, 0x29, 0xec, 0x9f, 0x8a, 0xc7, 0x84,
+	0xd0, 0x23, 0xbc, 0x42, 0xb5, 0xd0, 0x61, 0x04, 0xed, 0x35, 0xda, 0xed, 0x31, 0x29, 0x52, 0xa7,
+	0x67, 0x37, 0xa0, 0x27, 0x4b, 0x1b, 0xc0, 0xcf, 0x7c, 0x70, 0x9d, 0x38, 0xfa, 0x4d, 0x0b, 0xe2,
+	0x9a, 0xcd, 0x6e, 0x42, 0x5c, 0x4a, 0x93, 0xd9, 0x97, 0x86, 0x7b, 0x78, 0xa4, 0x51, 0x29, 0xcd,
+	0x53, 0x92, 0x29, 0x67, 0xd4, 0x25, 0x43, 0xce, 0x68, 0x4d, 0x67, 0xbf, 0x50, 0xc2, 0xa0, 0x4f,
+	0x99, 0x13, 0x88, 0x49, 0x73, 0xc1, 0x27, 0xcb, 0xae, 0x29, 0x8b, 0x17, 0x33, 0x61, 0xf0, 0x82,
+	0xeb, 0x99, 0x4f, 0xd5, 0x0a, 0xa0, 0x7a, 0x5b, 0xc8, 0xc2, 0x26, 0x2a, 0x4a, 0x69, 0x49, 0x96,
+	0x79, 0xb1, 0x10, 0xa5, 0xcd, 0x50, 0x94, 0x3a, 0x61, 0xb4, 0x04, 0x68, 0x0c, 0x81, 0x04, 0xfa,
+	0x95, 0x12, 0xe7, 0xdc, 0xa0, 0x77, 0x36, 0x88, 0xec, 0x1b, 0x10, 0xb9, 0x27, 0x94, 0x92, 0xde,
+	0xdf, 0xbe, 0x95, 0x53, 0x49, 0xa9, 0xe4, 0xa5, 0x11, 0x17, 0xa2, 0x0a, 0x5e, 0xd7, 0x32, 0x15,
+	0xd3, 0xa9, 0x42, 0xfc, 0x30, 0xd4, 0x99, 0x97, 0xde, 0xef, 0xd9, 0xb0, 0x3e, 0xfa, 0x5f, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0xdb, 0x54, 0x54, 0xfe, 0xe7, 0x0e, 0x00, 0x00,
 }
