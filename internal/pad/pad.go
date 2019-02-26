@@ -1,96 +1,17 @@
-/*
-Esterpad online collaborative editor
-Copyright (C) 2017 Anon2Anon
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-package esterpad
+package pad
 
 import (
 	"container/list"
-	. "esterpad_utils"
-	"gopkg.in/mgo.v2"
 	"strconv"
 	"strings"
 	"sync"
+	// pb "github.com/anon2anon/esterpad/internal/proto"
 )
 
 var (
 	padLogger       = LogInit("pad")
 	DefaultDocument = list.New()
 )
-
-type PChat struct {
-	Id   uint32
-	User *User
-	Text string
-}
-
-type PDelta struct {
-	Id     uint32
-	UserId uint32
-	Ops    *list.List
-}
-
-type PDocument struct {
-	Revision uint32
-	Ops      *list.List
-}
-
-type POpInsert struct {
-	Text   []rune
-	Meta   *PMeta
-	TextRO bool
-}
-
-type POpDelete struct {
-	Len uint32
-}
-
-type POpRetain struct {
-	Len  uint32
-	Meta *PMeta
-}
-
-type PMeta struct {
-	Changemask uint32
-	Bold       bool
-	Italic     bool
-	Underline  bool
-	Strike     bool
-	FontSize   uint32
-	UserId     uint32
-	User       *User
-}
-
-type Pad struct {
-	Id              uint32
-	Name            string
-	CacherChannel   chan interface{}
-	Clients         *list.List
-	ClientsMutex    sync.RWMutex
-	ChatCounter     uint32
-	ChatArray       []*PChat
-	ChatMutex       sync.RWMutex
-	DeltaArray      []*PDelta
-	DocumentArray   []*PDocument
-	DeltaCounter    uint32
-	DeltaMutex      sync.RWMutex
-	ChatCollection  *mgo.Collection
-	DeltaCollection *mgo.Collection
-}
 
 func PadLoad(id uint32, name string) *Pad {
 	p := Pad{Id: id, Name: name, CacherChannel: make(chan interface{}, 200), Clients: list.New(),
@@ -151,41 +72,35 @@ func PadLoad(id uint32, name string) *Pad {
 }
 
 func (p *Pad) CacherHandler() {
-	for {
-		select {
-		case pmessage, ok := <-p.CacherChannel:
-			if !ok {
-				return
+	for _, pmessage := range p.CacherChannel {
+		switch pmessage := pmessage.(type) {
+		case *PChat:
+			mongoMessage := &MongoChat{pmessage.Id, pmessage.User.Id, pmessage.Text}
+			if err := p.ChatCollection.Insert(mongoMessage); err != nil {
+				padLogger.Log(LOG_ERROR, p.Id, "mongo insert err", err)
 			}
-			switch pmessage := pmessage.(type) {
-			case *PChat:
-				mongoMessage := &MongoChat{pmessage.Id, pmessage.User.Id, pmessage.Text}
-				if err := p.ChatCollection.Insert(mongoMessage); err != nil {
-					padLogger.Log(LOG_ERROR, p.Id, "mongo insert err", err)
+		case *PDelta:
+			mongoMessage := &MongoDelta{
+				pmessage.Id, pmessage.UserId,
+				make([]*MongoDeltaOp, pmessage.Ops.Len())}
+			count := 0
+			for op := pmessage.Ops.Front(); op != nil; op = op.Next() {
+				mongoOp := MongoDeltaOp{}
+				switch op := op.Value.(type) {
+				case *POpInsert:
+					mongoOp.Insert = string(op.Text)
+					mongoOp.Meta = op.Meta
+				case *POpDelete:
+					mongoOp.Delete = &op.Len
+				case *POpRetain:
+					mongoOp.Retain = &op.Len
+					mongoOp.Meta = op.Meta
 				}
-			case *PDelta:
-				mongoMessage := &MongoDelta{
-					pmessage.Id, pmessage.UserId,
-					make([]*MongoDeltaOp, pmessage.Ops.Len())}
-				count := 0
-				for op := pmessage.Ops.Front(); op != nil; op = op.Next() {
-					mongoOp := MongoDeltaOp{}
-					switch op := op.Value.(type) {
-					case *POpInsert:
-						mongoOp.Insert = string(op.Text)
-						mongoOp.Meta = op.Meta
-					case *POpDelete:
-						mongoOp.Delete = &op.Len
-					case *POpRetain:
-						mongoOp.Retain = &op.Len
-						mongoOp.Meta = op.Meta
-					}
-					mongoMessage.Ops[count] = &mongoOp
-					count++
-				}
-				if err := p.DeltaCollection.Insert(mongoMessage); err != nil {
-					padLogger.Log(LOG_ERROR, p.Id, "mongo insert err", err)
-				}
+				mongoMessage.Ops[count] = &mongoOp
+				count++
+			}
+			if err := p.DeltaCollection.Insert(mongoMessage); err != nil {
+				padLogger.Log(LOG_ERROR, p.Id, "mongo insert err", err)
 			}
 		}
 	}
@@ -230,7 +145,7 @@ func (p *Pad) SendDelta(c *Client, clientDelta *CDelta) {
 		if newOpsList == nil {
 			padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't transform delta", rev, DeltaToString(opsList), DeltaToString(p.DeltaArray[rev].Ops))
 			p.DeltaMutex.Unlock()
-			c.Messages <- &SDeltaDropped{clientDelta.Revision}
+			c.Messages <- &SDeltaDropped{Revision: clientDelta.Revision}
 			return
 		}
 		opsList = newOpsList
@@ -242,7 +157,7 @@ func (p *Pad) SendDelta(c *Client, clientDelta *CDelta) {
 	if newOps == nil {
 		padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose delta", DeltaToString(opsList), DeltaToString(oldDocument))
 		p.DeltaMutex.Unlock()
-		c.Messages <- &SDeltaDropped{clientDelta.Revision}
+		c.Messages <- &SDeltaDropped{Revision: clientDelta.Revision}
 		return
 	}
 	p.DeltaCounter++
@@ -271,14 +186,14 @@ func (p *Pad) InvertDelta(c *Client, id uint32) {
 	p.DeltaMutex.Lock()
 	if p.DeltaCounter <= id {
 		p.DeltaMutex.Unlock()
-		c.Messages <- &SDeltaDropped{0}
+		c.Messages <- &SDeltaDropped{Revision: 0}
 		return
 	}
 	opsList := DeltaInvert(p.DeltaArray[id].Ops, p.DocumentArray[id].Ops)
 	if opsList == nil {
 		padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't invert delta", id, DeltaToString(p.DeltaArray[id].Ops), DeltaToString(p.DocumentArray[id].Ops))
 		p.DeltaMutex.Unlock()
-		c.Messages <- &SDeltaDropped{0}
+		c.Messages <- &SDeltaDropped{Revision: 0}
 		return
 	}
 	for rev := id + 1; rev < p.DeltaCounter; rev++ {
@@ -286,7 +201,7 @@ func (p *Pad) InvertDelta(c *Client, id uint32) {
 		if newOpsList == nil {
 			padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't transform inverted delta", rev, DeltaToString(opsList), DeltaToString(p.DeltaArray[rev].Ops))
 			p.DeltaMutex.Unlock()
-			c.Messages <- &SDeltaDropped{0}
+			c.Messages <- &SDeltaDropped{Revision: 0}
 			return
 		}
 		opsList = newOpsList
@@ -296,7 +211,7 @@ func (p *Pad) InvertDelta(c *Client, id uint32) {
 	if newOps == nil {
 		padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose inverted delta", DeltaToString(opsList), DeltaToString(oldDocument))
 		p.DeltaMutex.Unlock()
-		c.Messages <- &SDeltaDropped{0}
+		c.Messages <- &SDeltaDropped{Revision: 0}
 		return
 	}
 	p.DeltaCounter++
@@ -328,7 +243,7 @@ func (p *Pad) InvertUserDelta(c *Client, userId uint32) {
 			if invertedOpsList == nil {
 				padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't invert user delta", rev, DeltaToString(p.DeltaArray[rev].Ops), DeltaToString(p.DocumentArray[rev].Ops))
 				p.DeltaMutex.Unlock()
-				c.Messages <- &SDeltaDropped{0}
+				c.Messages <- &SDeltaDropped{Revision: 0}
 				return
 			}
 			if opsList != nil {
@@ -336,7 +251,7 @@ func (p *Pad) InvertUserDelta(c *Client, userId uint32) {
 				if newOpsList == nil {
 					padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose inverted user delta", rev, DeltaToString(invertedOpsList), DeltaToString(opsList))
 					p.DeltaMutex.Unlock()
-					c.Messages <- &SDeltaDropped{0}
+					c.Messages <- &SDeltaDropped{Revision: 0}
 					return
 				}
 				opsList = newOpsList
@@ -348,7 +263,7 @@ func (p *Pad) InvertUserDelta(c *Client, userId uint32) {
 			if newOpsList == nil {
 				padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't transform inverted user delta", rev, DeltaToString(opsList), DeltaToString(p.DeltaArray[rev].Ops))
 				p.DeltaMutex.Unlock()
-				c.Messages <- &SDeltaDropped{0}
+				c.Messages <- &SDeltaDropped{Revision: 0}
 				return
 			}
 			opsList = newOpsList
@@ -361,12 +276,12 @@ func (p *Pad) InvertUserDelta(c *Client, userId uint32) {
 		if newOps == nil {
 			padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose inverted user delta", DeltaToString(opsList), DeltaToString(oldDocument))
 			p.DeltaMutex.Unlock()
-			c.Messages <- &SDeltaDropped{0}
+			c.Messages <- &SDeltaDropped{Revision: 0}
 			return
 		}
 	} else {
 		p.DeltaMutex.Unlock()
-		c.Messages <- &SDeltaDropped{0}
+		c.Messages <- &SDeltaDropped{Revision: 0}
 		return
 	}
 	p.DeltaCounter++
@@ -397,7 +312,7 @@ func (p *Pad) RestoreRevision(c *Client, rev uint32) {
 		if invertedOpsList == nil {
 			padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't invert delta", rev, DeltaToString(p.DeltaArray[rev].Ops), DeltaToString(p.DocumentArray[rev].Ops))
 			p.DeltaMutex.Unlock()
-			c.Messages <- &SDeltaDropped{0}
+			c.Messages <- &SDeltaDropped{Revision: 0}
 			return
 		}
 		if opsList != nil {
@@ -405,7 +320,7 @@ func (p *Pad) RestoreRevision(c *Client, rev uint32) {
 			if newOpsList == nil {
 				padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose inverted delta", rev, DeltaToString(invertedOpsList), DeltaToString(opsList))
 				p.DeltaMutex.Unlock()
-				c.Messages <- &SDeltaDropped{0}
+				c.Messages <- &SDeltaDropped{Revision: 0}
 				return
 			}
 			opsList = newOpsList
@@ -420,12 +335,12 @@ func (p *Pad) RestoreRevision(c *Client, rev uint32) {
 		if newOps == nil {
 			padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose inverted delta", DeltaToString(opsList), DeltaToString(oldDocument))
 			p.DeltaMutex.Unlock()
-			c.Messages <- &SDeltaDropped{0}
+			c.Messages <- &SDeltaDropped{Revision: 0}
 			return
 		}
 	} else {
 		p.DeltaMutex.Unlock()
-		c.Messages <- &SDeltaDropped{0}
+		c.Messages <- &SDeltaDropped{Revision: 0}
 		return
 	}
 	p.DeltaCounter++
@@ -448,9 +363,8 @@ func (p *Pad) RestoreRevision(c *Client, rev uint32) {
 }
 
 func (p *Pad) SendUserInfo(c *Client) {
-	message := &SUserInfo{
-		UserId: c.UserId, Nickname: c.User.Nickname, Color: c.User.Color, Perms: c.User.Perms, Online: true}
-	messageMod := SUserInfo{c.UserId, c.User.Nickname, c.User.Color, c.User.Perms, true, c.Ip, c.UserAgent}
+	message := SUserInfo{
+		UserId: c.UserId, Nickname: c.User.Nickname, Color: c.User.Color, Perms: c.User.Perms, Online: true, Ip: c.Ip, UserAgent: c.UserAgent}
 	padLogger.Log(LOG_INFO, p.Id, c.UserId, "broadcast user info", &message)
 
 	p.ClientsMutex.RLock()
@@ -458,15 +372,12 @@ func (p *Pad) SendUserInfo(c *Client) {
 		neighbor := clientIter.Value.(*Client)
 		if neighbor != c {
 			if neighbor.User.Perms&PERM_MOD != 0 {
-				select {
-				case neighbor.Messages <- &messageMod:
-				default:
-				}
-			} else {
-				select {
-				case neighbor.Messages <- &message:
-				default:
-				}
+				message.Ip = ""
+				message.UserAgent = ""
+			}
+			select {
+			case neighbor.Messages <- &message:
+			default:
 			}
 		}
 	}
@@ -474,7 +385,7 @@ func (p *Pad) SendUserInfo(c *Client) {
 }
 
 func (p *Pad) SendUserLeave(c *Client) {
-	message := SUserLeave{c.UserId}
+	message := SUserLeave{UserId: c.UserId}
 	padLogger.Log(LOG_INFO, p.Id, c.UserId, "broadcast user logout", message)
 
 	p.ClientsMutex.RLock()

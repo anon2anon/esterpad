@@ -1,35 +1,37 @@
-/*
-Esterpad online collaborative editor
-Copyright (C) 2017 Anon2Anon
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-package esterpad
+package delta
 
 import (
 	"container/list"
-	. "esterpad_utils"
 	"fmt"
+
+	. "github.com/anon2anon/esterpad/internal/proto"
 )
 
-var deltaLogger = LogInit("delta")
+type Delta struct {
+	Id     uint32 `bson:"_id,omitempty"`
+	UserId uint32
+	Ops    *list.List
+}
 
-func DeltaAddInsert(ops *list.List, text []rune, meta *PMeta, textRO bool) {
+type OpInsert struct {
+	Text   []rune
+	Meta   *Meta
+	TextRO bool
+}
+
+type OpDelete struct {
+	Len uint32
+}
+
+type OpRetain struct {
+	Len  uint32
+	Meta *Meta
+}
+
+func AddInsert(ops *list.List, text []rune, meta *OpMeta, textRO bool) {
 	if back := ops.Back(); back != nil {
 		switch op := back.Value.(type) {
-		case *POpInsert:
+		case *OpInsert:
 			if *op.Meta == *meta {
 				if op.TextRO {
 					t := make([]rune, len(op.Text)+len(text))
@@ -44,34 +46,34 @@ func DeltaAddInsert(ops *list.List, text []rune, meta *PMeta, textRO bool) {
 			}
 		}
 	}
-	ops.PushBack(&POpInsert{text, meta, textRO})
+	ops.PushBack(&OpInsert{text, meta, textRO})
 }
 
-func DeltaAddDelete(ops *list.List, len uint32) {
+func AddDelete(ops *list.List, len uint32) {
 	if back := ops.Back(); back != nil {
 		switch op := back.Value.(type) {
-		case *POpDelete:
+		case *OpDelete:
 			op.Len = op.Len + len
 			return
 		}
 	}
-	ops.PushBack(&POpDelete{len})
+	ops.PushBack(&OpDelete{len})
 }
 
-func DeltaAddRetain(ops *list.List, len uint32, meta *PMeta) {
+func AddRetain(ops *list.List, len uint32, meta *PMeta) {
 	if back := ops.Back(); back != nil {
 		switch op := back.Value.(type) {
-		case *POpRetain:
+		case *OpRetain:
 			if *op.Meta == *meta {
 				op.Len = op.Len + len
 				return
 			}
 		}
 	}
-	ops.PushBack(&POpRetain{len, meta})
+	ops.PushBack(&OpRetain{Len: len, Meta: meta})
 }
 
-func DeltaValidateFromClient(ops []*Op, canWriteWash bool, userId uint32) *list.List {
+func ValidateFromClient(ops []*Op, canWriteWash bool, userId uint32) *list.List {
 	listOps := list.New()
 	for _, op := range ops {
 		switch op := op.Op.(type) {
@@ -147,7 +149,7 @@ func DeltaValidateFromClient(ops []*Op, canWriteWash bool, userId uint32) *list.
 	return listOps
 }
 
-func DeltaMetaAppend(what *PMeta, to *PMeta) *PMeta {
+func MetaAppend(what *PMeta, to *PMeta) *PMeta {
 	meta := *to
 	if what.Changemask&1 != 0 {
 		meta.Bold = what.Bold
@@ -171,7 +173,7 @@ func DeltaMetaAppend(what *PMeta, to *PMeta) *PMeta {
 	return &meta
 }
 
-func DeltaMetaComplement(what *PMeta, to *PMeta) *PMeta {
+func MetaComplement(what *PMeta, to *PMeta) *PMeta {
 	meta := *to
 	if what.Changemask&1 != 0 {
 		meta.Bold = false
@@ -195,7 +197,7 @@ func DeltaMetaComplement(what *PMeta, to *PMeta) *PMeta {
 	return &meta
 }
 
-func DeltaMetaInvert(what *PMeta, to *PMeta) *PMeta {
+func MetaInvert(what *PMeta, to *PMeta) *PMeta {
 	meta := *to
 	if what.Changemask&1 == 0 {
 		meta.Bold = false
@@ -219,7 +221,7 @@ func DeltaMetaInvert(what *PMeta, to *PMeta) *PMeta {
 	return &meta
 }
 
-func DeltaInvert(delta *list.List, text *list.List) *list.List {
+func Invert(delta *list.List, text *list.List) *list.List {
 	ret := list.New()
 	ai := delta.Front()
 	bi := text.Front()
@@ -233,15 +235,15 @@ func DeltaInvert(delta *list.List, text *list.List) *list.List {
 		at = -1
 		if ai != nil {
 			switch op := ai.Value.(type) {
-			case *POpInsert:
+			case *OpInsert:
 				ac = op.Text
 				at = 0
 				am = op.Meta
-			case *POpDelete:
+			case *OpDelete:
 				ac = op.Len
 				at = 1
 				am = nil
-			case *POpRetain:
+			case *OpRetain:
 				ac = op.Len
 				at = 2
 				am = op.Meta
@@ -253,7 +255,7 @@ func DeltaInvert(delta *list.List, text *list.List) *list.List {
 		bt = -1
 		if bi != nil {
 			switch op := bi.Value.(type) {
-			case *POpInsert:
+			case *OpInsert:
 				bc = op.Text
 				bt = 0
 				bm = op.Meta
@@ -297,7 +299,7 @@ func DeltaInvert(delta *list.List, text *list.List) *list.List {
 	return nil
 }
 
-func DeltaComposeOld(what *list.List, to *list.List) *list.List {
+func ComposeOld(what *list.List, to *list.List) *list.List {
 	ret := list.New()
 	ai := what.Front()
 	bi := to.Front()
@@ -311,15 +313,15 @@ func DeltaComposeOld(what *list.List, to *list.List) *list.List {
 		at = -1
 		if ai != nil {
 			switch op := ai.Value.(type) {
-			case *POpInsert:
+			case *OpInsert:
 				ac = op.Text
 				at = 0
 				am = op.Meta
-			case *POpDelete:
+			case *OpDelete:
 				ac = op.Len
 				at = 1
 				am = nil
-			case *POpRetain:
+			case *OpRetain:
 				ac = op.Len
 				at = 2
 				am = op.Meta
@@ -331,15 +333,15 @@ func DeltaComposeOld(what *list.List, to *list.List) *list.List {
 		bt = -1
 		if bi != nil {
 			switch op := bi.Value.(type) {
-			case *POpInsert:
+			case *OpInsert:
 				bc = op.Text
 				bt = 0
 				bm = op.Meta
-			case *POpDelete:
+			case *OpDelete:
 				bc = op.Len
 				bt = 1
 				bm = nil
-			case *POpRetain:
+			case *OpRetain:
 				bc = op.Len
 				bt = 2
 				bm = op.Meta
@@ -397,7 +399,7 @@ func DeltaComposeOld(what *list.List, to *list.List) *list.List {
 	return nil
 }
 
-func DeltaCompose(what *list.List, to *list.List, canWriteWash bool, canEdit bool, user *User) [2]*list.List {
+func Compose(what *list.List, to *list.List, canWriteWash bool, canEdit bool, user *User) [2]*list.List {
 	an := list.New()
 	bn := list.New()
 	ai := what.Front()
@@ -412,15 +414,15 @@ func DeltaCompose(what *list.List, to *list.List, canWriteWash bool, canEdit boo
 		at = -1
 		if ai != nil {
 			switch op := ai.Value.(type) {
-			case *POpInsert:
+			case *OpInsert:
 				ac = op.Text
 				at = 0
 				am = op.Meta
-			case *POpDelete:
+			case *OpDelete:
 				ac = op.Len
 				at = 1
 				am = nil
-			case *POpRetain:
+			case *OpRetain:
 				ac = op.Len
 				at = 2
 				am = op.Meta
@@ -432,15 +434,15 @@ func DeltaCompose(what *list.List, to *list.List, canWriteWash bool, canEdit boo
 		bt = -1
 		if bi != nil {
 			switch op := bi.Value.(type) {
-			case *POpInsert:
+			case *OpInsert:
 				bc = op.Text
 				bt = 0
 				bm = op.Meta
-			case *POpDelete:
+			case *OpDelete:
 				bc = op.Len
 				bt = 1
 				bm = nil
-			case *POpRetain:
+			case *OpRetain:
 				bc = op.Len
 				bt = 2
 				bm = op.Meta
@@ -524,7 +526,7 @@ func DeltaCompose(what *list.List, to *list.List, canWriteWash bool, canEdit boo
 	return [2]*list.List{nil, nil}
 }
 
-func DeltaTransform(a *list.List, b *list.List) *list.List {
+func Transform(a *list.List, b *list.List) *list.List {
 	an := list.New()
 	//bn := list.New()
 	ai := a.Front()
@@ -539,15 +541,15 @@ func DeltaTransform(a *list.List, b *list.List) *list.List {
 		at = -1
 		if ai != nil {
 			switch op := ai.Value.(type) {
-			case *POpInsert:
+			case *OpInsert:
 				ac = op.Text
 				at = 0
 				am = op.Meta
-			case *POpDelete:
+			case *OpDelete:
 				ac = op.Len
 				at = 1
 				am = nil
-			case *POpRetain:
+			case *OpRetain:
 				ac = op.Len
 				at = 2
 				am = op.Meta
@@ -559,15 +561,15 @@ func DeltaTransform(a *list.List, b *list.List) *list.List {
 		bt = -1
 		if bi != nil {
 			switch op := bi.Value.(type) {
-			case *POpInsert:
+			case *OpInsert:
 				bc = op.Text
 				bt = 0
 				bm = op.Meta
-			case *POpDelete:
+			case *OpDelete:
 				bc = op.Len
 				bt = 1
 				bm = nil
-			case *POpRetain:
+			case *OpRetain:
 				bc = op.Len
 				bt = 2
 				bm = op.Meta
@@ -619,50 +621,82 @@ func DeltaTransform(a *list.List, b *list.List) *list.List {
 	return nil
 }
 
-func DeltaToProtobuf(opsList *list.List) []*Op {
+func ToProtobuf(opsList *list.List) []*Op {
 	ops := make([]*Op, opsList.Len())
 	count := 0
 	for op := opsList.Front(); op != nil; op = op.Next() {
 		switch op := op.Value.(type) {
-		case *POpInsert:
-			meta := OpMeta{op.Meta.Changemask, op.Meta.Bold, op.Meta.Italic, op.Meta.Underline, op.Meta.Strike, op.Meta.FontSize, 0}
+		case *OpInsert:
+			meta := OpMeta{
+				Changemask: op.Meta.Changemask,
+				Bold:       op.Meta.Bold,
+				Italic:     op.Meta.Italic,
+				Underline:  op.Meta.Underline,
+				Strike:     op.Meta.Strike,
+				FontSize:   op.Meta.FontSize,
+				UserId:     0,
+			}
 			if op.Meta.User != nil {
 				meta.UserId = op.Meta.User.Id
 			}
-			ops[count] = &Op{&Op_Insert{&OpInsert{string(op.Text), &meta}}}
-		case *POpDelete:
-			ops[count] = &Op{&Op_Delete{&OpDelete{op.Len}}}
-		case *POpRetain:
-			meta := OpMeta{op.Meta.Changemask, op.Meta.Bold, op.Meta.Italic, op.Meta.Underline, op.Meta.Strike, op.Meta.FontSize, 0}
+			ops[count] = &Op{Op: &Op_Insert{&OpInsert{Text: string(op.Text), Meta: &meta}}}
+		case *OpDelete:
+			ops[count] = &Op{Op: &Op_Delete{&OpDelete{Len: op.Len}}}
+		case *OpRetain:
+			meta := OpMeta{
+				Changemask: op.Meta.Changemask,
+				Bold:       op.Meta.Bold,
+				Italic:     op.Meta.Italic,
+				Underline:  op.Meta.Underline,
+				Strike:     op.Meta.Strike,
+				FontSize:   op.Meta.FontSize,
+				UserId:     0,
+			}
 			if op.Meta.User != nil {
 				meta.UserId = op.Meta.User.Id
 			}
-			ops[count] = &Op{&Op_Retain{&OpRetain{op.Len, &meta}}}
+			ops[count] = &Op{Op: &Op_Retain{&OpRetain{Len: op.Len, Meta: &meta}}}
 		}
 		count++
 	}
 	return ops
 }
 
-func DeltaToString(opsList *list.List) string {
+func ToString(opsList *list.List) string {
 	ops := make([]*Op, opsList.Len())
 	count := 0
 	for op := opsList.Front(); op != nil; op = op.Next() {
 		switch op := op.Value.(type) {
-		case *POpInsert:
-			meta := OpMeta{op.Meta.Changemask, op.Meta.Bold, op.Meta.Italic, op.Meta.Underline, op.Meta.Strike, op.Meta.FontSize, 0}
+		case *OpInsert:
+			meta := OpMeta{
+				Changemask: op.Meta.Changemask,
+				Bold:       op.Meta.Bold,
+				Italic:     op.Meta.Italic,
+				Underline:  op.Meta.Underline,
+				Strike:     op.Meta.Strike,
+				FontSize:   op.Meta.FontSize,
+				UserId:     0,
+			}
 			if op.Meta.User != nil {
 				meta.UserId = op.Meta.User.Id
 			}
-			ops[count] = &Op{&Op_Insert{&OpInsert{string(op.Text), &meta}}}
-		case *POpDelete:
-			ops[count] = &Op{&Op_Delete{&OpDelete{op.Len}}}
-		case *POpRetain:
-			meta := OpMeta{op.Meta.Changemask, op.Meta.Bold, op.Meta.Italic, op.Meta.Underline, op.Meta.Strike, op.Meta.FontSize, 0}
+			ops[count] = &Op{Op: &Op_Insert{&OpInsert{Text: string(op.Text), Meta: &meta}}}
+		case *OpDelete:
+			ops[count] = &Op{Op: &Op_Delete{&OpDelete{Len: op.Len}}}
+		case *OpRetain:
+			meta := OpMeta{
+				Changemask: op.Meta.Changemask,
+				Bold:       op.Meta.Bold,
+				Italic:     op.Meta.Italic,
+				Underline:  op.Meta.Underline,
+				Strike:     op.Meta.Strike,
+				FontSize:   op.Meta.FontSize,
+				UserId:     0,
+			}
 			if op.Meta.User != nil {
 				meta.UserId = op.Meta.User.Id
 			}
-			ops[count] = &Op{&Op_Retain{&OpRetain{op.Len, &meta}}}
+			ops[count] = &Op{Op: &Op_Retain{&OpRetain{Len: op.Len, Meta: &meta}}}
 		}
 		count++
 	}

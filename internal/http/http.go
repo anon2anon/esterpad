@@ -1,22 +1,4 @@
-/*
-Esterpad online collaborative editor
-Copyright (C) 2017 Anon2Anon
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-package esterpad
+package http
 
 import (
 	"encoding/hex"
@@ -25,7 +7,11 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
+
+	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 type staticHanlderStruct struct {
@@ -93,7 +79,7 @@ func (this *staticHanlderStruct) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func HttpStat(w http.ResponseWriter, r *http.Request) {
+func handleStat(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, "405 Method not allowed", 405)
 		return
@@ -157,7 +143,7 @@ len(GlobalClientList): %d<br/>
 	fmt.Fprint(w, "</body>\n</html>\n")
 }
 
-func HttpClearAll(w http.ResponseWriter, r *http.Request) {
+func handleClearAll(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, "405 Method not allowed", 405)
 		return
@@ -165,16 +151,40 @@ func HttpClearAll(w http.ResponseWriter, r *http.Request) {
 	CacherClearAll()
 }
 
-func HttpInit() {
-	httpLogger := LogInit("http")
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	}, //TODO fix
+}
+
+func handleWs(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.WithError(err).Error("upgrader")
+		return
+	}
+	defer conn.Close()
+	ip := ""
+	if b, _ := strconv.ParseBool(Config["http"]["use-x-forwarded-for"].(string)); b {
+		ip = r.Header.Get("x-forwarded-for")
+	} else {
+		ip = r.RemoteAddr[:strings.IndexByte(r.RemoteAddr, ':')]
+	}
+	client := Client{Ip: ip, UserAgent: r.Header.Get("user-agent")}
+	client.Process(conn)
+}
+
+func Init() {
 	http.Handle("/", staticHanlder(http.Dir("frontend/dist")))
-	http.HandleFunc("/.clearall", HttpClearAll)
-	http.HandleFunc("/.stat", HttpStat)
-	http.HandleFunc("/.ws", WsHandler)
+	http.HandleFunc("/.clearall", handleClearAll)
+	http.HandleFunc("/.stat", handleStat)
+	http.HandleFunc("/.ws", handleWs)
 	httpListen := Config["http"]["listen"].(string)
-	httpLogger.Log(LOG_INFO, "Listening on", httpListen)
+	log.Info("Listening on ", httpListen)
 	err := http.ListenAndServe(httpListen, nil)
 	if err != nil {
-		httpLogger.Log(LOG_FATAL, "ListenAndServe", err)
+		log.WithError(err).Error("ListenAndServe")
 	}
 }

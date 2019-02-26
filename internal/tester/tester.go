@@ -1,26 +1,6 @@
-/*
-Esterpad online collaborative editor
-Copyright (C) 2017 Anon2Anon
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-package esterpad_tester
+package tester
 
 import (
-	. "esterpad_utils"
-	"fmt"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -28,6 +8,10 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	pb "github.com/anon2anon/esterpad/internal/proto"
+	"github.com/onrik/logrus/filename"
+	log "github.com/sirupsen/logrus"
 )
 
 type MagicWordInfo struct {
@@ -36,11 +20,11 @@ type MagicWordInfo struct {
 }
 
 func PrintUsage() {
-	fmt.Println("Usage:", os.Args[0], "[server address] [number of total clients] [number of writers] [pad name]")
-	fmt.Println("  server address - Server address in host:port format (ex. localhost:9000)")
-	fmt.Println("  number of total clients - number of clients that read text from pad")
-	fmt.Println("  number of writers - number of clients that write text to pad")
-	fmt.Println("  pad name - optional parameter, name of pad which clients will connect")
+	log.Info("Usage:", os.Args[0], "[server address] [number of total clients] [number of writers] [pad name]")
+	log.Info("  server address - Server address in host:port format (ex. localhost:9000)")
+	log.Info("  number of total clients - number of clients that read text from pad")
+	log.Info("  number of writers - number of clients that write text to pad")
+	log.Info("  pad name - optional parameter, name of pad which clients will connect")
 	os.Exit(1)
 }
 
@@ -64,7 +48,10 @@ func MagicWordReceiver(clients int, magicWordChannel chan string) {
 	for {
 		select {
 		case <-signalChan:
-			fmt.Println("Testing stopped,", testCount, "tests performed, max responce time", maxDelta)
+			log.WithFields(log.Fields{
+				"testCount": testCount,
+				"maxDelta":  maxDelta,
+			}).Info("Testing stopped")
 			return
 		case word, ok := <-magicWordChannel:
 			if !ok {
@@ -75,7 +62,10 @@ func MagicWordReceiver(clients int, magicWordChannel chan string) {
 				startTime := time.Now()
 				info = &MagicWordInfo{startTime, 1}
 				m[word] = info
-				fmt.Println("New test started, word", word, ", start time", startTime)
+				log.WithFields(log.Fields{
+					"word":      word,
+					"startTime": startTime,
+				}).Info("New test started")
 			} else {
 				info.clientCount++
 			}
@@ -85,7 +75,11 @@ func MagicWordReceiver(clients int, magicWordChannel chan string) {
 				if delta > maxDelta {
 					maxDelta = delta
 				}
-				fmt.Println("Test success, word", word, ", end time ", endTime, ", delta", endTime.Sub(info.StartTime))
+				log.WithFields(log.Fields{
+					"word":    word,
+					"endTime": endTime,
+					"delta":   endTime.Sub(info.StartTime),
+				}).Info("Test success")
 				delete(m, word)
 				testCount++
 			}
@@ -97,6 +91,7 @@ func Main() {
 	if len(os.Args) < 4 {
 		PrintUsage()
 	}
+	log.AddHook(filename.NewHook())
 	serverUrl := os.Args[1]
 	if strings.HasPrefix(serverUrl, "http:") {
 		serverUrl = serverUrl[5:]
@@ -106,12 +101,12 @@ func Main() {
 	}
 	clients, err := strconv.Atoi(os.Args[2])
 	if err != nil || clients <= 0 {
-		fmt.Println("Invalid number of total clients", os.Args[2])
+		log.Error("Invalid number of total clients: ", os.Args[2])
 		os.Exit(1)
 	}
 	writers, err := strconv.Atoi(os.Args[3])
 	if err != nil || writers <= 0 || writers > clients {
-		fmt.Println("Invalid number of writers", os.Args[3])
+		log.Error("Invalid number of writers: ", os.Args[3])
 		os.Exit(1)
 	}
 	padName := ""
@@ -123,8 +118,14 @@ func Main() {
 	magicWordChannel := make(chan string, clients)
 	for i := 0; i < clients; i++ {
 		c := Client{
-			id: i, writers: writers, magicWordChannel: magicWordChannel,
-			padName: padName, mutex: &sync.Mutex{}, opsMap: map[uint32][]*Op{}}
+			id:               i,
+			writers:          writers,
+			magicWordChannel: magicWordChannel,
+			padName:          padName,
+			mutex:            &sync.Mutex{},
+			opsMap:           map[uint32][]*pb.Op{},
+			logger:           log.WithField("client", i),
+		}
 		c.Connect(serverUrl)
 	}
 	MagicWordReceiver(clients, magicWordChannel)

@@ -1,28 +1,11 @@
-/*
-Esterpad online collaborative editor
-Copyright (C) 2017 Anon2Anon
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-package esterpad
+package state
 
 import (
-	. "esterpad_utils"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/anon2anon/esterpad/internal/mongo"
 )
 
 var (
@@ -36,7 +19,7 @@ var (
 	PadCounter    uint32 = 0
 )
 
-func CacherClearAll() {
+func ClearAll() {
 	PadMutex.Lock()
 	for _, p := range PadMap {
 		p.ChatMutex.Lock()
@@ -62,21 +45,21 @@ func CacherClearAll() {
 	UserMutex.Unlock()
 }
 
-func CacherAddUser(user *User, email interface{}) {
+func AddUser(user *User, email interface{}) {
 	UserMutex.Lock()
 	UserCounter++
 	user.Id = UserCounter
 	UserMap[UserCounter] = user
 	UserMutex.Unlock()
 	if email != nil {
-		MongoRegisterFinish(user, email.(string))
+		mongo.RegisterFinish(user, email.(string))
 	} else {
 		user.Nickname = "guest-" + strconv.FormatInt(int64(user.Id), 10)
-		MongoRegisterGuest(user)
+		mongo.RegisterGuest(user)
 	}
 }
 
-func CacherGetPad(name string) *Pad {
+func GetPad(name string) *Pad {
 	name = strings.TrimSpace(name)
 	if len(name) == 0 || strings.IndexRune(name, '/') >= 0 || strings.IndexRune(name, '.') >= 0 {
 		return nil
@@ -92,8 +75,8 @@ func CacherGetPad(name string) *Pad {
 	}
 	PadMutex.Unlock()
 	if needInsert {
-		MongoInsertPad(pad.Id, pad.Name)
-		message := SPadList{[]string{pad.Name}}
+		mongo.InsertPad(pad.Id, pad.Name)
+		message := pb.SPadList{Pads: []string{pad.Name}}
 		GlobalClientsMutex.RLock()
 		for clientIter := GlobalClients.Front(); clientIter != nil; clientIter = clientIter.Next() {
 			client := clientIter.Value.(*Client)
@@ -107,16 +90,16 @@ func CacherGetPad(name string) *Pad {
 	return pad
 }
 
-func CacherGetUser(userId uint32) *User {
+func GetUser(userId uint32) *User {
 	UserMutex.RLock()
 	user := UserMap[userId]
 	UserMutex.RUnlock()
 	return user
 }
 
-func CacherInit() {
+func Init() {
 	userIter := UserCollection.Find(nil).Iter()
-	user := MongoUser{}
+	user := mongo.User{}
 	for userIter.Next(&user) {
 		if UserCounter < user.UserId {
 			UserCounter = user.UserId
@@ -127,7 +110,7 @@ func CacherInit() {
 		mongoLogger.Log(LOG_ERROR, "mongo find err", err)
 	}
 	padIter := PadCollection.Find(nil).Sort("_id").Iter()
-	pad := MongoPad{}
+	pad := mongo.Pad{}
 	for padIter.Next(&pad) {
 		PadCounter = pad.Id
 		PadMap[pad.Name] = PadLoad(pad.Id, pad.Name)

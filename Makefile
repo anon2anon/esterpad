@@ -2,7 +2,7 @@ all: backend frontend
 
 frontend:
 	$(MAKE) -C frontend
-	
+
 .PHONY: frontend
 
 backend: utils deps

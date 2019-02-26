@@ -1,5 +1,5 @@
 syntax = "proto3";
-package esterpad_utils;
+package proto;
 
 message SMessages {
     repeated SMessage sm = 1;

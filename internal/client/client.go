@@ -1,44 +1,27 @@
-/*
-Esterpad online collaborative editor
-Copyright (C) 2017 Anon2Anon
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-package esterpad
+package client
 
 import (
 	"container/list"
 	"crypto/rand"
 	"encoding/hex"
-	. "esterpad_utils"
-	"github.com/golang/protobuf/proto"
-	"github.com/gorilla/websocket"
 	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	pb "github.com/anon2anon/esterpad/internal/proto"
+	"github.com/golang/protobuf/proto"
+	"github.com/gorilla/websocket"
 )
 
 const (
-	PERM_NOTGUEST  = 1
-	PERM_CHAT      = 1 << 1
-	PERM_WRITE     = 1 << 2
-	PERM_EDIT      = 1 << 3
-	PERM_WHITEWASH = 1 << 4
-	PERM_MOD       = 1 << 5
-	PERM_ADMIN     = 1 << 6
+	PERM_NOTGUEST  = 1 << iota
+	PERM_CHAT      = 1 << iota
+	PERM_WRITE     = 1 << iota
+	PERM_EDIT      = 1 << iota
+	PERM_WHITEWASH = 1 << iota
+	PERM_MOD       = 1 << iota
+	PERM_ADMIN     = 1 << iota
 )
 
 const (
@@ -59,29 +42,6 @@ type ClientPadContext struct {
 	SentUsers  map[uint32]bool
 }
 
-type User struct {
-	Id       uint32
-	Nickname string
-	Color    uint32
-	Perms    uint32
-}
-
-type Client struct {
-	Messages  chan interface{}
-	User      *User
-	UserId    uint32
-	SessId    [16]byte
-	Ip        string
-	UserAgent string
-	Pad       *Pad
-	pc        *ClientPadContext
-}
-
-type SessionInfo struct {
-	User      *User
-	StartTime time.Time
-}
-
 var (
 	clientLogger        = LogInit("client")
 	ClientSessions      = map[[16]byte]*SessionInfo{}
@@ -90,7 +50,7 @@ var (
 	GlobalClientsMutex  = &sync.RWMutex{}
 )
 
-func (c *Client) AddUserInfo(buffer []*SMessage, user *User) []*SMessage {
+func (c *Client) AddUserInfo(buffer []*pb.SMessage, user *User) []*SMessage {
 	if c.User != user {
 		_, exist := c.pc.SentUsers[user.Id]
 		if !exist {
@@ -99,7 +59,7 @@ func (c *Client) AddUserInfo(buffer []*SMessage, user *User) []*SMessage {
 				Perms: user.Perms, Online: false}
 			clientLogger.Log(LOG_INFO, c.UserId, "send author", smessage)
 			SMessageOneOf := &SMessage_UserInfo{smessage}
-			buffer = append(buffer, &SMessage{SMessageOneOf})
+			buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 			c.pc.SentUsers[user.Id] = false
 		}
 	}
@@ -136,7 +96,7 @@ func (c *Client) AddOfflineInfo(buffer []*SMessage) []*SMessage {
 				}
 				clientLogger.Log(LOG_INFO, c.UserId, "send online user", smessage)
 				SMessageOneOf := &SMessage_UserInfo{smessage}
-				buffer = append(buffer, &SMessage{SMessageOneOf})
+				buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 				c.pc.SentUsers[user.Id] = false
 			}
 		}
@@ -146,13 +106,13 @@ func (c *Client) AddOfflineInfo(buffer []*SMessage) []*SMessage {
 		for _, pmessage := range offlineChat {
 			if pmessage != nil {
 				c.pc.MaxChatId = pmessage.Id
-				smessage := &SChat{pmessage.Id, pmessage.User.Id, pmessage.Text}
+				smessage := &SChat{Id: pmessage.Id, UserId: pmessage.User.Id, Text: pmessage.Text}
 				clientLogger.Log(LOG_INFO, c.UserId, "send history chat message", smessage)
 				if pmessage.User != nil {
 					buffer = c.AddUserInfo(buffer, pmessage.User)
 				}
 				SMessageOneOf := &SMessage_Chat{smessage}
-				buffer = append(buffer, &SMessage{SMessageOneOf})
+				buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 			}
 		}
 	}
@@ -161,10 +121,10 @@ func (c *Client) AddOfflineInfo(buffer []*SMessage) []*SMessage {
 	if offlineDocument != nil {
 		c.pc.MaxDeltaId = offlineDocument.Revision
 		buffer = c.AddAllUsersFromOps(buffer, offlineDocument.Ops)
-		smessage := &SDocument{offlineDocument.Revision, DeltaToProtobuf(offlineDocument.Ops)}
+		smessage := &SDocument{Revision: offlineDocument.Revision, Ops: DeltaToProtobuf(offlineDocument.Ops)}
 		clientLogger.Log(LOG_INFO, c.UserId, "send document message", smessage)
 		SMessageOneOf := &SMessage_Document{smessage}
-		buffer = append(buffer, &SMessage{SMessageOneOf})
+		buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 	}
 	return buffer
 }
@@ -174,50 +134,50 @@ func (c *Client) WritePumpProcessChan(message interface{}, buffer []*SMessage) [
 	case *PChat:
 		if c.pc != nil && message.Id > c.pc.MaxChatId {
 			buffer = c.AddUserInfo(buffer, message.User)
-			smessage := &SChat{message.Id, message.User.Id, message.Text}
+			smessage := &SChat{Id: message.Id, UserId: message.User.Id, Text: message.Text}
 			clientLogger.Log(LOG_INFO, c.UserId, "send broadcast chat message ", smessage)
 			SMessageOneOf := &SMessage_Chat{smessage}
-			buffer = append(buffer, &SMessage{SMessageOneOf})
+			buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 		}
 	case *PDelta:
 		if c.pc != nil && message.Id > c.pc.MaxDeltaId {
 			buffer = c.AddAllUsersFromOps(buffer, message.Ops)
-			smessage := &SDelta{message.Id, message.UserId, DeltaToProtobuf(message.Ops)}
+			smessage := &SDelta{Id: message.Id, UserId: message.UserId, Ops: DeltaToProtobuf(message.Ops)}
 			clientLogger.Log(LOG_INFO, c.UserId, "send broadcast new delta message", smessage)
 			SMessageOneOf := &SMessage_Delta{smessage}
-			buffer = append(buffer, &SMessage{SMessageOneOf})
+			buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 		}
 	case *SDeltaDropped:
 		if c.pc != nil {
 			clientLogger.Log(LOG_INFO, c.UserId, "send delta dropped message", message)
 			SMessageOneOf := &SMessage_DeltaDropped{message}
-			buffer = append(buffer, &SMessage{SMessageOneOf})
+			buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 		}
 	case *SUserLeave:
 		if c.pc != nil {
 			clientLogger.Log(LOG_INFO, c.UserId, "send broadcast user logout", message)
 			SMessageOneOf := &SMessage_UserLeave{message}
-			buffer = append(buffer, &SMessage{SMessageOneOf})
+			buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 		}
 	case *SUserInfo:
 		if c.pc != nil {
 			clientLogger.Log(LOG_INFO, c.UserId, "send broadcast user info", message)
 			c.pc.SentUsers[message.UserId] = false
 			SMessageOneOf := &SMessage_UserInfo{message}
-			buffer = append(buffer, &SMessage{SMessageOneOf})
+			buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 		}
 	case *SAuth:
 		clientLogger.Log(LOG_INFO, c.UserId, "send auth success", message)
 		SMessageOneOf := &SMessage_Auth{message}
-		buffer = append(buffer, &SMessage{SMessageOneOf})
+		buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 	case *SAuthError:
 		clientLogger.Log(LOG_INFO, c.UserId, "send auth error", message)
 		SMessageOneOf := &SMessage_AuthError{message}
-		buffer = append(buffer, &SMessage{SMessageOneOf})
+		buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 	case *SPadList:
 		clientLogger.Log(LOG_INFO, c.UserId, "send pad list", message)
 		SMessageOneOf := &SMessage_PadList{message}
-		buffer = append(buffer, &SMessage{SMessageOneOf})
+		buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 	case *CChatRequest:
 		if c.pc != nil {
 			clientLogger.Log(LOG_INFO, c.UserId, "processs chat request", message)
@@ -229,9 +189,9 @@ func (c *Client) WritePumpProcessChan(message interface{}, buffer []*SMessage) [
 						if pmessage.User != nil {
 							buffer = c.AddUserInfo(buffer, pmessage.User)
 						}
-						smessage := &SChat{pmessage.Id, pmessage.User.Id, pmessage.Text}
+						smessage := &SChat{Id: pmessage.Id, UserId: pmessage.User.Id, Text: pmessage.Text}
 						SMessageOneOf := &SMessage_Chat{smessage}
-						buffer = append(buffer, &SMessage{SMessageOneOf})
+						buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 					}
 				}
 			}
@@ -242,16 +202,16 @@ func (c *Client) WritePumpProcessChan(message interface{}, buffer []*SMessage) [
 			document := c.Pad.CopyDocumentRevision(message.Revision)
 			if document != nil {
 				buffer = c.AddAllUsersFromOps(buffer, document.Ops)
-				smessage := &SDocument{document.Revision, DeltaToProtobuf(document.Ops)}
+				smessage := &SDocument{Revision: document.Revision, Ops: DeltaToProtobuf(document.Ops)}
 				SMessageOneOf := &SMessage_Document{smessage}
-				buffer = append(buffer, &SMessage{SMessageOneOf})
+				buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 			}
 			delta := c.Pad.CopyDeltaRevision(message.Revision)
 			if delta != nil {
 				buffer = c.AddAllUsersFromOps(buffer, delta.Ops)
-				smessage := &SDelta{delta.Id, delta.UserId, DeltaToProtobuf(delta.Ops)}
+				smessage := &SDelta{Id: delta.Id, UserId: delta.UserId, Ops: DeltaToProtobuf(delta.Ops)}
 				SMessageOneOf := &SMessage_Delta{smessage}
-				buffer = append(buffer, &SMessage{SMessageOneOf})
+				buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 			}
 		}
 	case ClientEnterPad:
@@ -267,7 +227,7 @@ func (c *Client) WritePumpProcessChan(message interface{}, buffer []*SMessage) [
 					UserId: message.Id, Nickname: message.Nickname, Color: message.Color,
 					Perms: message.Perms, Online: false}
 				SMessageOneOf := &SMessage_UserInfo{smessage}
-				buffer = append(buffer, &SMessage{SMessageOneOf})
+				buffer = append(buffer, &SMessage{SMessage: SMessageOneOf})
 			}
 
 		}
@@ -444,7 +404,7 @@ func (c *Client) SendWelcome(wsConn *websocket.Conn, newSessId bool) {
 	}
 	PadMutex.RUnlock()
 	sort.Strings(pads)
-	c.Messages <- &SPadList{pads}
+	c.Messages <- &SPadList{Pads: pads}
 }
 
 func (c *Client) SendGlobalUserInfo(user *User) {
@@ -593,7 +553,7 @@ func (c *Client) Process(wsConn *websocket.Conn) {
 				if c.AuthSession(m.Session.SessId) {
 					c.SendWelcome(wsConn, false)
 				} else {
-					c.Messages <- &SAuthError{4}
+					c.Messages <- &SAuthError{Error: 4}
 				}
 			case *CMessage_Login:
 				if c.User != nil {
@@ -604,7 +564,7 @@ func (c *Client) Process(wsConn *websocket.Conn) {
 				if authError := c.Login(m.Login.Email, m.Login.Password); authError == 0 {
 					c.SendWelcome(wsConn, true)
 				} else {
-					c.Messages <- &SAuthError{authError}
+					c.Messages <- &SAuthError{Error: authError}
 				}
 			case *CMessage_Register:
 				if c.User != nil {
@@ -615,13 +575,13 @@ func (c *Client) Process(wsConn *websocket.Conn) {
 				if authError := c.NewUser(m.Register.Email, m.Register.Password, m.Register.Nickname); authError == 0 {
 					c.SendWelcome(wsConn, true)
 				} else {
-					c.Messages <- &SAuthError{authError}
+					c.Messages <- &SAuthError{Error: authError}
 				}
 			case *CMessage_GuestLogin:
 				if authError := c.NewGuest(); authError == 0 {
 					c.SendWelcome(wsConn, true)
 				} else {
-					c.Messages <- &SAuthError{authError}
+					c.Messages <- &SAuthError{Error: authError}
 				}
 			case *CMessage_AdminUser:
 				if c.User != nil {
