@@ -20,7 +20,7 @@ type MagicWordInfo struct {
 }
 
 func PrintUsage() {
-	log.Info("Usage: ", os.Args[0], " server_address clients_no writers_no [pad_name]")
+	log.Infof("Usage: %v server_address clients_no writers_no [pad_name]", os.Args[0])
 	log.Info("  server_address - host:port (ex. localhost:9000)")
 	log.Info("  clients_no - number of clients that read text from pad")
 	log.Info("  writers_no - number of clients that write text to pad")

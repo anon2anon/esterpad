@@ -54,7 +54,7 @@ func (s *Storage) LoginUser(email string, password string) (*ep.User, error) {
 		return nil, fmt.Errorf("empty passhash")
 	}
 	if err := bcrypt.CompareHashAndPassword(user.Passhash, []byte(password)); err != nil {
-		return nil, fmt.Errorf("wrong pass for %s", email)
+		return nil, fmt.Errorf("wrong pass for %v", email)
 	}
 	return &user, nil
 }
@@ -62,12 +62,12 @@ func (s *Storage) LoginUser(email string, password string) (*ep.User, error) {
 func (s *Storage) Register(email string, password string) error {
 	passhash, err := bcrypt.GenerateFromPassword([]byte(password), 0)
 	if err != nil {
-		return errors.Wrapf(err, "hash generate err email=%s", email)
+		return errors.Wrapf(err, "hash generate err email=%v", email)
 	}
 	insert := bson.M{"email": email, "passhash": passhash}
 	err = s.users.Insert(insert)
 	if err != nil {
-		return errors.Wrapf(err, "cannot insert user email=%s", email)
+		return errors.Wrapf(err, "cannot insert user email=%v", email)
 	}
 	return nil
 }
@@ -84,7 +84,7 @@ func (s *Storage) RegisterFinish(user *ep.User, email string) error {
 	}
 	err := s.users.Update(query, change)
 	if err != nil {
-		return errors.Wrapf(err, "users update failed id=%s", user.Id)
+		return errors.Wrapf(err, "users update failed id=%v", user.Id)
 	}
 	return nil
 }
@@ -93,7 +93,7 @@ func (s *Storage) RegisterGuest(user *ep.User) error {
 	mongoUser := ep.User{Id: user.Id, Nickname: user.Nickname, Color: user.Color, Perms: user.Perms}
 	err := s.users.Insert(mongoUser)
 	if err != nil {
-		return errors.Wrapf(err, "register guest failed id=%s", user.Id)
+		return errors.Wrapf(err, "register guest failed id=%v", user.Id)
 	}
 	return nil
 }

@@ -29,18 +29,18 @@ func getConfig(fname string) *Config {
 	var conf Config
 	data, err := ioutil.ReadFile(fname)
 	if err != nil {
-		log.WithError(err).Error("config read")
+		log.WithError(err).Fatal("config read")
 	}
 	err = yaml.Unmarshal(data, &conf)
 	if err != nil {
-		log.WithError(err).Error("config unmarshal")
+		log.WithError(err).Fatal("config unmarshal")
 	}
 	return &conf
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		log.Info("usage: ", os.Args[0], " [config file]")
+		log.Infof("usage: %v [config file]", os.Args[0])
 		os.Exit(1)
 	}
 	log.AddHook(filename.NewHook())
