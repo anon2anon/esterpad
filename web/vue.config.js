@@ -2,6 +2,14 @@
 var protobuf = require('protobufjs')
 var fs = require('fs')
 
+process.env.VUE_APP_COMMIT = require('child_process').execSync('git rev-parse --short HEAD').toString().trim()
+
+if (process.env.NODE_ENV == 'production') {
+  process.env.VUE_APP_VERSION = require('./package.json').version
+} else {
+  process.env.VUE_APP_VERSION = 'dev'
+}
+
 module.exports = {
   configureWebpack: config => {
     protobuf.load('../internal/proto/esterpad.proto', function(e, p) {

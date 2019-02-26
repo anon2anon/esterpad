@@ -19,7 +19,7 @@ import './registerServiceWorker'
 window.log = log
 log.setLevel('debug')
 
-log.info('Running version ' + process.env.VERSION + ', commit ' + process.env.COMMIT)
+log.info('Running version ' + process.env.VUE_APP_VERSION + ', commit ' + process.env.VUE_APP_COMMIT)
 Vue.use(VueMaterial)
 
 Vue.config.productionTip = false

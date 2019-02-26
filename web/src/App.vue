@@ -76,7 +76,7 @@ export default {
       state: state,
       title: '',
       snckMsg: '',
-      version: process.env.VERSION + ' (' + process.env.COMMIT + ')'
+      version: process.env.VUE_APP_VERSION + ' (' + process.env.VUE_APP_COMMIT + ')'
     }
   },
   mounted () {
