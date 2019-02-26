@@ -20,11 +20,11 @@ type MagicWordInfo struct {
 }
 
 func PrintUsage() {
-	log.Info("Usage:", os.Args[0], "[server address] [number of total clients] [number of writers] [pad name]")
-	log.Info("  server address - Server address in host:port format (ex. localhost:9000)")
-	log.Info("  number of total clients - number of clients that read text from pad")
-	log.Info("  number of writers - number of clients that write text to pad")
-	log.Info("  pad name - optional parameter, name of pad which clients will connect")
+	log.Info("Usage: ", os.Args[0], " server_address clients_no writers_no [pad_name]")
+	log.Info("  server_address - host:port (ex. localhost:9000)")
+	log.Info("  clients_no - number of clients that read text from pad")
+	log.Info("  writers_no - number of clients that write text to pad")
+	log.Info("  pad_name - name of pad which clients will connect")
 	os.Exit(1)
 }
 
