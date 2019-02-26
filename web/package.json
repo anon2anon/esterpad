@@ -1,0 +1,63 @@
+{
+  "name": "esterpad",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Insanely fast collaborative text editor",
+  "author": "Anon2Anon",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "codemirror": "^5.44.0",
+    "loglevel": "^1.6.1",
+    "protobufjs": "^6.8.8",
+    "push.js": "^1.0.9",
+    "register-service-worker": "^1.5.2",
+    "split.js": "^1.5.10",
+    "vue": "^2.6.6",
+    "vue-codemirror": "^4.0.6",
+    "vue-material": "^1.0.0-beta-10.2",
+    "vue-router": "^3.0.1",
+    "vue-slider-component": "^2.8.12"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.4.0",
+    "@vue/cli-plugin-eslint": "^3.4.1",
+    "@vue/cli-plugin-pwa": "^3.4.0",
+    "@vue/cli-service": "^3.4.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.8.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "vue-template-compiler": "^2.5.21"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "@vue/airbnb",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "globals": {
+      "log": true
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
