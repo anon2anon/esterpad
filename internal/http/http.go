@@ -6,6 +6,7 @@ import (
 	"path"
 	"strings"
 
+	ep "github.com/anon2anon/esterpad/internal/types"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )
@@ -40,11 +41,11 @@ var upgrader = websocket.Upgrader{
 	}, //TODO fix
 }
 
-func newWsHandler(conf Config) func(http.ResponseWriter, *http.Request) {
+func newWsHandler(conf Config, env ep.Env) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			log.WithError(err).Error("Failed to upgrade to WS")
+			log.WithError(err).Error("failed to upgrade to WS")
 			return
 		}
 		defer conn.Close()
@@ -60,9 +61,9 @@ func newWsHandler(conf Config) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func Serve(conf Config) error {
+func Serve(conf Config, env ep.Env) error {
 	http.Handle("/", newFileHandler(conf.StaticPath))
-	http.HandleFunc("/.ws", newWsHandler(conf))
-	log.Info("Listening on ", conf.Listen)
+	http.HandleFunc("/.ws", newWsHandler(conf, env))
+	log.Info("listening on ", conf.Listen)
 	return http.ListenAndServe(conf.Listen, nil)
 }

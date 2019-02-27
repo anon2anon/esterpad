@@ -33,19 +33,19 @@ func ensureIndex(c *mgo.Collection, keys []string) {
 	}
 }
 
-func New(conf Config) *Storage {
+func New(conf Config) (*Storage, error) {
 	var s Storage
 	log.Debug("connecting to mongo")
 	db, err := mgo.Dial(conf.Url)
 	if err != nil {
-		log.WithError(err).Fatal("cannot dial mongo")
+		return &s, err
 	}
 	s.connection = db
 	s.users = db.DB("").C("user")
 	s.pads = db.DB("").C("pad")
 	ensureIndex(s.users, []string{"userid"})
 	ensureIndex(s.users, []string{"email"})
-	return &s
+	return &s, nil
 }
 
 func (s *Storage) LoginUser(email string, password string) (*ep.User, error) {

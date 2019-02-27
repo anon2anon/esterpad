@@ -7,6 +7,7 @@ import (
 )
 
 type Env struct {
+	Mongo Storage
 }
 
 type User struct {
