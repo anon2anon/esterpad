@@ -5,6 +5,7 @@ import (
 	"os"
 	"runtime/debug"
 
+	"github.com/anon2anon/esterpad/internal/http"
 	"github.com/anon2anon/esterpad/internal/mongo"
 	"github.com/onrik/logrus/filename"
 	log "github.com/sirupsen/logrus"
@@ -16,13 +17,8 @@ type Config struct {
 		Level     int
 		Directory string
 	}
-	Mongo struct {
-		Url string
-	}
-	HTTP struct {
-		Listen           string
-		UseXForwardedFor bool `yaml:"useXForwardedFor"`
-	}
+	Mongo mongo.Config
+	HTTP  http.Config
 }
 
 func getConfig(fname string) *Config {
@@ -52,8 +48,11 @@ func main() {
 			log.WithField("err", err).Fatal("Panic\n", string(debug.Stack()))
 		}
 	}()
-	storage := mongo.New(config.Mongo.Url)
+	storage := mongo.New(config.Mongo)
 	log.Debug(storage.LoginUser("test", "test"))
 	// cacher.Init()
-	// http.Init()
+	err := http.Serve(config.HTTP)
+	if err != nil {
+		log.WithError(err).Fatal("Cannot start HTTP server")
+	}
 }

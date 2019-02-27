@@ -5,4 +5,5 @@ mongo:
     url: mongodb://esterpad:esterpad@localhost:27017/pad
 http:
     listen: 0.0.0.0:9000
+    staticPath: web/dist
     useXForwardedFor: false

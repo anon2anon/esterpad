@@ -6,6 +6,9 @@ import (
 	// "github.com/anon2anon/esterpad/internal/pad"
 )
 
+type Env struct {
+}
+
 type User struct {
 	Id       uint32 `bson:"_id,omitempty"`
 	Email    string `bson:",omitempty"`

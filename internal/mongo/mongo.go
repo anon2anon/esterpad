@@ -12,6 +12,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type Config struct {
+	Url string
+}
+
 type Storage struct {
 	connection *mgo.Session
 	users      *mgo.Collection
@@ -29,10 +33,10 @@ func ensureIndex(c *mgo.Collection, keys []string) {
 	}
 }
 
-func New(url string) *Storage {
+func New(conf Config) *Storage {
 	var s Storage
 	log.Debug("connecting to mongo")
-	db, err := mgo.Dial(url)
+	db, err := mgo.Dial(conf.Url)
 	if err != nil {
 		log.WithError(err).Fatal("cannot dial mongo")
 	}
