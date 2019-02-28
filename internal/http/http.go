@@ -1,3 +1,4 @@
+// Package http handles serving frontend files and upgrading WebSocket connections
 package http
 
 import (
@@ -11,6 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Config for HTTP server
 type Config struct {
 	Listen           string
 	StaticPath       string `yaml:"staticPath"`
@@ -25,6 +27,7 @@ type indexFallbackFS struct {
 	assets http.FileSystem
 }
 
+// Open tries to open requested file, if it doesn't exist returns index.html
 func (i *indexFallbackFS) Open(name string) (http.File, error) {
 	ret, err := i.assets.Open(name)
 	if !os.IsNotExist(err) || path.Ext(name) != "" {
@@ -61,6 +64,8 @@ func newWsHandler(conf Config, env ep.Env) func(http.ResponseWriter, *http.Reque
 	}
 }
 
+// Serve starts serving files and websockets
+// Returns error from http.ListenAndServe
 func Serve(conf Config, env ep.Env) error {
 	http.Handle("/", newFileHandler(conf.StaticPath))
 	http.HandleFunc("/.ws", newWsHandler(conf, env))
