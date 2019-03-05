@@ -3,11 +3,10 @@ package types
 import (
 	"container/list"
 	"time"
-	// "github.com/anon2anon/esterpad/internal/pad"
 )
 
 type Env struct {
-	Mongo Storage
+	Mongo PersistentStorage
 }
 
 type User struct {
@@ -16,7 +15,17 @@ type User struct {
 	Passhash []byte `bson:",omitempty"`
 	Nickname string
 	Color    uint32
-	Perms    uint32
+	Perms    UserPerms
+}
+
+type UserPerms struct {
+	NotGuest  bool
+	Chat      bool
+	Write     bool
+	Edit      bool
+	Whitewash bool
+	Mod       bool
+	Admin     bool
 }
 
 // type Client struct {
@@ -50,27 +59,3 @@ type Pad struct {
 	Id   uint32 `bson:"_id,omitempty"`
 	Name string
 }
-
-// type Pad struct {
-// 	Id              uint32
-// 	Name            string
-// 	CacherChannel   chan interface{}
-// 	Clients         *list.List
-// 	ClientsMutex    sync.RWMutex
-// 	ChatCounter     uint32
-// 	ChatArray       []*PChat
-// 	ChatMutex       sync.RWMutex
-// 	DeltaArray      []*PDelta
-// 	DocumentArray   []*PDocument
-// 	DeltaCounter    uint32
-// 	DeltaMutex      sync.RWMutex
-// 	ChatCollection  *mgo.Collection
-// 	DeltaCollection *mgo.Collection
-// }
-
-// type DeltaOp struct {
-// 	Insert interface{} `bson:",omitempty"`
-// 	Delete *uint32     `bson:",omitempty"`
-// 	Retain *uint32     `bson:",omitempty"`
-// 	Meta   *pad.Meta   `bson:",omitempty"`
-// }

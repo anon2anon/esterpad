@@ -72,6 +72,7 @@ message S {
         // mod
         // admin
         ServerStats server_stats = 601;
+        string exec_js = 602;
         // common
         string server_error = 701;
     }
@@ -125,15 +126,14 @@ message C {
         User edit_user = 503;
         User create_user = 504;
         PadOptions set_pad_options = 505;
+        uint32 delete_chat_message = 506;
+        uint32 delete_user_messages = 507;
         // admin
         uint32 delete_user = 601;
         string delete_pad = 602;
-        uint32 delete_chat_message = 603;
-        uint32 delete_user_messages = 604;
-        bool get_server_stats = 605;
-        bool drop_caches = 606;
-        bool restart_server = 607;
-        string exec_js = 608;
+        bool get_server_stats = 603;
+        bool restart_server = 604;
+        string exec_js = 605;
     }
 }
 
@@ -167,7 +167,7 @@ message OpMeta {
     bool italic = 3;
     bool underline = 4;
     bool strike = 5;
-    uint32 fontSize = 6;
+    uint32 font_size = 6;
     uint32 user_id = 7;
 }
 

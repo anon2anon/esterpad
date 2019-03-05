@@ -1,10 +1,8 @@
 package types
 
-type Storage interface {
+type Mongo interface {
 	LoginUser(email string, password string) (*User, error)
-	Register(email string, password string) error
-	RegisterFinish(user *User, email string) error
-	RegisterGuest(user *User) error
+	RegisterUser(user *User, password string) error
 	SetUserNickname(userId uint32, nickname string) error
 	SetUserColor(userId uint32, color uint32) error
 	SetUserEmail(userId uint32, email string) error

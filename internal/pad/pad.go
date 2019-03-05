@@ -5,18 +5,39 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"gopkg.in/mgo.v2"
 	// pb "github.com/anon2anon/esterpad/internal/proto"
 )
 
-var (
-	padLogger       = LogInit("pad")
-	DefaultDocument = list.New()
-)
+type Pad struct {
+	Id              uint32
+	Name            string
+	CacherChannel   chan interface{}
+	Clients         *list.List
+	ClientsMutex    sync.RWMutex
+	ChatCounter     uint32
+	ChatArray       []*PChat
+	ChatMutex       sync.RWMutex
+	DeltaArray      []*PDelta
+	DocumentArray   []*PDocument
+	DeltaCounter    uint32
+	DeltaMutex      sync.RWMutex
+	ChatCollection  *mgo.Collection
+	DeltaCollection *mgo.Collection
+}
 
 func PadLoad(id uint32, name string) *Pad {
-	p := Pad{Id: id, Name: name, CacherChannel: make(chan interface{}, 200), Clients: list.New(),
-		ClientsMutex: sync.RWMutex{}, ChatMutex: sync.RWMutex{}, DeltaMutex: sync.RWMutex{},
-		DocumentArray: []*PDocument{&PDocument{Ops: DefaultDocument}}}
+	p := Pad{
+		Id:            id,
+		Name:          name,
+		CacherChannel: make(chan interface{}, 200),
+		Clients:       list.New(),
+		ClientsMutex:  sync.RWMutex{},
+		ChatMutex:     sync.RWMutex{},
+		DeltaMutex:    sync.RWMutex{},
+		DocumentArray: []*PDocument{&PDocument{Ops: list.New()}},
+	}
 	p.ChatCollection = MongoConnection.DB("").C("chat" + strconv.FormatInt(int64(p.Id), 10))
 	p.DeltaCollection = MongoConnection.DB("").C("delta" + strconv.FormatInt(int64(p.Id), 10))
 	chatIter := p.ChatCollection.Find(nil).Sort("_id").Iter()
@@ -34,7 +55,7 @@ func PadLoad(id uint32, name string) *Pad {
 	}
 	deltaIter := p.DeltaCollection.Find(nil).Sort("_id").Iter()
 	delta := MongoDelta{}
-	oldDocument := DefaultDocument
+	oldDocument := list.New()
 	for deltaIter.Next(&delta) {
 		for i := p.DeltaCounter + 1; i < delta.Id; i++ {
 			p.DeltaArray = append(p.DeltaArray, &PDelta{i, 0, list.New()})
@@ -158,7 +179,7 @@ func (p *Pad) SendDelta(c *Client, clientDelta *CDelta) {
 		padLogger.Log(LOG_ERROR, p.Id, c.UserId, "can't compose delta", DeltaToString(opsList), DeltaToString(oldDocument))
 		p.DeltaMutex.Unlock()
 		c.Messages <- &SDeltaDropped{Revision: clientDelta.Revision}
-		return
+		returnDeltaCollection
 	}
 	p.DeltaCounter++
 	//delta := PDelta{p.DeltaCounter, c.UserId, newOps[0]}
@@ -368,6 +389,7 @@ func (p *Pad) SendUserInfo(c *Client) {
 	padLogger.Log(LOG_INFO, p.Id, c.UserId, "broadcast user info", &message)
 
 	p.ClientsMutex.RLock()
+	defer p.ClientsMutex.RUnlock()
 	for clientIter := p.Clients.Front(); clientIter != nil; clientIter = clientIter.Next() {
 		neighbor := clientIter.Value.(*Client)
 		if neighbor != c {
@@ -381,7 +403,6 @@ func (p *Pad) SendUserInfo(c *Client) {
 			}
 		}
 	}
-	p.ClientsMutex.RUnlock()
 }
 
 func (p *Pad) SendUserLeave(c *Client) {
@@ -389,6 +410,7 @@ func (p *Pad) SendUserLeave(c *Client) {
 	padLogger.Log(LOG_INFO, p.Id, c.UserId, "broadcast user logout", message)
 
 	p.ClientsMutex.RLock()
+	defer p.ClientsMutex.RUnlock()
 	for clientIter := p.Clients.Front(); clientIter != nil; clientIter = clientIter.Next() {
 		neighbor := clientIter.Value.(*Client)
 		if neighbor != c {
@@ -398,18 +420,17 @@ func (p *Pad) SendUserLeave(c *Client) {
 			}
 		}
 	}
-	p.ClientsMutex.RUnlock()
 }
 
 func (p *Pad) CopyOnlineUsers() []*Client {
 	p.ClientsMutex.RLock()
+	defer p.ClientsMutex.RUnlock()
 	count := 0
 	ret := make([]*Client, p.Clients.Len())
 	for clientIter := p.Clients.Front(); clientIter != nil; clientIter = clientIter.Next() {
 		ret[count] = clientIter.Value.(*Client)
 		count++
 	}
-	p.ClientsMutex.RUnlock()
 	return ret
 }
 
@@ -419,16 +440,15 @@ func (p *Pad) CopyChat(count uint32) []*PChat {
 	}
 	ret := []*PChat{}
 	p.ChatMutex.RLock()
+	defer p.ChatMutex.RUnlock()
 	len := uint32(len(p.ChatArray))
 	if len == 0 {
-		p.ChatMutex.RUnlock()
 		return nil
 	}
 	if count > len {
 		count = len
 	}
 	ret = append(ret, p.ChatArray[len-count:]...)
-	p.ChatMutex.RUnlock()
 	return ret
 }
 
@@ -442,48 +462,44 @@ func (p *Pad) CopyChatFrom(from uint32, count uint32) []*PChat {
 	to := from - count
 	ret := []*PChat{}
 	p.ChatMutex.RLock()
+	defer p.ChatMutex.RUnlock()
 	len := uint32(len(p.ChatArray))
 	if to >= len {
-		p.ChatMutex.RUnlock()
 		return nil
 	}
 	if from > len {
 		from = len
 	}
 	ret = append(ret, p.ChatArray[to:from]...)
-	p.ChatMutex.RUnlock()
 	return ret
 }
 
 func (p *Pad) CopyDocument() *PDocument {
 	p.DeltaMutex.RLock()
+	defer p.DeltaMutex.RUnlock()
 	if p.DeltaCounter == 0 {
-		p.DeltaMutex.RUnlock()
 		return nil
 	}
 	ret := p.DocumentArray[p.DeltaCounter]
-	p.DeltaMutex.RUnlock()
 	return ret
 }
 
 func (p *Pad) CopyDeltaRevision(rev uint32) *PDelta {
 	p.DeltaMutex.RLock()
+	defer p.DeltaMutex.RUnlock()
 	if p.DeltaCounter <= rev {
-		p.DeltaMutex.RUnlock()
 		return nil
 	}
 	ret := p.DeltaArray[rev]
-	p.DeltaMutex.RUnlock()
 	return ret
 }
 
 func (p *Pad) CopyDocumentRevision(rev uint32) *PDocument {
 	p.DeltaMutex.RLock()
+	defer p.DeltaMutex.RUnlock()
 	if p.DeltaCounter < rev {
-		p.DeltaMutex.RUnlock()
 		return nil
 	}
 	ret := p.DocumentArray[rev]
-	p.DeltaMutex.RUnlock()
 	return ret
 }

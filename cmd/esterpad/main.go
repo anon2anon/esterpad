@@ -7,6 +7,7 @@ import (
 
 	"github.com/anon2anon/esterpad/internal/http"
 	"github.com/anon2anon/esterpad/internal/mongo"
+	"github.com/anon2anon/esterpad/internal/state"
 	ep "github.com/anon2anon/esterpad/internal/types"
 	"github.com/onrik/logrus/filename"
 	log "github.com/sirupsen/logrus"
@@ -41,20 +42,30 @@ func main() {
 		os.Exit(1)
 	}
 	log.AddHook(filename.NewHook())
+
 	config := getConfig(os.Args[1])
 	log.SetLevel(log.Level(config.Log.Level))
 	log.Debugf("running with config: %+v", *config)
+
 	defer func() {
 		if err := recover(); err != nil {
 			log.WithField("err", err).Fatal("Panic\n", string(debug.Stack()))
 		}
 	}()
+
+	log.Debug("connecting to mongo")
 	mgo, err := mongo.New(config.Mongo)
 	if err != nil {
 		log.WithError(err).Fatal("mongo error")
 	}
-	env := ep.Env{Mongo: mgo}
-	// cacher.Init()
+
+	stt, err := state.New(mgo)
+	if err != nil {
+		log.WithError(err).Fatal("mongo error")
+	}
+
+	env := ep.Env{Mongo: mgo, State: stt}
+
 	err = http.Serve(config.HTTP, env)
 	if err != nil {
 		log.WithError(err).Fatal("mannot start HTTP server")

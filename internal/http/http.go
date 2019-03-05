@@ -19,8 +19,13 @@ type Config struct {
 	UseXForwardedFor bool   `yaml:"useXForwardedFor"`
 }
 
-func newFileHandler(staticPath string) http.Handler {
-	return http.FileServer(&indexFallbackFS{http.Dir(staticPath)})
+type httpServer struct {
+	conf Config
+	env  ep.Env
+}
+
+func (h *httpServer) newFileHandler() http.Handler {
+	return http.FileServer(&indexFallbackFS{http.Dir(h.conf.StaticPath)})
 }
 
 type indexFallbackFS struct {
@@ -44,31 +49,30 @@ var upgrader = websocket.Upgrader{
 	}, //TODO fix
 }
 
-func newWsHandler(conf Config, env ep.Env) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		conn, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.WithError(err).Error("failed to upgrade to WS")
-			return
-		}
-		defer conn.Close()
-		ip := ""
-		if conf.UseXForwardedFor {
-			ip = r.Header.Get("x-forwarded-for")
-		} else {
-			ip = r.RemoteAddr[:strings.IndexByte(r.RemoteAddr, ':')]
-		}
-		log.WithField("ip", ip).Info("upgraded client to WS")
-		// client := Client{Ip: ip, UserAgent: r.Header.Get("user-agent")}
-		// client.Process(conn)
+func (h *httpServer) wsHandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.WithError(err).Error("failed to upgrade to WS")
+		return
 	}
+	defer conn.Close()
+	ip := ""
+	if h.conf.UseXForwardedFor {
+		ip = r.Header.Get("x-forwarded-for")
+	} else {
+		ip = r.RemoteAddr[:strings.IndexByte(r.RemoteAddr, ':')]
+	}
+	log.WithField("ip", ip).Info("upgraded client to WS")
+	// client := Client{Ip: ip, UserAgent: r.Header.Get("user-agent")}
+	// client.Process(conn)
 }
 
 // Serve starts serving files and websockets
 // Returns error from http.ListenAndServe
 func Serve(conf Config, env ep.Env) error {
-	http.Handle("/", newFileHandler(conf.StaticPath))
-	http.HandleFunc("/.ws", newWsHandler(conf, env))
+	server := httpServer{conf, env}
+	http.Handle("/", server.newFileHandler())
+	http.HandleFunc("/.ws", server.wsHandler)
 	log.Info("listening on ", conf.Listen)
 	return http.ListenAndServe(conf.Listen, nil)
 }
