@@ -2,6 +2,9 @@
 
 > Fast collaborative text editor
 
+**The project is being rewritten, it may not work, build, or whatever**
+Use master branch for stable behavior
+
 ### Setting up dev environment for backend:
 
 Install & start mongo, edit config.yaml
