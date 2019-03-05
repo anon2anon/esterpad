@@ -4,6 +4,13 @@
 
 **Project is being rewritren, see dev branch**
 
+Screenshots:
+
+![](https://i.imgur.com/C0D5WZs.png)
+
+![](https://i.imgur.com/IAyIsI0.png)
+
+
 ### Setting up dev environment for backend:
 
 TODO
