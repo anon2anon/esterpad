@@ -2,6 +2,8 @@
 
 > Fast collaborative text editor
 
+**Project is being rewritren, see dev branch**
+
 ### Setting up dev environment for backend:
 
 TODO
